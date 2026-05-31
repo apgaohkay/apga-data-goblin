@@ -1,0 +1,325 @@
+/*  Access Point of Georgia — SSP Data System v5 — Code.gs  */
+
+var SHEET_ID = '1D3wbyiGS3QIwg0CwFutj7tpffUZtmRf0P4HKSlitppM';
+
+function getSpreadsheet() {
+  return SpreadsheetApp.openById(SHEET_ID);
+}
+
+// ── Returns existing participants (ID, initials, birth year) ──
+function doGet(e) {
+  var ss = getSpreadsheet();
+  var sheet = ss.getSheetByName('Registry');
+  var lastRow = sheet.getLastRow();
+  var participants = [];
+  if (lastRow >= 4) {
+    var headers = sheet.getRange(3, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var idCol = -1, initCol = -1, yearCol = -1;
+    for (var i = 0; i < headers.length; i++) {
+      var h = String(headers[i]).replace('#','').trim();
+      if (h === 'Participant ID') idCol = i;
+      if (h === 'Initials') initCol = i;
+      if (h === 'Birth Year') yearCol = i;
+    }
+    if (idCol > -1) {
+      var vals = sheet.getRange(4, 1, lastRow - 3, sheet.getLastColumn()).getValues();
+      for (var i = 0; i < vals.length; i++) {
+        if (vals[i][idCol] !== '') {
+          participants.push({
+            id: String(vals[i][idCol]),
+            initials: initCol > -1 ? String(vals[i][initCol]).toUpperCase() : '',
+            year: yearCol > -1 ? String(vals[i][yearCol]) : ''
+          });
+        }
+      }
+    }
+  }
+  return ContentService
+    .createTextOutput(JSON.stringify({ participants: participants }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ── Receives POST from the web app ──
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var ss = getSpreadsheet();
+
+    logRaw(ss, data);
+
+    if (data.action === 'registerParticipant') {
+      return registerParticipant(ss, data);
+    } else if (data.action === 'logVisit') {
+      return logVisit(ss, data);
+    } else if (data.action === 'createEvent') {
+      return createEvent(ss, data);
+    } else if (data.action === 'logAttendee') {
+      return logAttendee(ss, data);
+    } else {
+      return ok({ error: 'Unknown action' });
+    }
+  } catch (err) {
+    return ok({ error: err.toString() });
+  }
+}
+
+// ── Register participant ──
+function registerParticipant(ss, d) {
+  var sheet = ss.getSheetByName('Registry');
+  var row = {};
+  row['Participant ID'] = d.id;
+  row['Participant ID#'] = d.id;
+  row['Initials'] = d.initials;
+  row['Birth Year'] = d.birthYear;
+  row['Gender Identity'] = d.gender;
+  row['Race/Ethnicity'] = d.race;
+  row['Race / Ethnicity'] = d.race;
+  row['County'] = d.county;
+  row['ZIP'] = d.zip;
+  row['Housing Status'] = d.housing;
+  row['Participant Type'] = d.participantType;
+  row['Date Registered'] = new Date().toLocaleDateString('en-US');
+  row['Visit Count'] = 0;
+  row['Notes'] = '';
+  appendByHeader(sheet, row);
+  return ok({ status: 'registered', id: d.id });
+}
+
+// ── Log a visit ──
+function logVisit(ss, d) {
+  var sheet = ss.getSheetByName('SSP Visits');
+  var row = {};
+  row['Date'] = d.date;
+  row['Participant ID'] = d.participantId;
+  row['Participant ID#'] = d.participantId;
+  row['New/Returning'] = d.newOrReturning;
+  row['New / Returning'] = d.newOrReturning;
+  row['Staff/Vol'] = d.worker;
+  row['Location'] = d.location;
+  row['Housing Status'] = d.housing;
+  row['Primary Substance'] = d.substances;
+  row['Route of Admin'] = d.route;
+  row['Longs Given'] = num(d.longs);
+  row['Shorts Given'] = num(d.shorts);
+  row['FTS Given'] = num(d.fts);
+  row['Naloxone IM'] = num(d.naloxIM);
+  row['Naloxone Nasal'] = num(d.naloxNasal);
+  row['Sec Distrib Kits'] = num(d.secDistrib);
+  row['Alt Supplies'] = d.altSupplies;
+  row['Naloxone Training?'] = d.training;
+  row['Services/Referrals'] = d.services;
+  row['Services / Referrals'] = d.services;
+  row['Reported Reversal?'] = d.reversal;
+  row['Reversal: Reporter Type'] = d.reporterType;
+  row['Reversal: OD Outcome'] = d.odOutcome;
+  row['Reversal: Nasal Doses Used'] = num(d.odNasalDoses);
+  row['Reversal: IM Doses Used'] = num(d.odInjDoses);
+  row['Reversal: Gender'] = d.odGender;
+  row['Reversal: Race/Eth'] = d.odRace;
+  row['Reversal: Age Range'] = d.odAge;
+  row['Reversal: County'] = d.odCounty;
+  row['Notes'] = d.notes;
+  appendByHeader(sheet, row);
+  bumpVisitCount(ss, d.participantId);
+
+  // Auto-write to OEND Training if trained today
+  if (d.training === 'Trained by us (today)') {
+    logOendFromVisit(ss, d);
+  }
+
+  return ok({ status: 'logged' });
+}
+
+// ── Auto-log OEND row when training happens during SSP visit ──
+function logOendFromVisit(ss, d) {
+  var sheet = ss.getSheetByName('OEND Training');
+  if (!sheet) return;
+  var row = {};
+  row['Date'] = d.date;
+  row['Participant ID'] = d.participantId;
+  row['Participant ID#'] = d.participantId;
+  row['New/Returning'] = d.newOrReturning;
+  row['New / Returning'] = d.newOrReturning;
+  row['Trainer'] = d.worker;
+  row['Location'] = d.location;
+  row['Training Type'] = 'Naloxone/OEND (SSP visit)';
+  row['Naloxone IM Given'] = num(d.naloxIM);
+  row['Naloxone Nasal Given'] = num(d.naloxNasal);
+  row['Sec Distrib Kits'] = num(d.secDistrib);
+  row['Completion Status'] = 'Completed';
+  row['Notes'] = 'Auto-logged from SSP visit';
+  appendByHeader(sheet, row);
+}
+
+// ── Create an event (Events sheet) ──
+function createEvent(ss, d) {
+  var sheet = ss.getSheetByName('Events');
+  if (!sheet) {
+    sheet = ss.insertSheet('Events');
+    sheet.appendRow(['Event ID', 'Date', 'Event Title', 'Event Type', 'Trainer/Facilitator', 'Duration', 'Format', 'Location/Venue', 'Partner Org', 'Funder/Grant', 'Attendee Count', 'Naloxone IM Total', 'Naloxone Nasal Total', 'Sec Distrib Total', 'Notes']);
+    sheet.getRange('A1:O1').setFontWeight('bold').setBackground('#1B6B6B').setFontColor('#FFFFFF');
+    sheet.setFrozenRows(1);
+  }
+  sheet.appendRow([
+    d.eventId, d.date, d.title, d.eventType, d.trainer, d.duration, d.format, d.location, d.partner, d.funder, 0, 0, 0, 0, d.notes
+  ]);
+  return ok({ status: 'eventCreated', eventId: d.eventId });
+}
+
+// ── Log an attendee for an event ──
+function logAttendee(ss, d) {
+  var oend = ss.getSheetByName('OEND Training');
+  if (oend) {
+    var row = {};
+    row['Date'] = getEventDate(ss, d.eventId);
+    row['Participant ID'] = d.participantId || '';
+    row['Participant ID#'] = d.participantId || '';
+    row['New/Returning'] = d.participantId ? 'Returning' : 'New';
+    row['New / Returning'] = d.participantId ? 'Returning' : 'New';
+    row['Trainer'] = getEventField(ss, d.eventId, 4);
+    row['Location'] = getEventField(ss, d.eventId, 7);
+    row['Training Type'] = getEventField(ss, d.eventId, 3);
+    row['Naloxone IM Given'] = num(d.naloxIM);
+    row['Naloxone Nasal Given'] = num(d.naloxNasal);
+    row['Sec Distrib Kits'] = num(d.secDistrib);
+    row['Completion Status'] = d.completion || 'Completed';
+    row['Notes'] = 'Event: ' + d.eventId + ' | ' + d.initials + ' | ' + (d.relationship || '') + ' | Age: ' + (d.ageRange || '') + ' | Race: ' + (d.race || '') + ' | ZIP: ' + (d.zip || '') + ' | County: ' + (d.county || '');
+    appendByHeader(oend, row);
+  }
+  updateEventTotals(ss, d.eventId, d);
+  return ok({ status: 'attendeeLogged' });
+}
+
+function getEventDate(ss, eventId) {
+  var sheet = ss.getSheetByName('Events');
+  if (!sheet) return '';
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return '';
+  var vals = sheet.getRange(2, 1, lastRow - 1, 2).getValues();
+  for (var i = 0; i < vals.length; i++) {
+    if (String(vals[i][0]) === String(eventId)) return vals[i][1];
+  }
+  return '';
+}
+
+function getEventField(ss, eventId, colIndex) {
+  var sheet = ss.getSheetByName('Events');
+  if (!sheet) return '';
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return '';
+  var ids = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(eventId)) {
+      return sheet.getRange(i + 2, colIndex + 1).getValue();
+    }
+  }
+  return '';
+}
+
+function updateEventTotals(ss, eventId, d) {
+  var sheet = ss.getSheetByName('Events');
+  if (!sheet) return;
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+  var ids = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(eventId)) {
+      var rowNum = i + 2;
+      var current = sheet.getRange(rowNum, 11, 1, 4).getValues()[0];
+      sheet.getRange(rowNum, 11, 1, 4).setValues([[
+        (Number(current[0]) || 0) + 1,
+        (Number(current[1]) || 0) + num(d.naloxIM),
+        (Number(current[2]) || 0) + num(d.naloxNasal),
+        (Number(current[3]) || 0) + num(d.secDistrib)
+      ]]);
+      break;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════
+
+function appendByHeader(sheet, rowObj) {
+  var headers = sheet.getRange(3, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var newRow = [];
+  for (var i = 0; i < headers.length; i++) {
+    var h = String(headers[i]).trim();
+    if (rowObj.hasOwnProperty(h)) {
+      newRow.push(rowObj[h]);
+    } else {
+      newRow.push('');
+    }
+  }
+  sheet.appendRow(newRow);
+}
+
+function logRaw(ss, data) {
+  var sheet = ss.getSheetByName('Raw Submissions');
+  if (!sheet) {
+    sheet = ss.insertSheet('Raw Submissions');
+    sheet.appendRow(['Timestamp', 'Action', 'Raw JSON']);
+    sheet.getRange('A1:C1').setFontWeight('bold');
+  }
+  sheet.appendRow([
+    new Date().toISOString(),
+    data.action || '',
+    JSON.stringify(data)
+  ]);
+}
+
+function bumpVisitCount(ss, participantId) {
+  var sheet = ss.getSheetByName('Registry');
+  var headers = sheet.getRange(3, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var idCol = -1;
+  var vcCol = -1;
+  for (var i = 0; i < headers.length; i++) {
+    var h = String(headers[i]).replace('#','').trim();
+    if (h === 'Participant ID') idCol = i;
+    if (String(headers[i]).trim() === 'Visit Count') vcCol = i;
+  }
+  if (idCol === -1 || vcCol === -1) return;
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 4) return;
+  var vals = sheet.getRange(4, idCol + 1, lastRow - 3, 1).getValues();
+  for (var i = 0; i < vals.length; i++) {
+    if (String(vals[i][0]) === String(participantId)) {
+      var cell = sheet.getRange(i + 4, vcCol + 1);
+      cell.setValue((Number(cell.getValue()) || 0) + 1);
+      break;
+    }
+  }
+}
+
+function num(v) {
+  var n = Number(v);
+  return isNaN(n) ? 0 : n;
+}
+
+function ok(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function testPost() {
+  var fakeEvent = {
+    postData: {
+      contents: JSON.stringify({
+        action: 'registerParticipant',
+        id: 9999,
+        initials: 'ZZ',
+        birthYear: '2000',
+        gender: 'Test',
+        race: 'Test',
+        county: 'Clarke',
+        zip: '30601',
+        housing: 'Stable',
+        participantType: 'SSP'
+      })
+    }
+  };
+  var result = doPost(fakeEvent);
+  Logger.log(result.getContent());
+}
