@@ -114,7 +114,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <button class="chip">Stably housed</button><button class="chip">Unstably housed</button><button class="chip">Unhoused</button><button class="chip">Shelter</button><button class="chip">Unknown</button>
 </div>
 </div>
-<button class="btn btn-rust" onclick="submitIntake()">Generate anonymous ID</button>
+<button class="btn btn-rust" onclick="submitIntake(this)">Generate anonymous ID</button>
 <div id="intake-err" class="err">Initials, birth year, and gender are required.</div>
 </div>
 <div id="intake-result" class="hidden">
@@ -152,7 +152,6 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="field"><label>ID #</label><input id="v-id" inputmode="numeric" placeholder="1001"></div>
 <div class="field"><label>Date</label><input id="v-date" type="date"></div>
 </div>
-<div id="v-id-display-wrap" class="hidden" style="text-align:center;font-size:28px;font-weight:700;color:#B5451B;padding:8px"></div>
 </div>
 
 <div class="card">
@@ -235,9 +234,14 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 </div>
 
 <div class="card">
-<div class="section-hdr">Services &amp; Referrals</div>
+<div class="section-hdr">Recovery Support Services (Annex D)</div>
+<div class="label">Peer Support</div>
 <div class="chips" data-group="svc" data-mode="multi">
-<button class="chip sage">Peer support</button><button class="chip sage">MAT/MOUD referral</button><button class="chip sage">Mental health referral</button><button class="chip sage">Safer use education</button><button class="chip sage">Wound care</button><button class="chip sage">Housing referral</button><button class="chip sage">Medical referral</button><button class="chip sage">Benefits/ID assistance</button><button class="chip sage">Secondary distribution</button><button class="chip sage">Legal aid referral</button>
+<button class="chip sage">Peer check-in</button><button class="chip sage">Safer use education</button><button class="chip sage">Emotional support</button><button class="chip sage">Resource navigation</button>
+</div>
+<div class="label" style="margin-top:10px">Referrals &amp; Services</div>
+<div class="chips" data-group="svc" data-mode="multi">
+<button class="chip sage">MAT/MOUD referral</button><button class="chip sage">Mental health referral</button><button class="chip sage">Medical referral</button><button class="chip sage">Wound care</button><button class="chip sage">Housing support</button><button class="chip sage">Transportation support</button><button class="chip sage">Employment services</button><button class="chip sage">Vocational/GED referral</button><button class="chip sage">Family supports</button><button class="chip sage">Benefits/ID assistance</button><button class="chip sage">Legal aid referral</button><button class="chip sage">Secondary distribution</button>
 </div>
 </div>
 
@@ -287,8 +291,6 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 
 <!-- ════════════════ EVENTS SCREEN ════════════════ -->
 <div id="screen-events" class="screen">
-
-<!-- Step 1: Create or select event -->
 <div id="event-setup">
 <div class="card">
 <div class="section-hdr teal-hdr">Event / Training Details</div>
@@ -296,7 +298,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="field"><label>Date</label><input id="e-date" type="date"></div>
 <div class="label">Event Type</div>
 <div class="chips" data-group="etype" data-mode="single">
-<button class="chip teal">OEND Training</button><button class="chip teal">Stigma Reduction</button><button class="chip teal">Tabling/Outreach</button><button class="chip teal">Speaking/Presentation</button><button class="chip teal">Provider Training</button>
+<button class="chip teal">OEND Training</button><button class="chip teal">Stigma Reduction</button><button class="chip teal">Recovery Support Group</button><button class="chip teal">Tabling/Outreach</button><button class="chip teal">Speaking/Presentation</button><button class="chip teal">Provider Training</button><button class="chip teal">Community Collaboration</button>
 </div>
 <div class="row2" style="margin-top:10px">
 <div class="field"><label>Trainer / Facilitator</label>
@@ -328,7 +330,6 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div id="e-err" class="err">Title, date, and event type are required.</div>
 </div>
 
-<!-- Step 2: Log attendees -->
 <div id="event-attendees" class="hidden">
 <div class="card" style="background:#e8f4f4;border-color:#1B6B6B">
 <div style="font-size:14px;font-weight:700;color:#1B6B6B" id="ea-event-title"></div>
@@ -369,7 +370,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="field"><label>Completion</label><select id="ea-completion"><option>Completed</option><option>Partial</option><option>No-show</option></select></div>
 </div>
 </div>
-<button class="btn btn-teal" onclick="addAttendee()">+ Add This Attendee</button>
+<button class="btn btn-teal" onclick="addAttendee(this)">+ Add This Attendee</button>
 <div id="ea-err" class="err">Initials required.</div>
 
 <div id="ea-logged-list" style="margin-top:12px"></div>
@@ -377,7 +378,6 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <button class="btn btn-outline-teal" onclick="finishEvent()" style="margin-top:12px">Finish Event</button>
 </div>
 
-<!-- Step 3: Done -->
 <div id="event-done" class="hidden">
 <div class="success-box"><h3>Event Saved</h3><p id="event-done-msg"></p></div>
 <button class="btn btn-outline-teal" onclick="resetEvent()">Log Another Event</button>
@@ -393,10 +393,16 @@ const sel = {};
 let currentEventId = null;
 let attendeeCount = 0;
 
-// Load existing IDs on page load
+// Load existing participants on page load (IDs + initials + birth year)
 fetch(WEB_APP_URL)
   .then(r => r.json())
-  .then(d => { if (d.ids) registry = d.ids.map(id => ({ id: Number(id) })); })
+  .then(d => {
+    if (d.participants) {
+      registry = d.participants.map(p => ({ id: Number(p.id), initials: (p.initials || '').toUpperCase(), year: String(p.year || '') }));
+    } else if (d.ids) {
+      registry = d.ids.map(id => ({ id: Number(id) }));
+    }
+  })
   .catch(() => {});
 
 // ── Navigation ──
@@ -422,7 +428,6 @@ document.addEventListener('click', function(e) {
   } else {
     e.target.classList.toggle('on');
   }
-  // Show "other" inputs
   if (group === 'worker') {
     document.getElementById('v-worker-other').classList.toggle('hidden', sel['worker'] !== 'Other');
   }
@@ -445,7 +450,7 @@ function toggleReversal() {
 }
 
 // ════════════════ INTAKE ════════════════
-async function submitIntake() {
+async function submitIntake(btn) {
   const initials = document.getElementById('i-initials').value.trim().toUpperCase();
   const year = document.getElementById('i-year').value.trim();
   const gender = sel['gender'] || document.getElementById('i-gender-other').value.trim();
@@ -462,7 +467,6 @@ async function submitIntake() {
     registry.push({ id, initials, year });
   }
 
-  const btn = event.currentTarget;
   btn.innerHTML = '<span class="spinner"></span> Registering...';
   btn.disabled = true;
 
@@ -638,13 +642,12 @@ async function createEvent() {
   document.getElementById('event-attendees').classList.remove('hidden');
 }
 
-async function addAttendee() {
+async function addAttendee(btn) {
   const initials = document.getElementById('ea-initials').value.trim().toUpperCase();
   const errEl = document.getElementById('ea-err');
   if (!initials) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
-  const btn = event.currentTarget;
   btn.innerHTML = '<span class="spinner"></span> Adding...';
   btn.disabled = true;
 
@@ -672,14 +675,12 @@ async function addAttendee() {
   attendeeCount++;
   document.getElementById('ea-count').textContent = attendeeCount + ' attendee' + (attendeeCount !== 1 ? 's' : '') + ' logged';
 
-  // Add to visible list
   const list = document.getElementById('ea-logged-list');
   const div = document.createElement('div');
   div.className = 'attendee-row';
   div.innerHTML = '<span class="row-num">#' + attendeeCount + '</span> ' + initials + (document.getElementById('ea-pid').value ? ' (ID: ' + document.getElementById('ea-pid').value + ')' : '');
   list.appendChild(div);
 
-  // Reset attendee fields
   ['ea-initials','ea-zip','ea-pid'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('ea-age').selectedIndex = 0;
   document.getElementById('ea-county').selectedIndex = 0;
