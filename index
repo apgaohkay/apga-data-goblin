@@ -605,7 +605,7 @@ function resetVisit() {
 }
 
 // ════════════════ EVENTS ════════════════
-async function submitEvent() {
+async function submitNewEvent() {
   const title = document.getElementById('e-title').value.trim();
   const date = document.getElementById('e-date').value;
   const etype = sel['etype'] || '';
