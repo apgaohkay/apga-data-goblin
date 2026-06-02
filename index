@@ -326,7 +326,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 </div>
 <div class="field"><label>Notes / Description</label><textarea id="e-notes" placeholder="Topic, curriculum used, audience, visibility notes for DBHDD..."></textarea></div>
 </div>
-<button class="btn btn-teal" onclick="startEvent()"">Start Event → Add Attendees</button>
+<button class="btn btn-teal" onclick="submitEvent()"">Start Event → Add Attendees</button>
 <div id="e-err" class="err">Title, date, and event type are required.</div>
 </div>
 
@@ -605,7 +605,7 @@ function resetVisit() {
 }
 
 // ════════════════ EVENTS ════════════════
-async function startEvent() {
+async function submitEvent() {
   const title = document.getElementById('e-title').value.trim();
   const date = document.getElementById('e-date').value;
   const etype = sel['etype'] || '';
