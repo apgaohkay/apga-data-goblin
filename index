@@ -4,226 +4,78 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Access Point SSP · RIGOR</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
-/* ══ PLAID BODY ═══════════════════════════════════════════════ */
 body{
   font-family:Arial,sans-serif;
   color:#2D2926;
   padding:0 0 60px;
-  /* Warm cream base */
   background-color:#EDE5DA;
-  /* Layered tartan: fine rust + sage crosshatch + wider teal accent */
   background-image:
-    repeating-linear-gradient(180deg,
-      transparent 0,transparent 22px,
-      rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,
-      transparent 23px,transparent 45px,
-      rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px
-    ),
-    repeating-linear-gradient(90deg,
-      transparent 0,transparent 22px,
-      rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,
-      transparent 23px,transparent 45px,
-      rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px
-    ),
-    repeating-linear-gradient(180deg,
-      transparent 0,transparent 89px,
-      rgba(27,107,107,.09) 89px,rgba(27,107,107,.09) 91px
-    ),
-    repeating-linear-gradient(90deg,
-      transparent 0,transparent 89px,
-      rgba(27,107,107,.09) 89px,rgba(27,107,107,.09) 91px
-    );
+    repeating-linear-gradient(180deg,transparent 0,transparent 22px,rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,transparent 23px,transparent 45px,rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px),
+    repeating-linear-gradient(90deg,transparent 0,transparent 22px,rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,transparent 23px,transparent 45px,rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px),
+    repeating-linear-gradient(180deg,transparent 0,transparent 89px,rgba(27,107,107,.09) 89px,rgba(27,107,107,.09) 91px),
+    repeating-linear-gradient(90deg,transparent 0,transparent 89px,rgba(27,107,107,.09) 89px,rgba(27,107,107,.09) 91px);
 }
-
-/* ══ TOP BAR ══════════════════════════════════════════════════ */
-.top-bar{
-  background:#2B0A0A;
-  padding:11px 16px 9px;
-  position:sticky;top:0;z-index:100;
-  border-bottom:3px solid #B5451B;
-  /* subtle plaid overlay on header too */
-  background-image:
-    repeating-linear-gradient(90deg,
-      transparent 0,transparent 30px,
-      rgba(255,255,255,.03) 30px,rgba(255,255,255,.03) 31px
-    ),
-    repeating-linear-gradient(180deg,
-      transparent 0,transparent 14px,
-      rgba(255,255,255,.03) 14px,rgba(255,255,255,.03) 15px
-    );
-}
-.top-bar h1{
-  font-family:'Bebas Neue',Arial,sans-serif;
-  font-weight:400;
-  font-size:21px;
-  letter-spacing:0.22em;
-  color:#fff;
-  line-height:1.1;
-}
-.top-bar p{
-  color:rgba(255,255,255,.60);
-  font-size:10px;
-  margin-top:3px;
-  letter-spacing:0.14em;
-  text-transform:uppercase;
-}
-
-/* ══ NAV ══════════════════════════════════════════════════════ */
-.nav{
-  display:flex;
-  background:#1A1210;
-  position:sticky;top:55px;z-index:99;
-  flex-wrap:wrap;
-  border-bottom:2px solid #3D1A10;
-}
-.nav-btn{
-  flex:1;padding:12px 4px;
-  border:none;background:transparent;
-  color:rgba(255,255,255,.55);font-size:12px;
-  cursor:pointer;font-family:Arial,sans-serif;
-  border-bottom:3px solid transparent;
-  min-width:70px;letter-spacing:0.03em;
-  transition:all 0.15s;
-}
-.nav-btn.active{
-  color:#fff;
-  border-bottom-color:#B5451B;
-  background:rgba(181,69,27,.14);
-}
-
-/* ══ SCREENS / CARDS ══════════════════════════════════════════ */
+.top-bar{background:#2B0A0A;padding:11px 16px 9px;position:sticky;top:0;z-index:100;border-bottom:3px solid #B5451B;background-image:repeating-linear-gradient(90deg,transparent 0,transparent 30px,rgba(255,255,255,.03) 30px,rgba(255,255,255,.03) 31px),repeating-linear-gradient(180deg,transparent 0,transparent 14px,rgba(255,255,255,.03) 14px,rgba(255,255,255,.03) 15px)}
+.top-bar h1{font-family:'Bebas Neue',Arial,sans-serif;font-weight:400;font-size:21px;letter-spacing:0.22em;color:#fff;line-height:1.1}
+.top-bar p{color:rgba(255,255,255,.60);font-size:10px;margin-top:3px;letter-spacing:0.14em;text-transform:uppercase}
+.nav{display:flex;background:#1A1210;position:sticky;top:55px;z-index:99;flex-wrap:wrap;border-bottom:2px solid #3D1A10}
+.nav-btn{flex:1;padding:12px 4px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:12px;cursor:pointer;font-family:Arial,sans-serif;border-bottom:3px solid transparent;min-width:70px;letter-spacing:0.03em;transition:all 0.15s}
+.nav-btn.active{color:#fff;border-bottom-color:#B5451B;background:rgba(181,69,27,.14)}
 .screen{display:none;padding:12px 12px 0}
 .screen.active{display:block}
-.card{
-  background:rgba(255,255,255,.86);
-  border:1px solid #D9CEBC;
-  border-radius:10px;
-  padding:14px;
-  margin-bottom:10px;
-  backdrop-filter:blur(3px);
-}
-
-/* ══ LABELS ═══════════════════════════════════════════════════ */
-.label{
-  font-size:11px;font-weight:700;
-  color:#6B5B4E;text-transform:uppercase;
-  letter-spacing:0.08em;margin-bottom:8px;
-}
-.multi-hint{
-  font-size:11px;color:#8B7B6E;font-style:italic;margin-bottom:6px;margin-top:-4px;
-}
-
-/* ══ CHIPS ════════════════════════════════════════════════════ */
+.card{background:rgba(255,255,255,.86);border:1px solid #D9CEBC;border-radius:10px;padding:14px;margin-bottom:10px;backdrop-filter:blur(3px)}
+.label{font-size:11px;font-weight:700;color:#6B5B4E;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
+.multi-hint{font-size:11px;color:#8B7B6E;font-style:italic;margin-bottom:6px;margin-top:-4px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{
-  padding:7px 13px;
-  border:1px solid #C4B8A8;border-radius:20px;
-  font-size:13px;cursor:pointer;
-  background:transparent;color:#2D2926;
-  font-family:Arial,sans-serif;
-  -webkit-tap-highlight-color:transparent;
-  transition:background 0.12s,color 0.12s,border-color 0.12s;
-}
+.chip{padding:7px 13px;border:1px solid #C4B8A8;border-radius:20px;font-size:13px;cursor:pointer;background:transparent;color:#2D2926;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent;transition:background 0.12s,color 0.12s,border-color 0.12s}
 .chip.on{background:#B5451B;color:#fff;border-color:#B5451B}
 .chip.sage.on{background:#4A6741;color:#fff;border-color:#4A6741}
 .chip.teal.on{background:#1B6B6B;color:#fff;border-color:#1B6B6B}
 .chip.danger.on{background:#8B1A1A;color:#fff;border-color:#8B1A1A}
-
-/* ══ FORM FIELDS ══════════════════════════════════════════════ */
 .field{margin-bottom:10px}
 .field label{font-size:12px;color:#6B5B4E;display:block;margin-bottom:4px}
-.field input,.field select,.field textarea{
-  width:100%;padding:9px 11px;
-  border:1px solid #C4B8A8;border-radius:8px;
-  font-size:14px;font-family:Arial,sans-serif;
-  background:#fff;color:#2D2926;
-  -webkit-appearance:none;
-}
-.field input:focus,.field select:focus,.field textarea:focus{
-  outline:none;border-color:#B5451B;
-}
+.field input,.field select,.field textarea{width:100%;padding:9px 11px;border:1px solid #C4B8A8;border-radius:8px;font-size:14px;font-family:Arial,sans-serif;background:#fff;color:#2D2926;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#B5451B}
 .field textarea{min-height:70px;resize:vertical}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-
-/* ══ BUTTONS ══════════════════════════════════════════════════ */
-.btn{
-  width:100%;padding:13px;border:none;border-radius:8px;
-  font-size:15px;font-weight:600;cursor:pointer;
-  margin-top:8px;font-family:Arial,sans-serif;
-  -webkit-tap-highlight-color:transparent;
-}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
 .btn-rust{background:#B5451B;color:#fff}
 .btn-sage{background:#4A6741;color:#fff}
 .btn-teal{background:#1B6B6B;color:#fff}
 .btn-rust:disabled,.btn-sage:disabled,.btn-teal:disabled{opacity:0.5}
 .btn-outline{background:transparent;color:#B5451B;border:1px solid #B5451B;margin-top:6px}
 .btn-outline-teal{background:transparent;color:#1B6B6B;border:1px solid #1B6B6B;margin-top:6px}
-
-/* ══ RESULT BOXES ═════════════════════════════════════════════ */
-.success-box{
-  background:#EAF3DE;border:1px solid #C5DDAA;
-  border-radius:10px;padding:16px;text-align:center;margin-bottom:10px;
-}
+.success-box{background:#EAF3DE;border:1px solid #C5DDAA;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px}
 .success-box h3{color:#3B6D11;font-size:16px;margin-bottom:4px}
 .success-box p{color:#3B6D11;font-size:13px;opacity:0.85}
 .id-box{background:#E8E0D5;border-radius:10px;padding:20px;text-align:center;margin-bottom:10px}
 .id-num{font-size:56px;font-weight:700;color:#B5451B;letter-spacing:0.1em}
 .id-sub{font-size:12px;color:#6B5B4E;margin-top:6px}
-.err{
-  color:#8B1A1A;font-size:12px;margin-top:6px;display:none;
-  padding:8px;background:#F5DCDC;border-radius:6px;
-}
-
-/* ══ REVERSAL ═════════════════════════════════════════════════ */
+.err{color:#8B1A1A;font-size:12px;margin-top:6px;display:none;padding:8px;background:#F5DCDC;border-radius:6px}
 .reversal-wrap{background:#F5DCDC;border-radius:8px;padding:12px;margin-top:8px}
 .toggle-row{display:flex;align-items:center;justify-content:space-between}
 .toggle-row span{font-size:13px;font-weight:600}
 .toggle-row input[type=checkbox]{width:20px;height:20px;cursor:pointer}
 .hidden{display:none}
-
-/* ══ SECTION HEADERS ══════════════════════════════════════════ */
-.section-hdr{
-  color:#fff;font-size:11px;font-weight:700;
-  text-transform:uppercase;letter-spacing:0.08em;
-  padding:8px 12px;border-radius:6px;margin-bottom:8px;
-  background:#2D2926;
-}
+.section-hdr{color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px;border-radius:6px;margin-bottom:8px;background:#2D2926}
 .section-hdr.teal-hdr{background:#1B6B6B}
 .section-hdr.sage-hdr{background:#4A6741}
-.section-hdr.rust-hdr{background:#B5451B}
-
-/* ══ SPINNER ══════════════════════════════════════════════════ */
-.spinner{
-  display:inline-block;width:16px;height:16px;
-  border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;
-  border-radius:50%;animation:spin 0.7s linear infinite;
-  vertical-align:middle;margin-right:6px;
-}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ══ EVENT ATTENDEE LIST ══════════════════════════════════════ */
-.attendee-row{
-  background:#f0f7f7;border:1px solid #c4d8d8;
-  border-radius:8px;padding:12px;margin-bottom:8px;
-}
+.attendee-row{background:#f0f7f7;border:1px solid #c4d8d8;border-radius:8px;padding:12px;margin-bottom:8px}
 .attendee-row .row-num{font-size:11px;font-weight:700;color:#1B6B6B;margin-bottom:6px}
-.attendee-count{
-  text-align:center;font-size:14px;color:#6B5B4E;
-  padding:8px;background:#E8E0D5;border-radius:8px;margin-bottom:10px;
-}
+.attendee-count{text-align:center;font-size:14px;color:#6B5B4E;padding:8px;background:#E8E0D5;border-radius:8px;margin-bottom:10px}
 </style>
 </head>
 <body>
 
 <div class="top-bar">
-<h1>△CCESS POINT OF GEO®GI△</h1>
-<p>Syringe Services &amp; Harm Reduction · RIGOR</p>
+<h1>&#9651;CCESS POINT OF GEO&#174;GI&#9651;</h1>
+<p>Syringe Services &amp; Harm Reduction &middot; RIGOR</p>
 </div>
 
 <div class="nav">
@@ -233,10 +85,9 @@ body{
 <button class="nav-btn" onclick="showScreen('events')">Events</button>
 </div>
 
-<!-- ════════════════ INTAKE ════════════════ -->
+<!-- INTAKE SCREEN -->
 <div id="screen-intake" class="screen active">
 <div id="intake-form">
-
 <div class="card">
 <div class="label">Participant Type</div>
 <div class="multi-hint">Select all that apply</div>
@@ -248,7 +99,6 @@ body{
 <button class="chip" data-val="Staff/Vol">Staff/Vol</button>
 </div>
 </div>
-
 <div class="card">
 <div class="label">Demographics</div>
 <div class="row2">
@@ -265,7 +115,6 @@ body{
 <button class="chip">White</button><button class="chip">Black</button><button class="chip">Hispanic/Latino</button><button class="chip">Native American</button><button class="chip">Asian</button><button class="chip">Pacific Islander</button><button class="chip">Multiracial</button><button class="chip">Other</button>
 </div>
 </div>
-
 <div class="card">
 <div class="label">Location</div>
 <div class="row2">
@@ -279,20 +128,18 @@ body{
 <button class="chip">Stably housed</button><button class="chip">Unstably housed</button><button class="chip">Unhoused</button><button class="chip">Shelter</button><button class="chip">Unknown</button>
 </div>
 </div>
-
 <button class="btn btn-rust" onclick="submitIntake(this)">Generate anonymous ID</button>
 <div id="intake-err" class="err">Initials, birth year, and gender are required.</div>
 </div>
-
 <div id="intake-result" class="hidden">
 <div class="success-box"><h3>Participant Registered</h3><p>Anonymous ID assigned</p></div>
 <div class="id-box"><div id="result-id" class="id-num"></div><div class="id-sub">Write this on their card</div></div>
-<button class="btn btn-sage" onclick="goVisit()">Log visit for this ID →</button>
+<button class="btn btn-sage" onclick="goVisit()">Log visit for this ID &rarr;</button>
 <button class="btn btn-outline" onclick="resetIntake()">Register another</button>
 </div>
 </div>
 
-<!-- ════════════════ LOOKUP ════════════════ -->
+<!-- LOOKUP SCREEN -->
 <div id="screen-lookup" class="screen">
 <div class="card">
 <div class="label">Find Participant ID</div>
@@ -304,14 +151,14 @@ body{
 </div>
 <div id="lookup-result" class="hidden">
 <div class="id-box"><div id="lookup-id" class="id-num"></div></div>
-<button class="btn btn-sage" onclick="goVisitFromLookup()">Log visit →</button>
+<button class="btn btn-sage" onclick="goVisitFromLookup()">Log visit &rarr;</button>
 </div>
 <div id="lookup-none" class="hidden">
 <div class="card" style="text-align:center;color:#8B1A1A">No match found. Check spelling or register as new.</div>
 </div>
 </div>
 
-<!-- ════════════════ VISIT LOG ════════════════ -->
+<!-- VISIT LOG SCREEN -->
 <div id="screen-visit" class="screen">
 <div class="card">
 <div class="label">Participant</div>
@@ -359,11 +206,11 @@ body{
 
 <div class="card">
 <div class="section-hdr">Supplies Distributed</div>
-<div class="label">Syringes — Longs</div>
+<div class="label">Syringes &mdash; Longs</div>
 <div class="chips" data-group="longs" data-mode="single">
 <button class="chip">0</button><button class="chip">10</button><button class="chip">20</button><button class="chip">30</button><button class="chip">40</button><button class="chip">50</button>
 </div>
-<div class="label" style="margin-top:10px">Syringes — Shorts</div>
+<div class="label" style="margin-top:10px">Syringes &mdash; Shorts</div>
 <div class="chips" data-group="shorts" data-mode="single">
 <button class="chip">0</button><button class="chip">10</button><button class="chip">20</button><button class="chip">30</button><button class="chip">40</button><button class="chip">50</button>
 </div>
@@ -394,14 +241,14 @@ body{
 </div>
 
 <div class="card">
-<div class="section-hdr sage-hdr">Naloxone Training</div>
+<div class="section-hdr">Naloxone Training</div>
 <div class="chips" data-group="training" data-mode="single">
 <button class="chip sage">Trained by us (today)</button><button class="chip sage">Previously trained by AP</button><button class="chip sage">Trained elsewhere</button><button class="chip sage">No training</button>
 </div>
 </div>
 
 <div class="card">
-<div class="section-hdr sage-hdr">Recovery Support Services (Annex D)</div>
+<div class="section-hdr">Recovery Support Services (Annex D)</div>
 <div class="label">Peer Support</div>
 <div class="chips" data-group="svc" data-mode="multi">
 <button class="chip sage">Peer check-in</button><button class="chip sage">Safer use education</button><button class="chip sage">Emotional support</button><button class="chip sage">Resource navigation</button>
@@ -456,23 +303,17 @@ body{
 </div>
 </div>
 
-<!-- ════════════════ EVENTS ════════════════ -->
+<!-- EVENTS SCREEN -->
 <div id="screen-events" class="screen">
 <div id="event-setup">
 <div class="card">
 <div class="section-hdr teal-hdr">Event / Training Details</div>
-<div class="field"><label>Event Title</label><input id="e-title" placeholder="e.g. OEND Training — Clarke Co Library"></div>
+<div class="field"><label>Event Title</label><input id="e-title" placeholder="e.g. OEND Training &mdash; Clarke Co Library"></div>
 <div class="field"><label>Date</label><input id="e-date" type="date"></div>
 <div class="label">Event Type</div>
 <div class="multi-hint">Select all that apply</div>
 <div class="chips" data-group="etype" data-mode="multi">
-<button class="chip teal">OEND Training</button>
-<button class="chip teal">Stigma Reduction</button>
-<button class="chip teal">Recovery Support Group</button>
-<button class="chip teal">Tabling/Outreach</button>
-<button class="chip teal">Speaking/Presentation</button>
-<button class="chip teal">Provider Training</button>
-<button class="chip teal">Community Collaboration</button>
+<button class="chip teal">OEND Training</button><button class="chip teal">Stigma Reduction</button><button class="chip teal">Recovery Support Group</button><button class="chip teal">Tabling/Outreach</button><button class="chip teal">Speaking/Presentation</button><button class="chip teal">Provider Training</button><button class="chip teal">Community Collaboration</button>
 </div>
 <div class="row2" style="margin-top:10px">
 <div class="field"><label>Trainer / Facilitator</label>
@@ -498,9 +339,9 @@ body{
 <button class="chip teal">SOR/DBHDD</button><button class="chip teal">Other grant</button><button class="chip teal">Unfunded</button>
 </div>
 </div>
-<div class="field"><label>Notes / Description</label><textarea id="e-notes" placeholder="Topic, curriculum used, audience, DBHDD visibility notes..."></textarea></div>
+<div class="field"><label>Notes / Description</label><textarea id="e-notes" placeholder="Topic, curriculum used, audience, visibility notes for DBHDD..."></textarea></div>
 </div>
-<button class="btn btn-teal" onclick="createEvent()">Start Event → Add Attendees</button>
+<button class="btn btn-teal" onclick="startEvent()">Start Event &rarr; Add Attendees</button>
 <div id="e-err" class="err">Title, date, and at least one event type are required.</div>
 </div>
 
@@ -546,7 +387,9 @@ body{
 </div>
 <button class="btn btn-teal" onclick="addAttendee(this)">+ Add This Attendee</button>
 <div id="ea-err" class="err">Initials required.</div>
+
 <div id="ea-logged-list" style="margin-top:12px"></div>
+
 <button class="btn btn-outline-teal" onclick="finishEvent()" style="margin-top:12px">Finish Event</button>
 </div>
 
@@ -559,88 +402,73 @@ body{
 <script>
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzCYLYOWFZXG4KCWcf-nFAAvYzaBFNaiJ7aB3oE5-mzqyIZrS0cDIznBxTNbqxd1U-p/exec';
 
-// ── State ──────────────────────────────────────────────────────
+// State
 let registry = [];
 const sel = {};
 let currentEventId = null;
 let attendeeCount = 0;
 
-// Load participant registry on page load
 fetch(WEB_APP_URL)
   .then(r => r.json())
   .then(d => {
     if (d.participants) {
-      registry = d.participants.map(p => ({
-        id: Number(p.id),
-        initials: (p.initials || '').toUpperCase(),
-        year: String(p.year || '')
-      }));
+      registry = d.participants.map(p => ({ id: Number(p.id), initials: (p.initials || '').toUpperCase(), year: String(p.year || '') }));
     } else if (d.ids) {
       registry = d.ids.map(id => ({ id: Number(id) }));
     }
   })
   .catch(() => {});
 
-// ── Navigation ─────────────────────────────────────────────────
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => {
-    const t = b.textContent.toLowerCase();
-    b.classList.toggle('active',
-      name === 'intake'  ? t.includes('intake') :
-      name === 'lookup'  ? t.includes('lookup') :
-      name === 'visit'   ? t.includes('visit')  :
-      t.includes('event')
-    );
+  document.querySelectorAll('.nav-btn').forEach((b, i) => {
+    b.classList.toggle('active', b.textContent.toLowerCase().includes(name === 'intake' ? 'intake' : name === 'lookup' ? 'lookup' : name === 'visit' ? 'visit' : 'event'));
   });
 }
 
-// ── Chip logic ─────────────────────────────────────────────────
 document.addEventListener('click', function(e) {
   if (!e.target.classList.contains('chip')) return;
   const wrap = e.target.closest('[data-group]');
   if (!wrap) return;
   const group = wrap.dataset.group;
-  const mode  = wrap.dataset.mode;
-
+  const mode = wrap.dataset.mode;
   if (mode === 'single') {
     wrap.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
     e.target.classList.add('on');
     sel[group] = e.target.dataset.val || e.target.textContent;
   } else {
-    // multi — just toggle; read with getToggled()
     e.target.classList.toggle('on');
   }
-
-  if (group === 'worker')    document.getElementById('v-worker-other').classList.toggle('hidden', sel['worker']    !== 'Other');
-  if (group === 'loc')       document.getElementById('v-loc-other').classList.toggle('hidden',    sel['loc']       !== 'Other');
-  if (group === 'e-trainer') document.getElementById('e-trainer-other').classList.toggle('hidden',sel['e-trainer'] !== 'Other');
+  if (group === 'worker') {
+    document.getElementById('v-worker-other').classList.toggle('hidden', sel['worker'] !== 'Other');
+  }
+  if (group === 'loc') {
+    document.getElementById('v-loc-other').classList.toggle('hidden', sel['loc'] !== 'Other');
+  }
+  if (group === 'e-trainer') {
+    document.getElementById('e-trainer-other').classList.toggle('hidden', sel['e-trainer'] !== 'Other');
+  }
 });
 
 function getToggled(group) {
-  return Array.from(document.querySelectorAll('[data-group="' + group + '"] .chip.on'))
-    .map(c => c.dataset.val || c.textContent).join('; ');
+  const chips = document.querySelectorAll('[data-group="' + group + '"] .chip.on');
+  return Array.from(chips).map(c => c.dataset.val || c.textContent).join('; ');
 }
 
-// ── Reversal toggle ────────────────────────────────────────────
 function toggleReversal() {
-  document.getElementById('reversal-details').classList.toggle(
-    'hidden', !document.getElementById('reversal-toggle').checked
-  );
+  document.getElementById('reversal-details').classList.toggle('hidden', !document.getElementById('reversal-toggle').checked);
 }
 
-// ════════════════ INTAKE ════════════════════════════════════════
+// INTAKE
 async function submitIntake(btn) {
   const initials = document.getElementById('i-initials').value.trim().toUpperCase();
-  const year     = document.getElementById('i-year').value.trim();
-  const gender   = sel['gender'] || document.getElementById('i-gender-other').value.trim();
-  const errEl    = document.getElementById('intake-err');
-
+  const year = document.getElementById('i-year').value.trim();
+  const gender = sel['gender'] || document.getElementById('i-gender-other').value.trim();
+  const errEl = document.getElementById('intake-err');
   if (!initials || !year || !gender) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
-  // Dedup check
   const dup = registry.find(p => p.initials === initials && p.year === year);
   let id;
   if (dup) { id = dup.id; }
@@ -661,7 +489,7 @@ async function submitIntake(btn) {
         id, initials, birthYear: year, gender,
         race: getToggled('race'),
         housing: sel['housing'] || '',
-        participantType: getToggled('ptype') || 'SSP',   // ← now multi-select
+        participantType: getToggled('ptype') || 'SSP',
         zip: document.getElementById('i-zip').value.trim(),
         county: document.getElementById('i-county').value,
       })
@@ -682,19 +510,19 @@ function resetIntake() {
   document.getElementById('i-county').selectedIndex = 0;
   document.querySelectorAll('#screen-intake .chip').forEach(c => c.classList.remove('on'));
   ['gender','race','housing'].forEach(k => delete sel[k]);
-  // ptype is multi — visual reset above handles it; no sel key to delete
 }
 
 function goVisit() {
-  document.getElementById('v-id').value = document.getElementById('result-id').textContent;
+  const id = document.getElementById('result-id').textContent;
+  document.getElementById('v-id').value = id;
   showScreen('visit');
 }
 
-// ════════════════ LOOKUP ════════════════════════════════════════
+// LOOKUP
 function lookupId() {
   const initials = document.getElementById('l-initials').value.trim().toUpperCase();
-  const year     = document.getElementById('l-year').value.trim();
-  const match    = registry.find(p => p.initials === initials && p.year === year);
+  const year = document.getElementById('l-year').value.trim();
+  const match = registry.find(p => p.initials === initials && p.year === year);
   document.getElementById('lookup-result').classList.add('hidden');
   document.getElementById('lookup-none').classList.add('hidden');
   if (match) {
@@ -706,36 +534,35 @@ function lookupId() {
 }
 
 function goVisitFromLookup() {
-  document.getElementById('v-id').value = document.getElementById('lookup-id').textContent;
+  const id = document.getElementById('lookup-id').textContent;
+  document.getElementById('v-id').value = id;
   showScreen('visit');
 }
 
-// ════════════════ VISIT LOG ═════════════════════════════════════
+// VISIT LOG
 async function submitVisit() {
-  const id    = document.getElementById('v-id').value;
-  const date  = document.getElementById('v-date').value;
+  const id = document.getElementById('v-id').value;
+  const date = document.getElementById('v-date').value;
   const errEl = document.getElementById('v-err');
   if (!id || !date) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
-  const btn     = document.getElementById('v-submit');
+  const btn = document.getElementById('v-submit');
   btn.innerHTML = '<span class="spinner"></span> Submitting...';
-  btn.disabled  = true;
+  btn.disabled = true;
 
   const reversal = document.getElementById('reversal-toggle').checked;
-  const worker   = sel['worker'] === 'Other'
-    ? document.getElementById('v-worker-other').value.trim().toUpperCase()
-    : (sel['worker'] || '');
+  const worker = sel['worker'] === 'Other' ? document.getElementById('v-worker-other').value.trim().toUpperCase() : (sel['worker'] || '');
 
   try {
     await fetch(WEB_APP_URL, {
       method: 'POST',
       body: JSON.stringify({
         action: 'logVisit',
-        participantId: id, date, worker,
-        location: sel['loc'] === 'Other'
-          ? document.getElementById('v-loc-other').value.trim()
-          : (sel['loc'] || ''),
+        participantId: id,
+        date,
+        worker: worker,
+        location: sel['loc'] === 'Other' ? document.getElementById('v-loc-other').value.trim() : (sel['loc'] || ''),
         newOrReturning: sel['nr'] || '',
         housing: sel['v-housing'] || '',
         substances: getToggled('subst'),
@@ -750,13 +577,13 @@ async function submitVisit() {
         training: sel['training'] || '',
         reversal: reversal ? 'Yes' : 'No',
         reporterType: reversal ? (sel['reporter'] || '') : '',
-        odOutcome:    reversal ? (sel['od-outcome'] || '') : '',
+        odOutcome: reversal ? (sel['od-outcome'] || '') : '',
         odNasalDoses: reversal ? (sel['od-nasal'] || '') : '',
-        odInjDoses:   reversal ? (sel['od-inj'] || '') : '',
-        odGender:     reversal ? (sel['od-gender'] || '') : '',
-        odRace:       reversal ? getToggled('od-race') : '',
-        odAge:        reversal ? document.getElementById('od-age').value : '',
-        odCounty:     reversal ? document.getElementById('od-county').value : '',
+        odInjDoses: reversal ? (sel['od-inj'] || '') : '',
+        odGender: reversal ? (sel['od-gender'] || '') : '',
+        odRace: reversal ? getToggled('od-race') : '',
+        odAge: reversal ? document.getElementById('od-age').value : '',
+        odCounty: reversal ? document.getElementById('od-county').value : '',
         services: getToggled('svc'),
         notes: document.getElementById('v-notes').value.trim(),
       })
@@ -768,9 +595,9 @@ async function submitVisit() {
 }
 
 function resetVisit() {
-  const btn     = document.getElementById('v-submit');
+  const btn = document.getElementById('v-submit');
   btn.innerHTML = 'Submit Visit';
-  btn.disabled  = false;
+  btn.disabled = false;
   btn.classList.remove('hidden');
   document.getElementById('v-success').classList.add('hidden');
   document.getElementById('v-err').style.display = 'none';
@@ -785,26 +612,22 @@ function resetVisit() {
   document.getElementById('od-age').selectedIndex = 0;
   document.getElementById('od-county').selectedIndex = 0;
   document.querySelectorAll('#screen-visit .chip').forEach(c => c.classList.remove('on'));
-  ['worker','nr','loc','v-housing','longs','shorts','fts','nalox-im','nalox-nasal','sec',
-   'training','reporter','od-outcome','od-nasal','od-inj','od-gender'].forEach(k => delete sel[k]);
+  ['worker','nr','loc','v-housing','subst','route','longs','shorts','fts','alt','nalox-im','nalox-nasal','sec','training','svc','reporter','od-outcome','od-nasal','od-inj','od-gender','od-race'].forEach(k => delete sel[k]);
 }
 
-// ════════════════ EVENTS ════════════════════════════════════════
-async function createEvent() {
-  const title  = document.getElementById('e-title').value.trim();
-  const date   = document.getElementById('e-date').value;
-  const etype  = getToggled('etype');     // ← now multi-select
-  const errEl  = document.getElementById('e-err');
-
+// EVENTS
+async function startEvent() {
+  const title = document.getElementById('e-title').value.trim();
+  const date = document.getElementById('e-date').value;
+  const etype = getToggled('etype');
+  const errEl = document.getElementById('e-err');
   if (!title || !date || !etype) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
   currentEventId = 'EVT-' + Date.now();
-  attendeeCount  = 0;
+  attendeeCount = 0;
 
-  const trainer = sel['e-trainer'] === 'Other'
-    ? document.getElementById('e-trainer-other').value.trim()
-    : (sel['e-trainer'] || '');
+  const trainer = sel['e-trainer'] === 'Other' ? document.getElementById('e-trainer-other').value.trim() : (sel['e-trainer'] || '');
 
   try {
     await fetch(WEB_APP_URL, {
@@ -813,32 +636,31 @@ async function createEvent() {
         action: 'createEvent',
         eventId: currentEventId,
         title, date, eventType: etype,
-        trainer,
+        trainer: trainer,
         duration: sel['e-duration'] || '',
-        format:   sel['e-format']   || '',
+        format: sel['e-format'] || '',
         location: document.getElementById('e-location').value.trim(),
-        partner:  document.getElementById('e-partner').value.trim(),
-        funder:   sel['e-funder']   || '',
-        notes:    document.getElementById('e-notes').value.trim(),
+        partner: document.getElementById('e-partner').value.trim(),
+        funder: sel['e-funder'] || '',
+        notes: document.getElementById('e-notes').value.trim(),
       })
     });
   } catch(e) {}
 
   document.getElementById('ea-event-title').textContent = title;
-  document.getElementById('ea-event-meta').textContent  =
-    date + ' · ' + etype + (trainer ? ' · ' + trainer : '');
+  document.getElementById('ea-event-meta').textContent = date + ' · ' + etype + (trainer ? ' · ' + trainer : '');
   document.getElementById('event-setup').classList.add('hidden');
   document.getElementById('event-attendees').classList.remove('hidden');
 }
 
 async function addAttendee(btn) {
   const initials = document.getElementById('ea-initials').value.trim().toUpperCase();
-  const errEl    = document.getElementById('ea-err');
+  const errEl = document.getElementById('ea-err');
   if (!initials) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
   btn.innerHTML = '<span class="spinner"></span> Adding...';
-  btn.disabled  = true;
+  btn.disabled = true;
 
   try {
     await fetch(WEB_APP_URL, {
@@ -846,30 +668,28 @@ async function addAttendee(btn) {
       body: JSON.stringify({
         action: 'logAttendee',
         eventId: currentEventId,
-        initials,
-        ageRange:      document.getElementById('ea-age').value,
-        race:          getToggled('ea-race'),
-        zip:           document.getElementById('ea-zip').value.trim(),
-        county:        document.getElementById('ea-county').value,
-        relationship:  sel['ea-rel'] || '',
-        naloxIM:       sel['ea-nalox-im']    || '0',
-        naloxNasal:    sel['ea-nalox-nasal'] || '0',
-        secDistrib:    sel['ea-sec']         || '0',
+        initials: initials,
+        ageRange: document.getElementById('ea-age').value,
+        race: getToggled('ea-race'),
+        zip: document.getElementById('ea-zip').value.trim(),
+        county: document.getElementById('ea-county').value,
+        relationship: sel['ea-rel'] || '',
+        naloxIM: sel['ea-nalox-im'] || '0',
+        naloxNasal: sel['ea-nalox-nasal'] || '0',
+        secDistrib: sel['ea-sec'] || '0',
         participantId: document.getElementById('ea-pid').value.trim(),
-        completion:    document.getElementById('ea-completion').value,
+        completion: document.getElementById('ea-completion').value,
       })
     });
   } catch(e) {}
 
   attendeeCount++;
-  document.getElementById('ea-count').textContent =
-    attendeeCount + ' attendee' + (attendeeCount !== 1 ? 's' : '') + ' logged';
+  document.getElementById('ea-count').textContent = attendeeCount + ' attendee' + (attendeeCount !== 1 ? 's' : '') + ' logged';
 
   const list = document.getElementById('ea-logged-list');
-  const div  = document.createElement('div');
+  const div = document.createElement('div');
   div.className = 'attendee-row';
-  div.innerHTML = '<span class="row-num">#' + attendeeCount + '</span> ' + initials
-    + (document.getElementById('ea-pid').value ? ' (ID: ' + document.getElementById('ea-pid').value + ')' : '');
+  div.innerHTML = '<span class="row-num">#' + attendeeCount + '</span> ' + initials + (document.getElementById('ea-pid').value ? ' (ID: ' + document.getElementById('ea-pid').value + ')' : '');
   list.appendChild(div);
 
   ['ea-initials','ea-zip','ea-pid'].forEach(id => document.getElementById(id).value = '');
@@ -877,18 +697,17 @@ async function addAttendee(btn) {
   document.getElementById('ea-county').selectedIndex = 0;
   document.getElementById('ea-completion').selectedIndex = 0;
   document.querySelectorAll('#event-attendees [data-group^="ea-"] .chip').forEach(c => c.classList.remove('on'));
-  ['ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k => delete sel[k]);
+  ['ea-race','ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k => delete sel[k]);
 
   btn.innerHTML = '+ Add This Attendee';
-  btn.disabled  = false;
+  btn.disabled = false;
   document.getElementById('ea-initials').focus();
 }
 
 function finishEvent() {
   document.getElementById('event-attendees').classList.add('hidden');
   document.getElementById('event-done').classList.remove('hidden');
-  document.getElementById('event-done-msg').textContent =
-    attendeeCount + ' attendee' + (attendeeCount !== 1 ? 's' : '') + ' logged for this event.';
+  document.getElementById('event-done-msg').textContent = attendeeCount + ' attendee' + (attendeeCount !== 1 ? 's' : '') + ' logged for this event.';
 }
 
 function resetEvent() {
@@ -898,16 +717,14 @@ function resetEvent() {
   ['e-title','e-location','e-partner','e-notes','e-trainer-other'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('e-date').value = '';
   document.querySelectorAll('#screen-events .chip').forEach(c => c.classList.remove('on'));
-  ['e-trainer','e-duration','e-format','e-funder'].forEach(k => delete sel[k]);
-  // etype is multi — visual reset above handles it
+  ['etype','e-trainer','e-duration','e-format','e-funder'].forEach(k => delete sel[k]);
   document.getElementById('e-trainer-other').classList.add('hidden');
   currentEventId = null;
-  attendeeCount  = 0;
+  attendeeCount = 0;
 }
 
-// ── Default dates ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  const today = new Date().toISOString().split('T')[0];
+  var today = new Date().toISOString().split('T')[0];
   document.getElementById('v-date').value = today;
   document.getElementById('e-date').value = today;
 });
