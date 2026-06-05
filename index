@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Access Point SSP · RIGOR</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:Arial,sans-serif;
-  color:#2D2926;
-  padding:0 0 60px;
+  font-family:Arial,sans-serif;color:#2D2926;padding:0 0 60px;
   background-color:#EDE5DA;
   background-image:
     repeating-linear-gradient(180deg,transparent 0,transparent 22px,rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,transparent 23px,transparent 45px,rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px),
@@ -85,7 +84,7 @@ body{
 <button class="nav-btn" onclick="showScreen('events')">Events</button>
 </div>
 
-<!-- INTAKE SCREEN -->
+<!-- ════════════════ INTAKE ════════════════ -->
 <div id="screen-intake" class="screen active">
 <div id="intake-form">
 <div class="card">
@@ -120,7 +119,7 @@ body{
 <div class="row2">
 <div class="field"><label>ZIP</label><input id="i-zip" inputmode="numeric" maxlength="5" placeholder="30601"></div>
 <div class="field"><label>County</label>
-<select id="i-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Other</option></select>
+<select id="i-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option></select>
 </div>
 </div>
 <div class="field"><label>Housing Status</label></div>
@@ -139,7 +138,7 @@ body{
 </div>
 </div>
 
-<!-- LOOKUP SCREEN -->
+<!-- ════════════════ LOOKUP ════════════════ -->
 <div id="screen-lookup" class="screen">
 <div class="card">
 <div class="label">Find Participant ID</div>
@@ -158,7 +157,7 @@ body{
 </div>
 </div>
 
-<!-- VISIT LOG SCREEN -->
+<!-- ════════════════ VISIT LOG ════════════════ -->
 <div id="screen-visit" class="screen">
 <div class="card">
 <div class="label">Participant</div>
@@ -241,14 +240,14 @@ body{
 </div>
 
 <div class="card">
-<div class="section-hdr">Naloxone Training</div>
+<div class="section-hdr sage-hdr">Naloxone Training</div>
 <div class="chips" data-group="training" data-mode="single">
 <button class="chip sage">Trained by us (today)</button><button class="chip sage">Previously trained by AP</button><button class="chip sage">Trained elsewhere</button><button class="chip sage">No training</button>
 </div>
 </div>
 
 <div class="card">
-<div class="section-hdr">Recovery Support Services (Annex D)</div>
+<div class="section-hdr sage-hdr">Recovery Support Services (Annex D)</div>
 <div class="label">Peer Support</div>
 <div class="chips" data-group="svc" data-mode="multi">
 <button class="chip sage">Peer check-in</button><button class="chip sage">Safer use education</button><button class="chip sage">Emotional support</button><button class="chip sage">Resource navigation</button>
@@ -286,7 +285,7 @@ body{
 </div>
 <div class="row2" style="margin-top:8px">
 <div class="field"><label>Age Range</label><select id="od-age"><option value="">Select</option><option>Under 18</option><option>18-24</option><option>25-34</option><option>35-44</option><option>45-54</option><option>55-64</option><option>65+</option><option>Unknown</option></select></div>
-<div class="field"><label>County</label><select id="od-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Other</option><option>Unknown</option></select></div>
+<div class="field"><label>County</label><select id="od-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option><option>Unknown</option></select></div>
 </div>
 </div>
 </div>
@@ -303,7 +302,7 @@ body{
 </div>
 </div>
 
-<!-- EVENTS SCREEN -->
+<!-- ════════════════ EVENTS ════════════════ -->
 <div id="screen-events" class="screen">
 <div id="event-setup">
 <div class="card">
@@ -339,7 +338,7 @@ body{
 <button class="chip teal">SOR/DBHDD</button><button class="chip teal">Other grant</button><button class="chip teal">Unfunded</button>
 </div>
 </div>
-<div class="field"><label>Notes / Description</label><textarea id="e-notes" placeholder="Topic, curriculum used, audience, visibility notes for DBHDD..."></textarea></div>
+<div class="field"><label>Notes / Description</label><textarea id="e-notes" placeholder="Topic, curriculum used, audience, DBHDD visibility notes..."></textarea></div>
 </div>
 <button class="btn btn-teal" onclick="startEvent()">Start Event &rarr; Add Attendees</button>
 <div id="e-err" class="err">Title, date, and at least one event type are required.</div>
@@ -351,7 +350,6 @@ body{
 <div style="font-size:12px;color:#6B5B4E;margin-top:2px" id="ea-event-meta"></div>
 </div>
 <div id="ea-count" class="attendee-count">0 attendees logged</div>
-
 <div class="card">
 <div class="section-hdr teal-hdr">Add Attendee</div>
 <div class="row2">
@@ -364,7 +362,7 @@ body{
 </div>
 <div class="row2" style="margin-top:8px">
 <div class="field"><label>ZIP</label><input id="ea-zip" inputmode="numeric" maxlength="5" placeholder="30601"></div>
-<div class="field"><label>County</label><select id="ea-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Other</option></select></div>
+<div class="field"><label>County</label><select id="ea-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option></select></div>
 </div>
 <div class="label">Relationship to Substance Use</div>
 <div class="chips" data-group="ea-rel" data-mode="single">
@@ -387,9 +385,7 @@ body{
 </div>
 <button class="btn btn-teal" onclick="addAttendee(this)">+ Add This Attendee</button>
 <div id="ea-err" class="err">Initials required.</div>
-
 <div id="ea-logged-list" style="margin-top:12px"></div>
-
 <button class="btn btn-outline-teal" onclick="finishEvent()" style="margin-top:12px">Finish Event</button>
 </div>
 
@@ -402,7 +398,6 @@ body{
 <script>
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzCYLYOWFZXG4KCWcf-nFAAvYzaBFNaiJ7aB3oE5-mzqyIZrS0cDIznBxTNbqxd1U-p/exec';
 
-// State
 let registry = [];
 const sel = {};
 let currentEventId = null;
@@ -422,8 +417,13 @@ fetch(WEB_APP_URL)
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach((b, i) => {
-    b.classList.toggle('active', b.textContent.toLowerCase().includes(name === 'intake' ? 'intake' : name === 'lookup' ? 'lookup' : name === 'visit' ? 'visit' : 'event'));
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active',
+      name === 'intake'  ? b.textContent.toLowerCase().includes('intake')  :
+      name === 'lookup'  ? b.textContent.toLowerCase().includes('lookup')  :
+      name === 'visit'   ? b.textContent.toLowerCase().includes('visit')   :
+      b.textContent.toLowerCase().includes('event')
+    );
   });
 }
 
@@ -432,7 +432,7 @@ document.addEventListener('click', function(e) {
   const wrap = e.target.closest('[data-group]');
   if (!wrap) return;
   const group = wrap.dataset.group;
-  const mode = wrap.dataset.mode;
+  const mode  = wrap.dataset.mode;
   if (mode === 'single') {
     wrap.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
     e.target.classList.add('on');
@@ -440,32 +440,26 @@ document.addEventListener('click', function(e) {
   } else {
     e.target.classList.toggle('on');
   }
-  if (group === 'worker') {
-    document.getElementById('v-worker-other').classList.toggle('hidden', sel['worker'] !== 'Other');
-  }
-  if (group === 'loc') {
-    document.getElementById('v-loc-other').classList.toggle('hidden', sel['loc'] !== 'Other');
-  }
-  if (group === 'e-trainer') {
-    document.getElementById('e-trainer-other').classList.toggle('hidden', sel['e-trainer'] !== 'Other');
-  }
+  if (group === 'worker')    document.getElementById('v-worker-other').classList.toggle('hidden', sel['worker']    !== 'Other');
+  if (group === 'loc')       document.getElementById('v-loc-other').classList.toggle('hidden',    sel['loc']       !== 'Other');
+  if (group === 'e-trainer') document.getElementById('e-trainer-other').classList.toggle('hidden',sel['e-trainer'] !== 'Other');
 });
 
 function getToggled(group) {
-  const chips = document.querySelectorAll('[data-group="' + group + '"] .chip.on');
-  return Array.from(chips).map(c => c.dataset.val || c.textContent).join('; ');
+  return Array.from(document.querySelectorAll('[data-group="' + group + '"] .chip.on'))
+    .map(c => c.dataset.val || c.textContent).join('; ');
 }
 
 function toggleReversal() {
   document.getElementById('reversal-details').classList.toggle('hidden', !document.getElementById('reversal-toggle').checked);
 }
 
-// INTAKE
+// ── INTAKE ──
 async function submitIntake(btn) {
   const initials = document.getElementById('i-initials').value.trim().toUpperCase();
-  const year = document.getElementById('i-year').value.trim();
-  const gender = sel['gender'] || document.getElementById('i-gender-other').value.trim();
-  const errEl = document.getElementById('intake-err');
+  const year     = document.getElementById('i-year').value.trim();
+  const gender   = sel['gender'] || document.getElementById('i-gender-other').value.trim();
+  const errEl    = document.getElementById('intake-err');
   if (!initials || !year || !gender) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
@@ -480,7 +474,6 @@ async function submitIntake(btn) {
 
   btn.innerHTML = '<span class="spinner"></span> Registering...';
   btn.disabled = true;
-
   try {
     await fetch(WEB_APP_URL, {
       method: 'POST',
@@ -513,16 +506,15 @@ function resetIntake() {
 }
 
 function goVisit() {
-  const id = document.getElementById('result-id').textContent;
-  document.getElementById('v-id').value = id;
+  document.getElementById('v-id').value = document.getElementById('result-id').textContent;
   showScreen('visit');
 }
 
-// LOOKUP
+// ── LOOKUP ──
 function lookupId() {
   const initials = document.getElementById('l-initials').value.trim().toUpperCase();
-  const year = document.getElementById('l-year').value.trim();
-  const match = registry.find(p => p.initials === initials && p.year === year);
+  const year     = document.getElementById('l-year').value.trim();
+  const match    = registry.find(p => p.initials === initials && p.year === year);
   document.getElementById('lookup-result').classList.add('hidden');
   document.getElementById('lookup-none').classList.add('hidden');
   if (match) {
@@ -534,34 +526,31 @@ function lookupId() {
 }
 
 function goVisitFromLookup() {
-  const id = document.getElementById('lookup-id').textContent;
-  document.getElementById('v-id').value = id;
+  document.getElementById('v-id').value = document.getElementById('lookup-id').textContent;
   showScreen('visit');
 }
 
-// VISIT LOG
+// ── VISIT LOG ──
 async function submitVisit() {
-  const id = document.getElementById('v-id').value;
-  const date = document.getElementById('v-date').value;
+  const id    = document.getElementById('v-id').value;
+  const date  = document.getElementById('v-date').value;
   const errEl = document.getElementById('v-err');
   if (!id || !date) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
   const btn = document.getElementById('v-submit');
   btn.innerHTML = '<span class="spinner"></span> Submitting...';
-  btn.disabled = true;
+  btn.disabled  = true;
 
   const reversal = document.getElementById('reversal-toggle').checked;
-  const worker = sel['worker'] === 'Other' ? document.getElementById('v-worker-other').value.trim().toUpperCase() : (sel['worker'] || '');
+  const worker   = sel['worker'] === 'Other' ? document.getElementById('v-worker-other').value.trim().toUpperCase() : (sel['worker'] || '');
 
   try {
     await fetch(WEB_APP_URL, {
       method: 'POST',
       body: JSON.stringify({
         action: 'logVisit',
-        participantId: id,
-        date,
-        worker: worker,
+        participantId: id, date, worker,
         location: sel['loc'] === 'Other' ? document.getElementById('v-loc-other').value.trim() : (sel['loc'] || ''),
         newOrReturning: sel['nr'] || '',
         housing: sel['v-housing'] || '',
@@ -577,13 +566,13 @@ async function submitVisit() {
         training: sel['training'] || '',
         reversal: reversal ? 'Yes' : 'No',
         reporterType: reversal ? (sel['reporter'] || '') : '',
-        odOutcome: reversal ? (sel['od-outcome'] || '') : '',
+        odOutcome:    reversal ? (sel['od-outcome'] || '') : '',
         odNasalDoses: reversal ? (sel['od-nasal'] || '') : '',
-        odInjDoses: reversal ? (sel['od-inj'] || '') : '',
-        odGender: reversal ? (sel['od-gender'] || '') : '',
-        odRace: reversal ? getToggled('od-race') : '',
-        odAge: reversal ? document.getElementById('od-age').value : '',
-        odCounty: reversal ? document.getElementById('od-county').value : '',
+        odInjDoses:   reversal ? (sel['od-inj'] || '') : '',
+        odGender:     reversal ? (sel['od-gender'] || '') : '',
+        odRace:       reversal ? getToggled('od-race') : '',
+        odAge:        reversal ? document.getElementById('od-age').value : '',
+        odCounty:     reversal ? document.getElementById('od-county').value : '',
         services: getToggled('svc'),
         notes: document.getElementById('v-notes').value.trim(),
       })
@@ -596,36 +585,31 @@ async function submitVisit() {
 
 function resetVisit() {
   const btn = document.getElementById('v-submit');
-  btn.innerHTML = 'Submit Visit';
-  btn.disabled = false;
-  btn.classList.remove('hidden');
+  btn.innerHTML = 'Submit Visit'; btn.disabled = false; btn.classList.remove('hidden');
   document.getElementById('v-success').classList.add('hidden');
   document.getElementById('v-err').style.display = 'none';
   ['v-id','v-notes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('v-date').value = '';
-  document.getElementById('v-worker-other').value = '';
-  document.getElementById('v-worker-other').classList.add('hidden');
-  document.getElementById('v-loc-other').value = '';
-  document.getElementById('v-loc-other').classList.add('hidden');
+  document.getElementById('v-worker-other').value = ''; document.getElementById('v-worker-other').classList.add('hidden');
+  document.getElementById('v-loc-other').value = ''; document.getElementById('v-loc-other').classList.add('hidden');
   document.getElementById('reversal-toggle').checked = false;
   document.getElementById('reversal-details').classList.add('hidden');
-  document.getElementById('od-age').selectedIndex = 0;
-  document.getElementById('od-county').selectedIndex = 0;
+  document.getElementById('od-age').selectedIndex = 0; document.getElementById('od-county').selectedIndex = 0;
   document.querySelectorAll('#screen-visit .chip').forEach(c => c.classList.remove('on'));
-  ['worker','nr','loc','v-housing','subst','route','longs','shorts','fts','alt','nalox-im','nalox-nasal','sec','training','svc','reporter','od-outcome','od-nasal','od-inj','od-gender','od-race'].forEach(k => delete sel[k]);
+  ['worker','nr','loc','v-housing','longs','shorts','fts','nalox-im','nalox-nasal','sec','training','reporter','od-outcome','od-nasal','od-inj','od-gender'].forEach(k => delete sel[k]);
 }
 
-// EVENTS
+// ── EVENTS ──
 async function startEvent() {
-  const title = document.getElementById('e-title').value.trim();
-  const date = document.getElementById('e-date').value;
-  const etype = getToggled('etype');
-  const errEl = document.getElementById('e-err');
+  const title  = document.getElementById('e-title').value.trim();
+  const date   = document.getElementById('e-date').value;
+  const etype  = getToggled('etype');
+  const errEl  = document.getElementById('e-err');
   if (!title || !date || !etype) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
   currentEventId = 'EVT-' + Date.now();
-  attendeeCount = 0;
+  attendeeCount  = 0;
 
   const trainer = sel['e-trainer'] === 'Other' ? document.getElementById('e-trainer-other').value.trim() : (sel['e-trainer'] || '');
 
@@ -634,11 +618,8 @@ async function startEvent() {
       method: 'POST',
       body: JSON.stringify({
         action: 'createEvent',
-        eventId: currentEventId,
-        title, date, eventType: etype,
-        trainer: trainer,
-        duration: sel['e-duration'] || '',
-        format: sel['e-format'] || '',
+        eventId: currentEventId, title, date, eventType: etype, trainer,
+        duration: sel['e-duration'] || '', format: sel['e-format'] || '',
         location: document.getElementById('e-location').value.trim(),
         partner: document.getElementById('e-partner').value.trim(),
         funder: sel['e-funder'] || '',
@@ -648,27 +629,25 @@ async function startEvent() {
   } catch(e) {}
 
   document.getElementById('ea-event-title').textContent = title;
-  document.getElementById('ea-event-meta').textContent = date + ' · ' + etype + (trainer ? ' · ' + trainer : '');
+  document.getElementById('ea-event-meta').textContent  = date + ' · ' + etype + (trainer ? ' · ' + trainer : '');
   document.getElementById('event-setup').classList.add('hidden');
   document.getElementById('event-attendees').classList.remove('hidden');
 }
 
 async function addAttendee(btn) {
   const initials = document.getElementById('ea-initials').value.trim().toUpperCase();
-  const errEl = document.getElementById('ea-err');
+  const errEl    = document.getElementById('ea-err');
   if (!initials) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
   btn.innerHTML = '<span class="spinner"></span> Adding...';
-  btn.disabled = true;
+  btn.disabled  = true;
 
   try {
     await fetch(WEB_APP_URL, {
       method: 'POST',
       body: JSON.stringify({
-        action: 'logAttendee',
-        eventId: currentEventId,
-        initials: initials,
+        action: 'logAttendee', eventId: currentEventId, initials,
         ageRange: document.getElementById('ea-age').value,
         race: getToggled('ea-race'),
         zip: document.getElementById('ea-zip').value.trim(),
@@ -685,22 +664,20 @@ async function addAttendee(btn) {
 
   attendeeCount++;
   document.getElementById('ea-count').textContent = attendeeCount + ' attendee' + (attendeeCount !== 1 ? 's' : '') + ' logged';
-
-  const list = document.getElementById('ea-logged-list');
   const div = document.createElement('div');
   div.className = 'attendee-row';
   div.innerHTML = '<span class="row-num">#' + attendeeCount + '</span> ' + initials + (document.getElementById('ea-pid').value ? ' (ID: ' + document.getElementById('ea-pid').value + ')' : '');
-  list.appendChild(div);
+  document.getElementById('ea-logged-list').appendChild(div);
 
   ['ea-initials','ea-zip','ea-pid'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('ea-age').selectedIndex = 0;
   document.getElementById('ea-county').selectedIndex = 0;
   document.getElementById('ea-completion').selectedIndex = 0;
   document.querySelectorAll('#event-attendees [data-group^="ea-"] .chip').forEach(c => c.classList.remove('on'));
-  ['ea-race','ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k => delete sel[k]);
+  ['ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k => delete sel[k]);
 
   btn.innerHTML = '+ Add This Attendee';
-  btn.disabled = false;
+  btn.disabled  = false;
   document.getElementById('ea-initials').focus();
 }
 
@@ -717,10 +694,9 @@ function resetEvent() {
   ['e-title','e-location','e-partner','e-notes','e-trainer-other'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('e-date').value = '';
   document.querySelectorAll('#screen-events .chip').forEach(c => c.classList.remove('on'));
-  ['etype','e-trainer','e-duration','e-format','e-funder'].forEach(k => delete sel[k]);
+  ['e-trainer','e-duration','e-format','e-funder'].forEach(k => delete sel[k]);
   document.getElementById('e-trainer-other').classList.add('hidden');
-  currentEventId = null;
-  attendeeCount = 0;
+  currentEventId = null; attendeeCount = 0;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
