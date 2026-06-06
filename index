@@ -71,10 +71,12 @@ body{
 </style>
 </head>
 <body>
+
 <div class="top-bar">
 <h1>&#9651;CCESS POINT OF GEO&#174;GI&#9651;</h1>
 <p>Syringe Services &amp; Harm Reduction &middot; RIGOR</p>
 </div>
+
 <div class="nav">
 <button class="nav-btn active" onclick="showScreen('intake')">New Intake</button>
 <button class="nav-btn" onclick="showScreen('lookup')">Lookup ID</button>
@@ -82,6 +84,7 @@ body{
 <button class="nav-btn" onclick="showScreen('events')">Events</button>
 <button class="nav-btn" onclick="showScreen('checkin')" style="color:#1B9B7B;border-bottom-color:transparent">Today</button>
 </div>
+
 <!-- INTAKE -->
 <div id="screen-intake" class="screen active">
 <div id="intake-form">
@@ -135,6 +138,7 @@ body{
 <button class="btn btn-outline" onclick="resetIntake()">Register another</button>
 </div>
 </div>
+
 <!-- LOOKUP -->
 <div id="screen-lookup" class="screen">
 <div class="card">
@@ -153,6 +157,7 @@ body{
 <div class="card" style="text-align:center;color:#8B1A1A">No match found. Check spelling or register as new.</div>
 </div>
 </div>
+
 <!-- VISIT LOG -->
 <div id="screen-visit" class="screen">
 <div class="card">
@@ -287,6 +292,7 @@ body{
 <button class="btn btn-outline" onclick="resetVisit()">Log another visit</button>
 </div>
 </div>
+
 <!-- EVENTS -->
 <div id="screen-events" class="screen">
 <div id="event-setup">
@@ -377,7 +383,203 @@ body{
 <button class="btn btn-outline-teal" onclick="resetEvent()">Log Another Event</button>
 </div>
 </div>
-<!-- TODAY / CHECK-IN -->
+
+<script>
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzCYLYOWFZXG4KCWcf-nFAAvYzaBFNaiJ7aB3oE5-mzqyIZrS0cDIznBxTNbqxd1U-p/exec';
+let registry = [];
+const sel = {};
+let currentEventId = null;
+let attendeeCount = 0;
+
+fetch(WEB_APP_URL).then(r=>r.json()).then(d=>{
+  if(d.participants) registry=d.participants.map(p=>({id:Number(p.id),initials:(p.initials||'').toUpperCase(),year:String(p.year||'')}));
+  else if(d.ids) registry=d.ids.map(id=>({id:Number(id)}));
+}).catch(()=>{});
+
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',
+    name==='intake'?b.textContent.toLowerCase().includes('intake'):
+    name==='lookup'?b.textContent.toLowerCase().includes('lookup'):
+    name==='visit'?b.textContent.toLowerCase().includes('visit'):
+    b.textContent.toLowerCase().includes('event')));
+}
+
+document.addEventListener('click',function(e){
+  if(!e.target.classList.contains('chip')) return;
+  const wrap=e.target.closest('[data-group]');
+  if(!wrap) return;
+  const group=wrap.dataset.group, mode=wrap.dataset.mode;
+  if(mode==='single'){wrap.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));e.target.classList.add('on');sel[group]=e.target.dataset.val||e.target.textContent;}
+  else{e.target.classList.toggle('on');}
+  if(group==='worker') document.getElementById('v-worker-other').classList.toggle('hidden',sel['worker']!=='Other');
+  if(group==='loc') document.getElementById('v-loc-other').classList.toggle('hidden',sel['loc']!=='Other');
+  if(group==='e-trainer') document.getElementById('e-trainer-other').classList.toggle('hidden',sel['e-trainer']!=='Other');
+});
+
+function getToggled(g){return Array.from(document.querySelectorAll('[data-group="'+g+'"] .chip.on')).map(c=>c.dataset.val||c.textContent).join('; ');}
+function toggleReversal(){document.getElementById('reversal-details').classList.toggle('hidden',!document.getElementById('reversal-toggle').checked);}
+
+async function submitIntake(btn){
+  const initials=document.getElementById('i-initials').value.trim().toUpperCase();
+  const year=document.getElementById('i-year').value.trim();
+  const gender=sel['gender']||document.getElementById('i-gender-other').value.trim();
+  const errEl=document.getElementById('intake-err');
+  if(!initials||!year||!gender){errEl.style.display='block';return;}
+  errEl.style.display='none';
+  const dup=registry.find(p=>p.initials===initials&&p.year===year);
+  let id;
+  if(dup){id=dup.id;}
+  else{const ex=registry.map(p=>p.id);do{id=Math.floor(Math.random()*9000)+1000;}while(ex.includes(id));registry.push({id,initials,year});}
+  btn.innerHTML='<span class="spinner"></span> Registering...';btn.disabled=true;
+  try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'registerParticipant',id,initials,birthYear:year,gender,race:getToggled('race'),housing:sel['housing']||'',participantType:getToggled('ptype')||'SSP',zip:document.getElementById('i-zip').value.trim(),county:document.getElementById('i-county').value})});}catch(e){}
+  document.getElementById('result-id').textContent=id;
+  document.getElementById('intake-form').classList.add('hidden');
+  document.getElementById('intake-result').classList.remove('hidden');
+  btn.innerHTML='Generate anonymous ID';btn.disabled=false;
+}
+
+function resetIntake(){
+  document.getElementById('intake-form').classList.remove('hidden');
+  document.getElementById('intake-result').classList.add('hidden');
+  ['i-initials','i-year','i-zip','i-gender-other'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('i-county').selectedIndex=0;
+  document.querySelectorAll('#screen-intake .chip').forEach(c=>c.classList.remove('on'));
+  ['gender','race','housing'].forEach(k=>delete sel[k]);
+}
+function goVisit(){document.getElementById('v-id').value=document.getElementById('result-id').textContent;showScreen('visit');}
+
+function lookupId(){
+  const initials=document.getElementById('l-initials').value.trim().toUpperCase();
+  const year=document.getElementById('l-year').value.trim();
+  const match=registry.find(p=>p.initials===initials&&p.year===year);
+  document.getElementById('lookup-result').classList.add('hidden');
+  document.getElementById('lookup-none').classList.add('hidden');
+  if(match){document.getElementById('lookup-id').textContent=match.id;document.getElementById('lookup-result').classList.remove('hidden');}
+  else{document.getElementById('lookup-none').classList.remove('hidden');}
+}
+function goVisitFromLookup(){document.getElementById('v-id').value=document.getElementById('lookup-id').textContent;showScreen('visit');}
+
+async function submitVisit(){
+  const id=document.getElementById('v-id').value,date=document.getElementById('v-date').value;
+  const errEl=document.getElementById('v-err');
+  if(!id||!date){errEl.style.display='block';return;}errEl.style.display='none';
+  const btn=document.getElementById('v-submit');
+  btn.innerHTML='<span class="spinner"></span> Submitting...';btn.disabled=true;
+  const reversal=document.getElementById('reversal-toggle').checked;
+  const worker=sel['worker']==='Other'?document.getElementById('v-worker-other').value.trim().toUpperCase():(sel['worker']||'');
+  try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logVisit',participantId:id,date,worker,location:sel['loc']==='Other'?document.getElementById('v-loc-other').value.trim():(sel['loc']||''),newOrReturning:sel['nr']||'',housing:sel['v-housing']||'',substances:getToggled('subst'),route:getToggled('route'),longs:sel['longs']||'0',shorts:sel['shorts']||'0',fts:sel['fts']||'0',altSupplies:getToggled('alt'),naloxIM:sel['nalox-im']||'0',naloxNasal:sel['nalox-nasal']||'0',secDistrib:sel['sec']||'0',training:sel['training']||'',reversal:reversal?'Yes':'No',reporterType:reversal?(sel['reporter']||''):'',odOutcome:reversal?(sel['od-outcome']||''):'',odNasalDoses:reversal?(sel['od-nasal']||''):'',odInjDoses:reversal?(sel['od-inj']||''):'',odGender:reversal?(sel['od-gender']||''):'',odRace:reversal?getToggled('od-race'):'',odAge:reversal?document.getElementById('od-age').value:'',odCounty:reversal?document.getElementById('od-county').value:'',services:getToggled('svc'),notes:document.getElementById('v-notes').value.trim()})});}catch(e){}
+  btn.classList.add('hidden');document.getElementById('v-success').classList.remove('hidden');
+}
+
+function resetVisit(){
+  const btn=document.getElementById('v-submit');btn.innerHTML='Submit Visit';btn.disabled=false;btn.classList.remove('hidden');
+  document.getElementById('v-success').classList.add('hidden');document.getElementById('v-err').style.display='none';
+  ['v-id','v-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('v-date').value='';
+  ['v-worker-other','v-loc-other'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).classList.add('hidden');});
+  document.getElementById('reversal-toggle').checked=false;document.getElementById('reversal-details').classList.add('hidden');
+  document.getElementById('od-age').selectedIndex=0;document.getElementById('od-county').selectedIndex=0;
+  document.querySelectorAll('#screen-visit .chip').forEach(c=>c.classList.remove('on'));
+  ['worker','nr','loc','v-housing','longs','shorts','fts','nalox-im','nalox-nasal','sec','training','reporter','od-outcome','od-nasal','od-inj','od-gender'].forEach(k=>delete sel[k]);
+}
+
+async function startEvent(){
+  const title=document.getElementById('e-title').value.trim();
+  const date=document.getElementById('e-date').value;
+  const etype=getToggled('etype');
+  const errEl=document.getElementById('e-err');
+  if(!title||!date||!etype){errEl.style.display='block';return;}errEl.style.display='none';
+  currentEventId='EVT-'+Date.now();attendeeCount=0;
+  const trainer=sel['e-trainer']==='Other'?document.getElementById('e-trainer-other').value.trim():(sel['e-trainer']||'');
+  try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'createEvent',eventId:currentEventId,title,date,eventType:etype,trainer,duration:sel['e-duration']||'',format:sel['e-format']||'',location:document.getElementById('e-location').value.trim(),partner:document.getElementById('e-partner').value.trim(),funder:sel['e-funder']||'',notes:document.getElementById('e-notes').value.trim()})});}catch(e){}
+  document.getElementById('ea-event-title').textContent=title;
+  document.getElementById('ea-event-meta').textContent=date+' · '+etype+(trainer?' · '+trainer:'');
+  document.getElementById('event-setup').classList.add('hidden');
+  document.getElementById('event-attendees').classList.remove('hidden');
+}
+
+async function addAttendee(btn){
+  const initials=document.getElementById('ea-initials').value.trim().toUpperCase();
+  const errEl=document.getElementById('ea-err');
+  if(!initials){errEl.style.display='block';return;}errEl.style.display='none';
+  btn.innerHTML='<span class="spinner"></span> Adding...';btn.disabled=true;
+  try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logAttendee',eventId:currentEventId,initials,ageRange:document.getElementById('ea-age').value,race:getToggled('ea-race'),zip:document.getElementById('ea-zip').value.trim(),county:document.getElementById('ea-county').value,relationship:sel['ea-rel']||'',naloxIM:sel['ea-nalox-im']||'0',naloxNasal:sel['ea-nalox-nasal']||'0',secDistrib:sel['ea-sec']||'0',participantId:document.getElementById('ea-pid').value.trim(),completion:document.getElementById('ea-completion').value})});}catch(e){}
+  attendeeCount++;
+  document.getElementById('ea-count').textContent=attendeeCount+' attendee'+(attendeeCount!==1?'s':'')+' logged';
+  const div=document.createElement('div');div.className='attendee-row';
+  div.innerHTML='<span class="row-num">#'+attendeeCount+'</span> '+initials+(document.getElementById('ea-pid').value?' (ID: '+document.getElementById('ea-pid').value+')':'');
+  document.getElementById('ea-logged-list').appendChild(div);
+  ['ea-initials','ea-zip','ea-pid'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ea-age').selectedIndex=0;document.getElementById('ea-county').selectedIndex=0;document.getElementById('ea-completion').selectedIndex=0;
+  document.querySelectorAll('#event-attendees [data-group^="ea-"] .chip').forEach(c=>c.classList.remove('on'));
+  ['ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k=>delete sel[k]);
+  btn.innerHTML='+ Add This Attendee';btn.disabled=false;
+  document.getElementById('ea-initials').focus();
+}
+
+function finishEvent(){
+  document.getElementById('event-attendees').classList.add('hidden');
+  document.getElementById('event-done').classList.remove('hidden');
+  document.getElementById('event-done-msg').textContent=attendeeCount+' attendee'+(attendeeCount!==1?'s':'')+' logged for this event.';
+}
+
+function resetEvent(){
+  document.getElementById('event-setup').classList.remove('hidden');
+  document.getElementById('event-done').classList.add('hidden');
+  document.getElementById('ea-logged-list').innerHTML='';
+  ['e-title','e-location','e-partner','e-notes','e-trainer-other'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('e-date').value='';
+  document.querySelectorAll('#screen-events .chip').forEach(c=>c.classList.remove('on'));
+  ['e-trainer','e-duration','e-format','e-funder'].forEach(k=>delete sel[k]);
+  document.getElementById('e-trainer-other').classList.add('hidden');
+  currentEventId=null;attendeeCount=0;
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('v-date').value=today;
+  document.getElementById('e-date').value=today;
+});
+
+// ── CHECK IN ──
+async function checkIn(btn) {
+  const initials = document.getElementById('ci-initials').value.trim().toUpperCase();
+  const year     = document.getElementById('ci-year').value.trim();
+  const directId = document.getElementById('ci-id').value.trim();
+  const notes    = document.getElementById('ci-notes').value.trim();
+  const errEl    = document.getElementById('ci-err');
+  let pid = null;
+  if (directId) {
+    pid = Number(directId);
+  } else if (initials && year) {
+    const match = registry.find(p => p.initials === initials && p.year === year);
+    if (match) { pid = match.id; }
+    else { errEl.textContent='No match found. Check spelling or use ID directly.'; errEl.style.display='block'; return; }
+  } else {
+    errEl.textContent='Enter initials + birth year, or participant ID.'; errEl.style.display='block'; return;
+  }
+  errEl.style.display='none';
+  btn.innerHTML='<span class="spinner"></span> Checking in...'; btn.disabled=true;
+  try {
+    await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'checkIn',participantId:pid,notes:notes,time:new Date().toISOString()})});
+  } catch(e) {}
+  document.getElementById('ci-form').classList.add('hidden');
+  document.getElementById('ci-result-id').textContent=pid;
+  document.getElementById('ci-result-time').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('ci-success').classList.remove('hidden');
+  btn.innerHTML='Check In &rarr;'; btn.disabled=false;
+}
+function resetCheckIn() {
+  document.getElementById('ci-form').classList.remove('hidden');
+  document.getElementById('ci-success').classList.add('hidden');
+  ['ci-initials','ci-year','ci-id','ci-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ci-err').style.display='none';
+}
+</script>
+
+<!-- CHECK IN SCREEN -->
 <div id="screen-checkin" class="screen">
 <div id="ci-form">
 <div class="card" style="background:rgba(27,107,107,.08);border-color:#1B6B6B">
@@ -404,33 +606,11 @@ body{
 <div class="id-num" style="color:#1B6B6B" id="ci-result-id"></div>
 <div class="id-sub" id="ci-result-time"></div>
 </div>
-<div style="font-size:12px;color:#6B5B4E;margin:8px 0 16px">Added to the Today tab — staff in back can see this now.</div>
+<div style="font-size:12px;color:#6B5B4E;margin:8px 0 16px">Added to the queue — staff in back can see this now.</div>
 <button class="btn btn-outline-teal" onclick="resetCheckIn()">Check In Another</button>
 <button class="btn btn-sage" onclick="showScreen('visit');document.getElementById('v-id').value=document.getElementById('ci-result-id').textContent" style="margin-top:8px">Log Visit for This Person &rarr;</button>
 </div>
 </div>
-<script>
-const WEB_APP_URL='https://script.google.com/macros/s/AKfycbzCYLYOWFZXG4KCWcf-nFAAvYzaBFNaiJ7aB3oE5-mzqyIZrS0cDIznBxTNbqxd1U-p/exec';
-let registry=[];const sel={};let currentEventId=null;let attendeeCount=0;
-fetch(WEB_APP_URL).then(r=>r.json()).then(d=>{if(d.participants)registry=d.participants.map(p=>({id:Number(p.id),initials:(p.initials||'').toUpperCase(),year:String(p.year||'')}));else if(d.ids)registry=d.ids.map(id=>({id:Number(id)}));}).catch(()=>{});
-function showScreen(name){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+name).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',name==='intake'?b.textContent.toLowerCase().includes('intake'):name==='lookup'?b.textContent.toLowerCase().includes('lookup'):name==='visit'?b.textContent.toLowerCase().includes('visit'):name==='checkin'?b.textContent.toLowerCase().includes('today'):b.textContent.toLowerCase().includes('event')));}
-document.addEventListener('click',function(e){if(!e.target.classList.contains('chip'))return;const wrap=e.target.closest('[data-group]');if(!wrap)return;const group=wrap.dataset.group,mode=wrap.dataset.mode;if(mode==='single'){wrap.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));e.target.classList.add('on');sel[group]=e.target.dataset.val||e.target.textContent;}else{e.target.classList.toggle('on');}if(group==='worker')document.getElementById('v-worker-other').classList.toggle('hidden',sel['worker']!=='Other');if(group==='loc')document.getElementById('v-loc-other').classList.toggle('hidden',sel['loc']!=='Other');if(group==='e-trainer')document.getElementById('e-trainer-other').classList.toggle('hidden',sel['e-trainer']!=='Other');});
-function getToggled(g){return Array.from(document.querySelectorAll('[data-group="'+g+'"] .chip.on')).map(c=>c.dataset.val||c.textContent).join('; ');}
-function toggleReversal(){document.getElementById('reversal-details').classList.toggle('hidden',!document.getElementById('reversal-toggle').checked);}
-async function submitIntake(btn){const initials=document.getElementById('i-initials').value.trim().toUpperCase();const year=document.getElementById('i-year').value.trim();const gender=sel['gender']||document.getElementById('i-gender-other').value.trim();const errEl=document.getElementById('intake-err');if(!initials||!year||!gender){errEl.style.display='block';return;}errEl.style.display='none';const dup=registry.find(p=>p.initials===initials&&p.year===year);let id;if(dup){id=dup.id;}else{const ex=registry.map(p=>p.id);do{id=Math.floor(Math.random()*9000)+1000;}while(ex.includes(id));registry.push({id,initials,year});}btn.innerHTML='<span class="spinner"></span> Registering...';btn.disabled=true;try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'registerParticipant',id,initials,birthYear:year,gender,race:getToggled('race'),housing:sel['housing']||'',participantType:getToggled('ptype')||'SSP',zip:document.getElementById('i-zip').value.trim(),county:document.getElementById('i-county').value})});}catch(e){}document.getElementById('result-id').textContent=id;document.getElementById('intake-form').classList.add('hidden');document.getElementById('intake-result').classList.remove('hidden');btn.innerHTML='Generate anonymous ID';btn.disabled=false;}
-function resetIntake(){document.getElementById('intake-form').classList.remove('hidden');document.getElementById('intake-result').classList.add('hidden');['i-initials','i-year','i-zip','i-gender-other'].forEach(id=>document.getElementById(id).value='');document.getElementById('i-county').selectedIndex=0;document.querySelectorAll('#screen-intake .chip').forEach(c=>c.classList.remove('on'));['gender','race','housing'].forEach(k=>delete sel[k]);}
-function goVisit(){document.getElementById('v-id').value=document.getElementById('result-id').textContent;showScreen('visit');}
-function lookupId(){const initials=document.getElementById('l-initials').value.trim().toUpperCase();const year=document.getElementById('l-year').value.trim();const match=registry.find(p=>p.initials===initials&&p.year===year);document.getElementById('lookup-result').classList.add('hidden');document.getElementById('lookup-none').classList.add('hidden');if(match){document.getElementById('lookup-id').textContent=match.id;document.getElementById('lookup-result').classList.remove('hidden');}else{document.getElementById('lookup-none').classList.remove('hidden');}}
-function goVisitFromLookup(){document.getElementById('v-id').value=document.getElementById('lookup-id').textContent;showScreen('visit');}
-async function submitVisit(){const id=document.getElementById('v-id').value;const date=document.getElementById('v-date').value;const errEl=document.getElementById('v-err');if(!id||!date){errEl.style.display='block';return;}errEl.style.display='none';const btn=document.getElementById('v-submit');btn.innerHTML='<span class="spinner"></span> Submitting...';btn.disabled=true;const reversal=document.getElementById('reversal-toggle').checked;const worker=sel['worker']==='Other'?document.getElementById('v-worker-other').value.trim().toUpperCase():(sel['worker']||'');try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logVisit',participantId:id,date,worker,location:sel['loc']==='Other'?document.getElementById('v-loc-other').value.trim():(sel['loc']||''),newOrReturning:sel['nr']||'',housing:sel['v-housing']||'',substances:getToggled('subst'),route:getToggled('route'),longs:sel['longs']||'0',shorts:sel['shorts']||'0',fts:sel['fts']||'0',altSupplies:getToggled('alt'),naloxIM:sel['nalox-im']||'0',naloxNasal:sel['nalox-nasal']||'0',secDistrib:sel['sec']||'0',training:sel['training']||'',reversal:reversal?'Yes':'No',reporterType:reversal?(sel['reporter']||''):'',odOutcome:reversal?(sel['od-outcome']||''):'',odNasalDoses:reversal?(sel['od-nasal']||''):'',odInjDoses:reversal?(sel['od-inj']||''):'',odGender:reversal?(sel['od-gender']||''):'',odRace:reversal?getToggled('od-race'):'',odAge:reversal?document.getElementById('od-age').value:'',odCounty:reversal?document.getElementById('od-county').value:'',services:getToggled('svc'),notes:document.getElementById('v-notes').value.trim()})});}catch(e){}btn.classList.add('hidden');document.getElementById('v-success').classList.remove('hidden');}
-function resetVisit(){const btn=document.getElementById('v-submit');btn.innerHTML='Submit Visit';btn.disabled=false;btn.classList.remove('hidden');document.getElementById('v-success').classList.add('hidden');document.getElementById('v-err').style.display='none';['v-id','v-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('v-date').value='';['v-worker-other','v-loc-other'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).classList.add('hidden');});document.getElementById('reversal-toggle').checked=false;document.getElementById('reversal-details').classList.add('hidden');document.getElementById('od-age').selectedIndex=0;document.getElementById('od-county').selectedIndex=0;document.querySelectorAll('#screen-visit .chip').forEach(c=>c.classList.remove('on'));['worker','nr','loc','v-housing','longs','shorts','fts','nalox-im','nalox-nasal','sec','training','reporter','od-outcome','od-nasal','od-inj','od-gender'].forEach(k=>delete sel[k]);}
-async function startEvent(){const title=document.getElementById('e-title').value.trim();const date=document.getElementById('e-date').value;const etype=getToggled('etype');const errEl=document.getElementById('e-err');if(!title||!date||!etype){errEl.style.display='block';return;}errEl.style.display='none';currentEventId='EVT-'+Date.now();attendeeCount=0;const trainer=sel['e-trainer']==='Other'?document.getElementById('e-trainer-other').value.trim():(sel['e-trainer']||'');try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'createEvent',eventId:currentEventId,title,date,eventType:etype,trainer,duration:sel['e-duration']||'',format:sel['e-format']||'',location:document.getElementById('e-location').value.trim(),partner:document.getElementById('e-partner').value.trim(),funder:sel['e-funder']||'',notes:document.getElementById('e-notes').value.trim()})});}catch(e){}document.getElementById('ea-event-title').textContent=title;document.getElementById('ea-event-meta').textContent=date+' · '+etype+(trainer?' · '+trainer:'');document.getElementById('event-setup').classList.add('hidden');document.getElementById('event-attendees').classList.remove('hidden');}
-async function addAttendee(btn){const initials=document.getElementById('ea-initials').value.trim().toUpperCase();const errEl=document.getElementById('ea-err');if(!initials){errEl.style.display='block';return;}errEl.style.display='none';btn.innerHTML='<span class="spinner"></span> Adding...';btn.disabled=true;try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logAttendee',eventId:currentEventId,initials,ageRange:document.getElementById('ea-age').value,race:getToggled('ea-race'),zip:document.getElementById('ea-zip').value.trim(),county:document.getElementById('ea-county').value,relationship:sel['ea-rel']||'',naloxIM:sel['ea-nalox-im']||'0',naloxNasal:sel['ea-nalox-nasal']||'0',secDistrib:sel['ea-sec']||'0',participantId:document.getElementById('ea-pid').value.trim(),completion:document.getElementById('ea-completion').value})});}catch(e){}attendeeCount++;document.getElementById('ea-count').textContent=attendeeCount+' attendee'+(attendeeCount!==1?'s':'')+' logged';const div=document.createElement('div');div.className='attendee-row';div.innerHTML='<span class="row-num">#'+attendeeCount+'</span> '+initials+(document.getElementById('ea-pid').value?' (ID: '+document.getElementById('ea-pid').value+')':'');document.getElementById('ea-logged-list').appendChild(div);['ea-initials','ea-zip','ea-pid'].forEach(id=>document.getElementById(id).value='');document.getElementById('ea-age').selectedIndex=0;document.getElementById('ea-county').selectedIndex=0;document.getElementById('ea-completion').selectedIndex=0;document.querySelectorAll('#event-attendees [data-group^="ea-"] .chip').forEach(c=>c.classList.remove('on'));['ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k=>delete sel[k]);btn.innerHTML='+ Add This Attendee';btn.disabled=false;document.getElementById('ea-initials').focus();}
-function finishEvent(){document.getElementById('event-attendees').classList.add('hidden');document.getElementById('event-done').classList.remove('hidden');document.getElementById('event-done-msg').textContent=attendeeCount+' attendee'+(attendeeCount!==1?'s':'')+' logged for this event.';}
-function resetEvent(){document.getElementById('event-setup').classList.remove('hidden');document.getElementById('event-done').classList.add('hidden');document.getElementById('ea-logged-list').innerHTML='';['e-title','e-location','e-partner','e-notes','e-trainer-other'].forEach(id=>document.getElementById(id).value='');document.getElementById('e-date').value='';document.querySelectorAll('#screen-events .chip').forEach(c=>c.classList.remove('on'));['e-trainer','e-duration','e-format','e-funder'].forEach(k=>delete sel[k]);document.getElementById('e-trainer-other').classList.add('hidden');currentEventId=null;attendeeCount=0;}
-async function checkIn(btn){const initials=document.getElementById('ci-initials').value.trim().toUpperCase();const year=document.getElementById('ci-year').value.trim();const directId=document.getElementById('ci-id').value.trim();const notes=document.getElementById('ci-notes').value.trim();const errEl=document.getElementById('ci-err');let pid=null;if(directId){pid=Number(directId);}else if(initials&&year){const match=registry.find(p=>p.initials===initials&&p.year===year);if(match){pid=match.id;}else{errEl.textContent='No match found. Check spelling or use ID directly.';errEl.style.display='block';return;}}else{errEl.textContent='Enter initials + birth year, or participant ID.';errEl.style.display='block';return;}errEl.style.display='none';btn.innerHTML='<span class="spinner"></span> Checking in...';btn.disabled=true;try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'checkIn',participantId:pid,notes:notes,time:new Date().toISOString()})});}catch(e){}document.getElementById('ci-form').classList.add('hidden');document.getElementById('ci-result-id').textContent=pid;document.getElementById('ci-result-time').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});document.getElementById('ci-success').classList.remove('hidden');btn.innerHTML='Check In &rarr;';btn.disabled=false;}
-function resetCheckIn(){document.getElementById('ci-form').classList.remove('hidden');document.getElementById('ci-success').classList.add('hidden');['ci-initials','ci-year','ci-id','ci-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('ci-err').style.display='none';}
-document.addEventListener('DOMContentLoaded',function(){var today=new Date().toISOString().split('T')[0];document.getElementById('v-date').value=today;document.getElementById('e-date').value=today;});
-</script>
+
 </body>
 </html>
