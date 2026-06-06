@@ -847,7 +847,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
 
 <script>
 // ── CONFIG ───────────────────────────────────────────────────
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzCYLYOWFZXG4KCWcf-nFAAvYzaBFNaiJ7aB3oE5-mzqyIZrS0cDIznBxTNbqxd1U-p/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzyGxH8EurAx8cdAC1itwUlvoSWr7EDghzkQSyCnz2vclzPtC0nu27l4Il3Jlo-FTDn/exec';
 
 // ── PARTICIPANT CACHE ────────────────────────────────────────
 let participants = [];
