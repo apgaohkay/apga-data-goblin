@@ -1,616 +1,1237 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Access Point SSP · RIGOR</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Arial,sans-serif;color:#2D2926;padding:0 0 60px;
-  background-color:#EDE5DA;
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; font-size: 14px; color: #1a1a1a; min-height: 100vh; background-color: #c8b8a2; }
+
+/* ── PLAID BACKGROUND ── */
+body {
+  background-color: #c8b8a2;
   background-image:
-    repeating-linear-gradient(180deg,transparent 0,transparent 22px,rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,transparent 23px,transparent 45px,rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px),
-    repeating-linear-gradient(90deg,transparent 0,transparent 22px,rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,transparent 23px,transparent 45px,rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px),
-    repeating-linear-gradient(180deg,transparent 0,transparent 89px,rgba(27,107,107,.09) 89px,rgba(27,107,107,.09) 91px),
-    repeating-linear-gradient(90deg,transparent 0,transparent 89px,rgba(27,107,107,.09) 89px,rgba(27,107,107,.09) 91px);
+    repeating-linear-gradient(0deg,   transparent, transparent 38px, rgba(90,26,26,0.18) 38px, rgba(90,26,26,0.18) 42px),
+    repeating-linear-gradient(90deg,  transparent, transparent 38px, rgba(90,26,26,0.18) 38px, rgba(90,26,26,0.18) 42px),
+    repeating-linear-gradient(0deg,   transparent, transparent 78px, rgba(43,10,10,0.25) 78px, rgba(43,10,10,0.25) 84px),
+    repeating-linear-gradient(90deg,  transparent, transparent 78px, rgba(43,10,10,0.25) 78px, rgba(43,10,10,0.25) 84px),
+    repeating-linear-gradient(0deg,   transparent, transparent 118px, rgba(180,140,80,0.13) 118px, rgba(180,140,80,0.13) 122px),
+    repeating-linear-gradient(90deg,  transparent, transparent 118px, rgba(180,140,80,0.13) 118px, rgba(180,140,80,0.13) 122px);
 }
-.top-bar{background:#2B0A0A;padding:11px 16px 9px;position:sticky;top:0;z-index:100;border-bottom:3px solid #B5451B;background-image:repeating-linear-gradient(90deg,transparent 0,transparent 30px,rgba(255,255,255,.03) 30px,rgba(255,255,255,.03) 31px),repeating-linear-gradient(180deg,transparent 0,transparent 14px,rgba(255,255,255,.03) 14px,rgba(255,255,255,.03) 15px)}
-.top-bar h1{font-family:'Bebas Neue',Arial,sans-serif;font-weight:400;font-size:21px;letter-spacing:0.22em;color:#fff;line-height:1.1}
-.top-bar p{color:rgba(255,255,255,.60);font-size:10px;margin-top:3px;letter-spacing:0.14em;text-transform:uppercase}
-.nav{display:flex;background:#1A1210;position:sticky;top:55px;z-index:99;flex-wrap:wrap;border-bottom:2px solid #3D1A10}
-.nav-btn{flex:1;padding:12px 4px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:12px;cursor:pointer;font-family:Arial,sans-serif;border-bottom:3px solid transparent;min-width:70px;letter-spacing:0.03em;transition:all 0.15s}
-.nav-btn.active{color:#fff;border-bottom-color:#B5451B;background:rgba(181,69,27,.14)}
-.screen{display:none;padding:12px 12px 0}
-.screen.active{display:block}
-.card{background:rgba(255,255,255,.86);border:1px solid #D9CEBC;border-radius:10px;padding:14px;margin-bottom:10px;backdrop-filter:blur(3px)}
-.label{font-size:11px;font-weight:700;color:#6B5B4E;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
-.multi-hint{font-size:11px;color:#8B7B6E;font-style:italic;margin-bottom:6px;margin-top:-4px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{padding:7px 13px;border:1px solid #C4B8A8;border-radius:20px;font-size:13px;cursor:pointer;background:transparent;color:#2D2926;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent;transition:background 0.12s,color 0.12s,border-color 0.12s}
-.chip.on{background:#B5451B;color:#fff;border-color:#B5451B}
-.chip.sage.on{background:#4A6741;color:#fff;border-color:#4A6741}
-.chip.teal.on{background:#1B6B6B;color:#fff;border-color:#1B6B6B}
-.chip.danger.on{background:#8B1A1A;color:#fff;border-color:#8B1A1A}
-.field{margin-bottom:10px}
-.field label{font-size:12px;color:#6B5B4E;display:block;margin-bottom:4px}
-.field input,.field select,.field textarea{width:100%;padding:9px 11px;border:1px solid #C4B8A8;border-radius:8px;font-size:14px;font-family:Arial,sans-serif;background:#fff;color:#2D2926;-webkit-appearance:none}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#B5451B}
-.field textarea{min-height:70px;resize:vertical}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
-.btn-rust{background:#B5451B;color:#fff}
-.btn-sage{background:#4A6741;color:#fff}
-.btn-teal{background:#1B6B6B;color:#fff}
-.btn-rust:disabled,.btn-sage:disabled,.btn-teal:disabled{opacity:0.5}
-.btn-outline{background:transparent;color:#B5451B;border:1px solid #B5451B;margin-top:6px}
-.btn-outline-teal{background:transparent;color:#1B6B6B;border:1px solid #1B6B6B;margin-top:6px}
-.success-box{background:#EAF3DE;border:1px solid #C5DDAA;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px}
-.success-box h3{color:#3B6D11;font-size:16px;margin-bottom:4px}
-.success-box p{color:#3B6D11;font-size:13px;opacity:0.85}
-.id-box{background:#E8E0D5;border-radius:10px;padding:20px;text-align:center;margin-bottom:10px}
-.id-num{font-size:56px;font-weight:700;color:#B5451B;letter-spacing:0.1em}
-.id-sub{font-size:12px;color:#6B5B4E;margin-top:6px}
-.err{color:#8B1A1A;font-size:12px;margin-top:6px;display:none;padding:8px;background:#F5DCDC;border-radius:6px}
-.reversal-wrap{background:#F5DCDC;border-radius:8px;padding:12px;margin-top:8px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between}
-.toggle-row span{font-size:13px;font-weight:600}
-.toggle-row input[type=checkbox]{width:20px;height:20px;cursor:pointer}
-.hidden{display:none}
-.section-hdr{color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px;border-radius:6px;margin-bottom:8px;background:#2D2926}
-.section-hdr.teal-hdr{background:#1B6B6B}
-.section-hdr.sage-hdr{background:#4A6741}
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.attendee-row{background:#f0f7f7;border:1px solid #c4d8d8;border-radius:8px;padding:12px;margin-bottom:8px}
-.attendee-row .row-num{font-size:11px;font-weight:700;color:#1B6B6B;margin-bottom:6px}
-.attendee-count{text-align:center;font-size:14px;color:#6B5B4E;padding:8px;background:#E8E0D5;border-radius:8px;margin-bottom:10px}
+
+/* ── HEADER ── */
+header {
+  background: #2B0A0A;
+  color: #fff;
+  padding: 18px 28px 14px;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  border-bottom: 4px solid #8B2020;
+}
+header h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem;
+  letter-spacing: 3px;
+  line-height: 1;
+  color: #fff;
+}
+header .subtitle {
+  font-size: 0.78rem;
+  color: #e0c4b0;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding-bottom: 4px;
+}
+
+/* ── NAV TABS ── */
+nav {
+  display: flex;
+  background: #3d0f0f;
+  padding: 0 20px;
+  gap: 4px;
+  border-bottom: 3px solid #8B2020;
+}
+nav button {
+  background: none;
+  border: none;
+  color: #c9a98a;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 12px 18px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  transition: color 0.15s, border-color 0.15s;
+}
+nav button:hover { color: #fff; }
+nav button.active { color: #fff; border-bottom-color: #e8a045; }
+
+/* ── CONTENT PANEL ── */
+.panel { display: none; padding: 24px; max-width: 820px; margin: 0 auto; }
+.panel.active { display: block; }
+
+/* ── CARD ── */
+.card {
+  background: rgba(255,255,255,0.93);
+  border-radius: 10px;
+  padding: 22px 26px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(43,10,10,0.13);
+  border: 1px solid rgba(139,32,32,0.12);
+}
+.card h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 1.5px;
+  color: #2B0A0A;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #8B2020;
+  padding-bottom: 6px;
+}
+.card h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #5a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 16px 0 8px;
+}
+
+/* ── FORM ELEMENTS ── */
+label { display: block; font-size: 0.78rem; font-weight: 600; color: #5a2a2a; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+input[type=text], input[type=number], input[type=date], select, textarea {
+  width: 100%; padding: 8px 10px; border: 1.5px solid #c4a882;
+  border-radius: 6px; font-size: 0.88rem; font-family: 'Inter', sans-serif;
+  background: #fdf9f5; color: #1a1a1a;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: #8B2020; box-shadow: 0 0 0 3px rgba(139,32,32,0.12);
+}
+textarea { resize: vertical; min-height: 60px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-row.single { grid-template-columns: 1fr; }
+.field { margin-bottom: 12px; }
+
+/* ── MULTI-SELECT CHIPS ── */
+[data-mode="multi"] {
+  display: none; /* hidden — chips shown instead */
+}
+.chip-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.chip {
+  padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; border: 1.5px solid #c4a882; background: #f5ede4; color: #5a2a2a;
+  transition: all 0.12s; user-select: none;
+}
+.chip:hover { border-color: #8B2020; background: #f0ddd0; }
+.chip.selected { background: #8B2020; color: #fff; border-color: #8B2020; }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 10px 22px; border: none; border-radius: 7px; font-size: 0.88rem;
+  font-weight: 600; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px;
+}
+.btn-primary { background: #8B2020; color: #fff; }
+.btn-primary:hover { background: #6e1818; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(139,32,32,0.3); }
+.btn-secondary { background: #c4a882; color: #2B0A0A; }
+.btn-secondary:hover { background: #b89870; }
+.btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+.btn-success { background: #1B6B6B; color: #fff; }
+.btn-success:hover { background: #145555; }
+.btn-row { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+
+/* ── STATUS ── */
+#status-bar {
+  position: fixed; bottom: 20px; right: 20px;
+  background: #2B0A0A; color: #fff; padding: 10px 20px;
+  border-radius: 8px; font-size: 0.82rem; max-width: 340px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3); display: none;
+  z-index: 1000; border-left: 4px solid #e8a045;
+}
+#status-bar.show { display: block; }
+#status-bar.error { border-left-color: #e84545; }
+#status-bar.success { border-left-color: #45e895; }
+
+/* ── LOOKUP RESULT ── */
+.lookup-result {
+  background: #fdf6ee; border: 1.5px solid #c4a882; border-radius: 8px;
+  padding: 14px 18px; margin-top: 14px; display: none;
+}
+.lookup-result.show { display: block; }
+.lookup-result .pid { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #8B2020; letter-spacing: 2px; }
+.lookup-result .meta { font-size: 0.82rem; color: #666; margin-top: 4px; }
+
+/* ── TODAY TAB ── */
+.today-card {
+  background: rgba(27,107,107,0.08); border: 1.5px solid #1B6B6B;
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 12px;
+}
+.today-card .pid-badge {
+  background: #1B6B6B; color: #fff; border-radius: 6px;
+  padding: 4px 10px; font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem; letter-spacing: 1px; white-space: nowrap;
+}
+.today-card .info { flex: 1; font-size: 0.82rem; color: #333; }
+.today-card .time { font-size: 0.75rem; color: #888; }
+
+/* ── NUMBER INPUTS GRID ── */
+.num-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.num-field label { font-size: 0.72rem; }
+.num-field input { text-align: center; }
+
+/* ── SECTION DIVIDER ── */
+.section-head {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: #8B2020; margin: 18px 0 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-head::after { content: ''; flex: 1; height: 1px; background: #c4a882; }
+
+/* ── REVERSAL SECTION ── */
+#reversal-section { display: none; }
+#reversal-section.show { display: block; }
+
+hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
 </style>
 </head>
 <body>
 
-<div class="top-bar">
-<h1>&#9651;CCESS POINT OF GEO&#174;GI&#9651;</h1>
-<p>Syringe Services &amp; Harm Reduction &middot; RIGOR</p>
+<header>
+  <div>
+    <h1>RIGOR</h1>
+    <div class="subtitle">Access Point of Georgia · SSP / OEND Data System</div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('intake')">New Intake</button>
+  <button onclick="showTab('lookup')">Lookup ID</button>
+  <button onclick="showTab('visit')">Visit Log</button>
+  <button onclick="showTab('events')">Events / OEND</button>
+  <button onclick="showTab('today')">Today</button>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- TAB 1: NEW INTAKE                                        -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="tab-intake" class="panel active">
+  <div class="card">
+    <h2>New Participant Intake</h2>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Initials</label>
+        <input type="text" id="ini" maxlength="6" placeholder="e.g. JD" oninput="this.value=this.value.toUpperCase()"/>
+      </div>
+      <div class="field">
+        <label>Birth Year</label>
+        <input type="number" id="yr" placeholder="e.g. 1990" min="1920" max="2010"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Gender Identity</label>
+      <select id="gender">
+        <option value="">— Select —</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Non-binary / Gender non-conforming</option>
+        <option>Transgender Male</option>
+        <option>Transgender Female</option>
+        <option>Prefer not to say</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Race / Ethnicity</label>
+      <select id="race">
+        <option value="">— Select —</option>
+        <option>American Indian / Alaska Native</option>
+        <option>Asian</option>
+        <option>Black / African American</option>
+        <option>Hispanic / Latino</option>
+        <option>Native Hawaiian / Pacific Islander</option>
+        <option>White / Non-Hispanic</option>
+        <option>Multiracial</option>
+        <option>Other / Unknown</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label>County</label>
+        <select id="county">
+          <option value="">— Select —</option>
+          <option>Banks</option>
+          <option>Barrow</option>
+          <option>Clarke</option>
+          <option>Elbert</option>
+          <option>Franklin</option>
+          <option>Greene</option>
+          <option>Habersham</option>
+          <option>Hall</option>
+          <option>Hart</option>
+          <option>Jackson</option>
+          <option>Madison</option>
+          <option>Morgan</option>
+          <option>Newton</option>
+          <option>Oconee</option>
+          <option>Oglethorpe</option>
+          <option>Stephens</option>
+          <option>Walton</option>
+          <option>White</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>ZIP Code</label>
+        <input type="text" id="zip" maxlength="5" placeholder="30601"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Housing Status</label>
+      <select id="housing">
+        <option value="">— Select —</option>
+        <option>Stably Housed</option>
+        <option>Unstably Housed</option>
+        <option>Homeless / Unsheltered</option>
+        <option>Shelter / Transitional</option>
+        <option>Unknown</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Participant Type</label>
+      <div class="chip-group" id="chips-ptype">
+        <span class="chip" data-val="SSP">SSP</span>
+        <span class="chip" data-val="OEND">OEND</span>
+        <span class="chip" data-val="Recovery Support">Recovery Support</span>
+        <span class="chip" data-val="Walk-In">Walk-In</span>
+        <span class="chip" data-val="Staff">Staff</span>
+        <span class="chip" data-val="Community Partner">Community Partner</span>
+      </div>
+      <select id="ptype" data-mode="multi" multiple></select>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="registerParticipant()">Register Participant</button>
+      <button class="btn btn-secondary" onclick="clearIntake()">Clear Form</button>
+    </div>
+
+    <div id="intake-result" class="lookup-result">
+      <div class="pid" id="new-pid"></div>
+      <div class="meta" id="new-meta"></div>
+    </div>
+  </div>
 </div>
 
-<div class="nav">
-<button class="nav-btn active" onclick="showScreen('intake')">New Intake</button>
-<button class="nav-btn" onclick="showScreen('lookup')">Lookup ID</button>
-<button class="nav-btn" onclick="showScreen('visit')">Visit Log</button>
-<button class="nav-btn" onclick="showScreen('events')">Events</button>
-<button class="nav-btn" onclick="showScreen('checkin')" style="color:#1B9B7B;border-bottom-color:transparent">Today</button>
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- TAB 2: LOOKUP ID                                         -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="tab-lookup" class="panel">
+  <div class="card">
+    <h2>Lookup Participant ID</h2>
+    <div class="form-row">
+      <div class="field">
+        <label>Initials</label>
+        <input type="text" id="lu-ini" maxlength="6" placeholder="JD" oninput="this.value=this.value.toUpperCase()"/>
+      </div>
+      <div class="field">
+        <label>Birth Year</label>
+        <input type="number" id="lu-yr" placeholder="1990"/>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="lookupParticipant()">Search</button>
+    </div>
+    <div id="lookup-result" class="lookup-result">
+      <div class="pid" id="lu-pid"></div>
+      <div class="meta" id="lu-meta"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Lookup by ID #</h2>
+    <div class="field" style="max-width:200px">
+      <label>Participant ID</label>
+      <input type="number" id="lu-id" placeholder="e.g. 4521"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="lookupById()">Find</button>
+    </div>
+    <div id="lookup-id-result" class="lookup-result">
+      <div class="pid" id="lu-id-pid"></div>
+      <div class="meta" id="lu-id-meta"></div>
+    </div>
+  </div>
 </div>
 
-<!-- INTAKE -->
-<div id="screen-intake" class="screen active">
-<div id="intake-form">
-<div class="card">
-<div class="label">Participant Type</div>
-<div class="multi-hint">Select all that apply</div>
-<div class="chips" data-group="ptype" data-mode="multi">
-<button class="chip" data-val="SSP">SSP</button>
-<button class="chip" data-val="OEND">OEND</button>
-<button class="chip" data-val="Community">Community</button>
-<button class="chip" data-val="Secondary Distro">Sec Distro</button>
-<button class="chip" data-val="Staff/Vol">Staff/Vol</button>
-</div>
-</div>
-<div class="card">
-<div class="label">Demographics</div>
-<div class="row2">
-<div class="field"><label>Initials</label><input id="i-initials" maxlength="4" autocapitalize="characters" placeholder="AB"></div>
-<div class="field"><label>Birth Year</label><input id="i-year" type="number" inputmode="numeric" placeholder="1990"></div>
-</div>
-<div class="field"><label>Gender Identity</label></div>
-<div class="chips" data-group="gender" data-mode="single">
-<button class="chip">Woman</button><button class="chip">Man</button><button class="chip">Non-binary</button><button class="chip">Transgender</button><button class="chip">Other</button>
-</div>
-<div class="field" style="margin-top:6px"><input id="i-gender-other" placeholder="If other, specify"></div>
-<div class="field"><label>Race / Ethnicity (select all)</label></div>
-<div class="chips" data-group="race" data-mode="multi">
-<button class="chip">White</button><button class="chip">Black</button><button class="chip">Hispanic/Latino</button><button class="chip">Native American</button><button class="chip">Asian</button><button class="chip">Pacific Islander</button><button class="chip">Multiracial</button><button class="chip">Other</button>
-</div>
-</div>
-<div class="card">
-<div class="label">Location</div>
-<div class="row2">
-<div class="field"><label>ZIP</label><input id="i-zip" inputmode="numeric" maxlength="5" placeholder="30601"></div>
-<div class="field"><label>County</label>
-<select id="i-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option></select>
-</div>
-</div>
-<div class="field"><label>Housing Status</label></div>
-<div class="chips" data-group="housing" data-mode="single">
-<button class="chip">Stably housed</button><button class="chip">Unstably housed</button><button class="chip">Unhoused</button><button class="chip">Shelter</button><button class="chip">Unknown</button>
-</div>
-</div>
-<button class="btn btn-rust" onclick="submitIntake(this)">Generate anonymous ID</button>
-<div id="intake-err" class="err">Initials, birth year, and gender are required.</div>
-</div>
-<div id="intake-result" class="hidden">
-<div class="success-box"><h3>Participant Registered</h3><p>Anonymous ID assigned</p></div>
-<div class="id-box"><div id="result-id" class="id-num"></div><div class="id-sub">Write this on their card</div></div>
-<button class="btn btn-sage" onclick="goVisit()">Log visit for this ID &rarr;</button>
-<button class="btn btn-outline" onclick="resetIntake()">Register another</button>
-</div>
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- TAB 3: VISIT LOG                                         -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="tab-visit" class="panel">
+  <div class="card">
+    <h2>Log SSP Visit</h2>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="v-date"/>
+      </div>
+      <div class="field">
+        <label>Participant ID</label>
+        <input type="number" id="v-pid" placeholder="4521"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label>New or Returning</label>
+        <select id="v-nr">
+          <option value="">— Select —</option>
+          <option>New</option>
+          <option>Returning</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Staff / Volunteer</label>
+        <input type="text" id="v-worker" placeholder="Name or initials"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Location</label>
+        <select id="v-location">
+          <option value="">— Select —</option>
+          <option>Athens Office</option>
+          <option>Mobile Unit</option>
+          <option>Partner Site</option>
+          <option>Community Event</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Housing Status (Today)</label>
+        <select id="v-housing">
+          <option value="">— Select —</option>
+          <option>Stably Housed</option>
+          <option>Unstably Housed</option>
+          <option>Homeless / Unsheltered</option>
+          <option>Shelter / Transitional</option>
+          <option>Unknown</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-head">Substances &amp; Route</div>
+    <div class="form-row">
+      <div class="field">
+        <label>Primary Substance</label>
+        <select id="v-substance">
+          <option value="">— Select —</option>
+          <option>Heroin</option>
+          <option>Fentanyl</option>
+          <option>Methamphetamine</option>
+          <option>Cocaine / Crack</option>
+          <option>Prescription Opioids</option>
+          <option>Benzodiazepines</option>
+          <option>Alcohol</option>
+          <option>Multiple</option>
+          <option>Unknown</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Route of Administration</label>
+        <select id="v-route">
+          <option value="">— Select —</option>
+          <option>IV / Injection</option>
+          <option>Snorting / Intranasal</option>
+          <option>Smoking / Inhalation</option>
+          <option>Oral / Swallowing</option>
+          <option>Other</option>
+          <option>Unknown</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-head">Supplies Distributed</div>
+    <div class="num-grid">
+      <div class="num-field field"><label>Longs (syringes)</label><input type="number" id="v-longs" value="0" min="0"/></div>
+      <div class="num-field field"><label>Shorts (syringes)</label><input type="number" id="v-shorts" value="0" min="0"/></div>
+      <div class="num-field field"><label>FTS Strips</label><input type="number" id="v-fts" value="0" min="0"/></div>
+      <div class="num-field field"><label>Naloxone IM Kits</label><input type="number" id="v-nIM" value="0" min="0"/></div>
+      <div class="num-field field"><label>Naloxone Nasal</label><input type="number" id="v-nNasal" value="0" min="0"/></div>
+      <div class="num-field field"><label>Sec Distrib Kits</label><input type="number" id="v-sec" value="0" min="0"/></div>
+    </div>
+
+    <div class="section-head">Alt Supplies, Training &amp; Services</div>
+    <div class="field">
+      <label>Alt Supplies Given</label>
+      <select id="v-alt">
+        <option value="">— None —</option>
+        <option>Cookers</option>
+        <option>Cotton</option>
+        <option>Alcohol Swabs</option>
+        <option>Sharps Container</option>
+        <option>Wound Care</option>
+        <option>Multiple</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Naloxone Training?</label>
+        <select id="v-training">
+          <option value="">— Select —</option>
+          <option>Yes</option>
+          <option>No</option>
+          <option>Refresher</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Services / Referrals</label>
+        <input type="text" id="v-services" placeholder="e.g. MAT referral, food bank"/>
+      </div>
+    </div>
+
+    <div class="section-head">Reversal Report</div>
+    <div class="field">
+      <label>Reported Reversal?</label>
+      <select id="v-reversal" onchange="toggleReversal(this.value)">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
+    </div>
+
+    <div id="reversal-section">
+      <div class="form-row three">
+        <div class="field">
+          <label>Reporter Type</label>
+          <select id="v-rType">
+            <option value="">— Select —</option>
+            <option>Participant</option>
+            <option>Bystander</option>
+            <option>Family Member</option>
+            <option>Staff</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>OD Outcome</label>
+          <select id="v-odOutcome">
+            <option value="">— Select —</option>
+            <option>Survived</option>
+            <option>Fatal</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>OD Gender</label>
+          <select id="v-odGender">
+            <option value="">— Select —</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Non-binary</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row three">
+        <div class="field">
+          <label>OD Race</label>
+          <select id="v-odRace">
+            <option value="">— Select —</option>
+            <option>White / Non-Hispanic</option>
+            <option>Black / African American</option>
+            <option>Hispanic / Latino</option>
+            <option>Other / Unknown</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>OD Age Range</label>
+          <select id="v-odAge">
+            <option value="">— Select —</option>
+            <option>Under 18</option>
+            <option>18–24</option>
+            <option>25–34</option>
+            <option>35–44</option>
+            <option>45–54</option>
+            <option>55+</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>OD County</label>
+          <select id="v-odCounty">
+            <option value="">— Select —</option>
+            <option>Clarke</option>
+            <option>Barrow</option>
+            <option>Madison</option>
+            <option>Oconee</option>
+            <option>Oglethorpe</option>
+            <option>Jackson</option>
+            <option>Hall</option>
+            <option>Other</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Nasal Doses Used</label>
+          <input type="number" id="v-odNasal" value="0" min="0"/>
+        </div>
+        <div class="field">
+          <label>IM Doses Used</label>
+          <input type="number" id="v-odIM" value="0" min="0"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="v-notes" placeholder="Any additional notes..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitVisit()">Log Visit</button>
+      <button class="btn btn-secondary" onclick="clearVisit()">Clear</button>
+    </div>
+  </div>
 </div>
 
-<!-- LOOKUP -->
-<div id="screen-lookup" class="screen">
-<div class="card">
-<div class="label">Find Participant ID</div>
-<div class="row2">
-<div class="field"><label>Initials</label><input id="l-initials" maxlength="4" autocapitalize="characters"></div>
-<div class="field"><label>Birth Year</label><input id="l-year" type="number" inputmode="numeric"></div>
-</div>
-<button class="btn btn-rust" onclick="lookupId()">Search</button>
-</div>
-<div id="lookup-result" class="hidden">
-<div class="id-box"><div id="lookup-id" class="id-num"></div></div>
-<button class="btn btn-sage" onclick="goVisitFromLookup()">Log visit &rarr;</button>
-</div>
-<div id="lookup-none" class="hidden">
-<div class="card" style="text-align:center;color:#8B1A1A">No match found. Check spelling or register as new.</div>
-</div>
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- TAB 4: EVENTS / OEND                                     -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="tab-events" class="panel">
+  <div class="card">
+    <h2>Log Event / OEND Training</h2>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Event Date</label>
+        <input type="date" id="e-date"/>
+      </div>
+      <div class="field">
+        <label>Event Title</label>
+        <input type="text" id="e-title" placeholder="e.g. Naloxone Training @ Library"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Event Type</label>
+      <div class="chip-group" id="chips-etype">
+        <span class="chip" data-val="OEND Training">OEND Training</span>
+        <span class="chip" data-val="Community Outreach">Community Outreach</span>
+        <span class="chip" data-val="Health Fair">Health Fair</span>
+        <span class="chip" data-val="Partner Meeting">Partner Meeting</span>
+        <span class="chip" data-val="School / Youth">School / Youth</span>
+        <span class="chip" data-val="Faith Community">Faith Community</span>
+        <span class="chip" data-val="First Responder">First Responder</span>
+        <span class="chip" data-val="Other">Other</span>
+      </div>
+      <select id="etype" data-mode="multi" multiple></select>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Trainer / Facilitator</label>
+        <input type="text" id="e-trainer" placeholder="Name"/>
+      </div>
+      <div class="field">
+        <label>Duration (hours)</label>
+        <input type="number" id="e-duration" placeholder="1.5" step="0.5" min="0.5"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Format</label>
+        <select id="e-format">
+          <option value="">— Select —</option>
+          <option>In-Person</option>
+          <option>Virtual</option>
+          <option>Hybrid</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Location</label>
+        <input type="text" id="e-location" placeholder="Venue or address"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Partner Organization</label>
+        <input type="text" id="e-partner" placeholder="Organization name"/>
+      </div>
+      <div class="field">
+        <label>Funder / Grant</label>
+        <input type="text" id="e-funder" placeholder="e.g. SOR, SAMHSA"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="e-notes" placeholder="Any additional notes..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="startEvent()">Create Event</button>
+      <button class="btn btn-secondary" onclick="clearEvent()">Clear</button>
+    </div>
+    <div id="event-result" style="margin-top:10px; font-size:0.85rem; color:#1B6B6B; display:none;"></div>
+  </div>
+
+  <!-- Attendee Log -->
+  <div class="card">
+    <h2>Log Event Attendee</h2>
+    <div class="field">
+      <label>Event ID</label>
+      <input type="text" id="ea-eventid" placeholder="EVT-... (from created event)"/>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Initials</label>
+        <input type="text" id="ea-ini" maxlength="6" oninput="this.value=this.value.toUpperCase()"/>
+      </div>
+      <div class="field">
+        <label>Age Range</label>
+        <select id="ea-age">
+          <option value="">— Select —</option>
+          <option>Under 18</option>
+          <option>18–24</option>
+          <option>25–34</option>
+          <option>35–44</option>
+          <option>45–54</option>
+          <option>55+</option>
+          <option>Unknown</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Race / Ethnicity</label>
+        <select id="ea-race">
+          <option value="">— Select —</option>
+          <option>American Indian / Alaska Native</option>
+          <option>Asian</option>
+          <option>Black / African American</option>
+          <option>Hispanic / Latino</option>
+          <option>White / Non-Hispanic</option>
+          <option>Multiracial</option>
+          <option>Other / Unknown</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Relationship to Person Who Uses Drugs</label>
+        <select id="ea-rel">
+          <option value="">— Select —</option>
+          <option>Self</option>
+          <option>Family Member</option>
+          <option>Friend / Peer</option>
+          <option>Partner / Spouse</option>
+          <option>Service Provider</option>
+          <option>First Responder</option>
+          <option>Community Member</option>
+          <option>Unknown</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>ZIP</label>
+        <input type="text" id="ea-zip" maxlength="5"/>
+      </div>
+      <div class="field">
+        <label>County</label>
+        <select id="ea-county">
+          <option value="">— Select —</option>
+          <option>Clarke</option>
+          <option>Barrow</option>
+          <option>Banks</option>
+          <option>Madison</option>
+          <option>Oconee</option>
+          <option>Oglethorpe</option>
+          <option>Jackson</option>
+          <option>Hall</option>
+          <option>Hart</option>
+          <option>Franklin</option>
+          <option>Walton</option>
+          <option>Other</option>
+          <option>Unknown</option>
+        </select>
+      </div>
+    </div>
+    <div class="num-grid">
+      <div class="num-field field"><label>Naloxone IM</label><input type="number" id="ea-nIM" value="0" min="0"/></div>
+      <div class="num-field field"><label>Naloxone Nasal</label><input type="number" id="ea-nNasal" value="0" min="0"/></div>
+      <div class="num-field field"><label>Sec Distrib Kits</label><input type="number" id="ea-sec" value="0" min="0"/></div>
+    </div>
+    <div class="field">
+      <label>Participant ID (if registered)</label>
+      <input type="number" id="ea-pid" placeholder="Leave blank if not registered"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitAttendee()">Log Attendee</button>
+    </div>
+  </div>
 </div>
 
-<!-- VISIT LOG -->
-<div id="screen-visit" class="screen">
-<div class="card">
-<div class="label">Participant</div>
-<div class="row2">
-<div class="field"><label>ID #</label><input id="v-id" inputmode="numeric" placeholder="1001"></div>
-<div class="field"><label>Date</label><input id="v-date" type="date"></div>
-</div>
-</div>
-<div class="card">
-<div class="label">Worker</div>
-<div class="chips" data-group="worker" data-mode="single">
-<button class="chip">OK</button><button class="chip">RK</button><button class="chip">Other</button>
-</div>
-<div class="field" style="margin-top:6px"><input id="v-worker-other" class="hidden" placeholder="Worker initials" autocapitalize="characters"></div>
-</div>
-<div class="card">
-<div class="label">Visit Details</div>
-<div class="chips" data-group="nr" data-mode="single">
-<button class="chip">New</button><button class="chip">Returning</button>
-</div>
-<div class="field" style="margin-top:8px"><label>Location</label></div>
-<div class="chips" data-group="loc" data-mode="single">
-<button class="chip">Office</button><button class="chip">Mobile</button><button class="chip">Paradise</button><button class="chip">Other</button>
-</div>
-<div class="field" style="margin-top:6px"><input id="v-loc-other" class="hidden" placeholder="Location name"></div>
-<div class="field" style="margin-top:8px"><label>Housing Status</label></div>
-<div class="chips" data-group="v-housing" data-mode="single">
-<button class="chip">Stably housed</button><button class="chip">Unstably housed</button><button class="chip">Unhoused</button><button class="chip">Shelter</button><button class="chip">Unknown</button>
-</div>
-</div>
-<div class="card">
-<div class="section-hdr">Substance Use</div>
-<div class="label">Primary Substance (select all)</div>
-<div class="chips" data-group="subst" data-mode="multi">
-<button class="chip">Heroin/fentanyl</button><button class="chip">Methamphetamine</button><button class="chip">Cocaine/crack</button><button class="chip">Rx opioids</button><button class="chip">Cannabis</button><button class="chip">Benzodiazepines</button><button class="chip">Alcohol</button><button class="chip">Other / unknown</button><button class="chip">None/not disclosed</button>
-</div>
-<div class="field" style="margin-top:8px"><label>Route of Admin</label></div>
-<div class="chips" data-group="route" data-mode="multi">
-<button class="chip">Injection</button><button class="chip">Smoking</button><button class="chip">Snorting</button><button class="chip">Oral</button><button class="chip">Other</button>
-</div>
-</div>
-<div class="card">
-<div class="section-hdr">Supplies Distributed</div>
-<div class="label">Syringes &mdash; Longs</div>
-<div class="chips" data-group="longs" data-mode="single">
-<button class="chip">0</button><button class="chip">10</button><button class="chip">20</button><button class="chip">30</button><button class="chip">40</button><button class="chip">50</button>
-</div>
-<div class="label" style="margin-top:10px">Syringes &mdash; Shorts</div>
-<div class="chips" data-group="shorts" data-mode="single">
-<button class="chip">0</button><button class="chip">10</button><button class="chip">20</button><button class="chip">30</button><button class="chip">40</button><button class="chip">50</button>
-</div>
-<div class="label" style="margin-top:10px">Fentanyl Test Strips</div>
-<div class="chips" data-group="fts" data-mode="single">
-<button class="chip">0</button><button class="chip">5</button><button class="chip">10</button><button class="chip">20</button><button class="chip">50</button>
-</div>
-<div class="label" style="margin-top:10px">Alt Supplies (select all)</div>
-<div class="chips" data-group="alt" data-mode="multi">
-<button class="chip">Condoms</button><button class="chip">Pipes</button><button class="chip">Tourniquets</button><button class="chip">Cookers</button><button class="chip">Cottons/filters</button><button class="chip">Alcohol pads</button><button class="chip">Sharps container</button><button class="chip">Wound care kit</button>
-</div>
-</div>
-<div class="card">
-<div class="section-hdr">Naloxone</div>
-<div class="label">Naloxone IM (kits)</div>
-<div class="chips" data-group="nalox-im" data-mode="single">
-<button class="chip">0</button><button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button>
-</div>
-<div class="label" style="margin-top:10px">Naloxone Nasal (kits)</div>
-<div class="chips" data-group="nalox-nasal" data-mode="single">
-<button class="chip">0</button><button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button>
-</div>
-<div class="label" style="margin-top:10px">Sec Distrib Kits</div>
-<div class="chips" data-group="sec" data-mode="single">
-<button class="chip">0</button><button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button>
-</div>
-</div>
-<div class="card">
-<div class="section-hdr sage-hdr">Naloxone Training</div>
-<div class="chips" data-group="training" data-mode="single">
-<button class="chip sage">Trained by us (today)</button><button class="chip sage">Previously trained by AP</button><button class="chip sage">Trained elsewhere</button><button class="chip sage">No training</button>
-</div>
-</div>
-<div class="card">
-<div class="section-hdr sage-hdr">Recovery Support Services (Annex D)</div>
-<div class="label">Peer Support</div>
-<div class="chips" data-group="svc" data-mode="multi">
-<button class="chip sage">Peer check-in</button><button class="chip sage">Safer use education</button><button class="chip sage">Emotional support</button><button class="chip sage">Resource navigation</button>
-</div>
-<div class="label" style="margin-top:10px">Referrals &amp; Services</div>
-<div class="chips" data-group="svc" data-mode="multi">
-<button class="chip sage">MAT/MOUD referral</button><button class="chip sage">Mental health referral</button><button class="chip sage">Medical referral</button><button class="chip sage">Wound care</button><button class="chip sage">Housing support</button><button class="chip sage">Transportation support</button><button class="chip sage">Employment services</button><button class="chip sage">Vocational/GED referral</button><button class="chip sage">Family supports</button><button class="chip sage">Benefits/ID assistance</button><button class="chip sage">Legal aid referral</button><button class="chip sage">Secondary distribution</button>
-</div>
-</div>
-<div class="card">
-<div class="reversal-wrap">
-<div class="toggle-row"><span>Reported Reversal?</span><input type="checkbox" id="reversal-toggle" onchange="toggleReversal()"></div>
-</div>
-<div id="reversal-details" class="hidden" style="margin-top:10px">
-<div class="label">Reporter Type</div>
-<div class="chips" data-group="reporter" data-mode="single">
-<button class="chip danger">SSP Participant</button><button class="chip danger">OEND Participant</button><button class="chip danger">Community Member</button><button class="chip danger">Sec Distro Recipient</button><button class="chip danger">Staff/Volunteer</button>
-</div>
-<div class="label" style="margin-top:10px">OD Outcome</div>
-<div class="chips" data-group="od-outcome" data-mode="single">
-<button class="chip danger">Alive and well</button><button class="chip danger">Alive - hospital</button><button class="chip danger">Alive - unknown condition</button><button class="chip danger">Deceased</button><button class="chip danger">Unknown</button>
-</div>
-<div class="row2" style="margin-top:8px">
-<div><div class="label">Nasal doses used</div><div class="chips" data-group="od-nasal" data-mode="single"><button class="chip danger">0</button><button class="chip danger">1</button><button class="chip danger">2</button><button class="chip danger">3</button><button class="chip danger">4</button></div></div>
-<div><div class="label">IM doses used</div><div class="chips" data-group="od-inj" data-mode="single"><button class="chip danger">0</button><button class="chip danger">1</button><button class="chip danger">2</button><button class="chip danger">3</button><button class="chip danger">4</button></div></div>
-</div>
-<div class="label" style="margin-top:10px">OD Demographics (de-identified)</div>
-<div class="chips" data-group="od-gender" data-mode="single">
-<button class="chip danger">Woman</button><button class="chip danger">Man</button><button class="chip danger">Non-binary</button><button class="chip danger">Unknown</button>
-</div>
-<div class="field" style="margin-top:6px"><label>Race/Ethnicity</label></div>
-<div class="chips" data-group="od-race" data-mode="multi">
-<button class="chip danger">White</button><button class="chip danger">Black</button><button class="chip danger">Hispanic/Latino</button><button class="chip danger">Native American</button><button class="chip danger">Other</button><button class="chip danger">Unknown</button>
-</div>
-<div class="row2" style="margin-top:8px">
-<div class="field"><label>Age Range</label><select id="od-age"><option value="">Select</option><option>Under 18</option><option>18-24</option><option>25-34</option><option>35-44</option><option>45-54</option><option>55-64</option><option>65+</option><option>Unknown</option></select></div>
-<div class="field"><label>County</label><select id="od-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option><option>Unknown</option></select></div>
-</div>
-</div>
-</div>
-<div class="card">
-<div class="field"><label>Notes</label><textarea id="v-notes" placeholder="Anything notable about this visit..."></textarea></div>
-</div>
-<button id="v-submit" class="btn btn-sage" onclick="submitVisit()">Submit Visit</button>
-<div id="v-err" class="err">Participant ID and date are required.</div>
-<div id="v-success" class="hidden">
-<div class="success-box"><h3>Visit Logged</h3><p>Data saved to SSP Visits</p></div>
-<button class="btn btn-outline" onclick="resetVisit()">Log another visit</button>
-</div>
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- TAB 5: TODAY                                             -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="tab-today" class="panel">
+  <div class="card">
+    <h2>Today's Check-In Queue</h2>
+    <p style="font-size:0.82rem;color:#555;margin-bottom:16px;">
+      Check in participants as they arrive. The queue clears automatically at midnight.
+      Use the Visit Log tab to record their full visit.
+    </p>
+
+    <div class="section-head">Find Participant</div>
+    <div class="form-row">
+      <div class="field">
+        <label>Initials</label>
+        <input type="text" id="t-ini" maxlength="6" placeholder="JD" oninput="this.value=this.value.toUpperCase()"/>
+      </div>
+      <div class="field">
+        <label>Birth Year</label>
+        <input type="number" id="t-yr" placeholder="1990"/>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-sm" onclick="todayLookup()">Find ID</button>
+    </div>
+    <div id="today-lookup-result" style="margin:8px 0; font-size:0.88rem; color:#2B0A0A; min-height:20px;"></div>
+
+    <div class="section-head">Check In</div>
+    <div class="form-row">
+      <div class="field">
+        <label>Participant ID</label>
+        <input type="number" id="t-pid" placeholder="4521"/>
+      </div>
+      <div class="field">
+        <label>Notes for Staff</label>
+        <input type="text" id="t-notes" placeholder="e.g. needs wound care, ask about MAT"/>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-success" onclick="checkIn()">✓ Check In</button>
+    </div>
+  </div>
+
+  <div class="card" id="today-queue-card">
+    <h2>Current Queue</h2>
+    <div id="today-queue" style="font-size:0.82rem;color:#888;font-style:italic;">
+      (Check-ins will appear here after submitting)
+    </div>
+  </div>
 </div>
 
-<!-- EVENTS -->
-<div id="screen-events" class="screen">
-<div id="event-setup">
-<div class="card">
-<div class="section-hdr teal-hdr">Event / Training Details</div>
-<div class="field"><label>Event Title</label><input id="e-title" placeholder="e.g. OEND Training — Clarke Co Library"></div>
-<div class="field"><label>Date</label><input id="e-date" type="date"></div>
-<div class="label">Event Type</div>
-<div class="multi-hint">Select all that apply</div>
-<div class="chips" data-group="etype" data-mode="multi">
-<button class="chip teal">OEND Training</button><button class="chip teal">Stigma Reduction</button><button class="chip teal">Recovery Support Group</button><button class="chip teal">Tabling/Outreach</button><button class="chip teal">Speaking/Presentation</button><button class="chip teal">Provider Training</button><button class="chip teal">Community Collaboration</button>
-</div>
-<div class="row2" style="margin-top:10px">
-<div class="field"><label>Trainer / Facilitator</label>
-<div class="chips" data-group="e-trainer" data-mode="single">
-<button class="chip teal">OK</button><button class="chip teal">RK</button><button class="chip teal">Other</button>
-</div>
-<input id="e-trainer-other" class="hidden" placeholder="Name" style="margin-top:6px">
-</div>
-<div class="field"><label>Duration</label>
-<div class="chips" data-group="e-duration" data-mode="single">
-<button class="chip teal">30 min</button><button class="chip teal">1 hr</button><button class="chip teal">2 hr</button><button class="chip teal">Half day</button><button class="chip teal">Full day</button>
-</div>
-</div>
-</div>
-<div class="label" style="margin-top:10px">Format</div>
-<div class="chips" data-group="e-format" data-mode="single">
-<button class="chip teal">In-person</button><button class="chip teal">Virtual</button><button class="chip teal">Hybrid</button>
-</div>
-<div class="field" style="margin-top:10px"><label>Location / Venue</label><input id="e-location" placeholder="e.g. Clarke Co Library, Zoom, etc."></div>
-<div class="field"><label>Partner / Collaborating Org</label><input id="e-partner" placeholder="e.g. UGA School of Social Work"></div>
-<div class="field"><label>Funder / Grant</label>
-<div class="chips" data-group="e-funder" data-mode="single">
-<button class="chip teal">SOR/DBHDD</button><button class="chip teal">Other grant</button><button class="chip teal">Unfunded</button>
-</div>
-</div>
-<div class="field"><label>Notes / Description</label><textarea id="e-notes" placeholder="Topic, curriculum used, audience, DBHDD visibility notes..."></textarea></div>
-</div>
-<button class="btn btn-teal" onclick="startEvent()">Start Event &rarr; Add Attendees</button>
-<div id="e-err" class="err">Title, date, and at least one event type are required.</div>
-</div>
-<div id="event-attendees" class="hidden">
-<div class="card" style="background:#e8f4f4;border-color:#1B6B6B">
-<div style="font-size:14px;font-weight:700;color:#1B6B6B" id="ea-event-title"></div>
-<div style="font-size:12px;color:#6B5B4E;margin-top:2px" id="ea-event-meta"></div>
-</div>
-<div id="ea-count" class="attendee-count">0 attendees logged</div>
-<div class="card">
-<div class="section-hdr teal-hdr">Add Attendee</div>
-<div class="row2">
-<div class="field"><label>Initials</label><input id="ea-initials" maxlength="4" autocapitalize="characters" placeholder="AB"></div>
-<div class="field"><label>Age Range</label><select id="ea-age"><option value="">Select</option><option>Under 18</option><option>18-24</option><option>25-34</option><option>35-44</option><option>45-54</option><option>55-64</option><option>65+</option></select></div>
-</div>
-<div class="label">Race / Ethnicity</div>
-<div class="chips" data-group="ea-race" data-mode="multi">
-<button class="chip teal">White</button><button class="chip teal">Black</button><button class="chip teal">Hispanic/Latino</button><button class="chip teal">Native American</button><button class="chip teal">Asian</button><button class="chip teal">Multiracial</button><button class="chip teal">Other</button>
-</div>
-<div class="row2" style="margin-top:8px">
-<div class="field"><label>ZIP</label><input id="ea-zip" inputmode="numeric" maxlength="5" placeholder="30601"></div>
-<div class="field"><label>County</label><select id="ea-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option></select></div>
-</div>
-<div class="label">Relationship to Substance Use</div>
-<div class="chips" data-group="ea-rel" data-mode="single">
-<button class="chip teal">Person who uses</button><button class="chip teal">Family/friend</button><button class="chip teal">Provider</button><button class="chip teal">First responder</button><button class="chip teal">Community member</button><button class="chip teal">Student</button><button class="chip teal">Other</button>
-</div>
-<div class="label" style="margin-top:10px">Naloxone Given</div>
-<div class="row2">
-<div><div class="label">IM kits</div><div class="chips" data-group="ea-nalox-im" data-mode="single"><button class="chip teal">0</button><button class="chip teal">1</button><button class="chip teal">2</button></div></div>
-<div><div class="label">Nasal kits</div><div class="chips" data-group="ea-nalox-nasal" data-mode="single"><button class="chip teal">0</button><button class="chip teal">1</button><button class="chip teal">2</button></div></div>
-</div>
-<div class="label" style="margin-top:10px">Sec Distrib Kits</div>
-<div class="chips" data-group="ea-sec" data-mode="single">
-<button class="chip teal">0</button><button class="chip teal">1</button><button class="chip teal">2</button><button class="chip teal">3</button>
-</div>
-<div class="label" style="margin-top:10px">Existing SSP Participant?</div>
-<div class="row2">
-<div class="field"><label>Participant ID (if known)</label><input id="ea-pid" inputmode="numeric" placeholder="Leave blank if N/A"></div>
-<div class="field"><label>Completion</label><select id="ea-completion"><option>Completed</option><option>Partial</option><option>No-show</option></select></div>
-</div>
-</div>
-<button class="btn btn-teal" onclick="addAttendee(this)">+ Add This Attendee</button>
-<div id="ea-err" class="err">Initials required.</div>
-<div id="ea-logged-list" style="margin-top:12px"></div>
-<button class="btn btn-outline-teal" onclick="finishEvent()" style="margin-top:12px">Finish Event</button>
-</div>
-<div id="event-done" class="hidden">
-<div class="success-box"><h3>Event Saved</h3><p id="event-done-msg"></p></div>
-<button class="btn btn-outline-teal" onclick="resetEvent()">Log Another Event</button>
-</div>
-</div>
+<!-- Status Bar -->
+<div id="status-bar"></div>
 
 <script>
+// ── CONFIG ───────────────────────────────────────────────────
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzCYLYOWFZXG4KCWcf-nFAAvYzaBFNaiJ7aB3oE5-mzqyIZrS0cDIznBxTNbqxd1U-p/exec';
-let registry = [];
-const sel = {};
-let currentEventId = null;
-let attendeeCount = 0;
 
-fetch(WEB_APP_URL).then(r=>r.json()).then(d=>{
-  if(d.participants) registry=d.participants.map(p=>({id:Number(p.id),initials:(p.initials||'').toUpperCase(),year:String(p.year||'')}));
-  else if(d.ids) registry=d.ids.map(id=>({id:Number(id)}));
-}).catch(()=>{});
+// ── PARTICIPANT CACHE ────────────────────────────────────────
+let participants = [];
+let dataLoaded   = false;
 
-function showScreen(name){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',
-    name==='intake'?b.textContent.toLowerCase().includes('intake'):
-    name==='lookup'?b.textContent.toLowerCase().includes('lookup'):
-    name==='visit'?b.textContent.toLowerCase().includes('visit'):
-    b.textContent.toLowerCase().includes('event')));
-}
-
-document.addEventListener('click',function(e){
-  if(!e.target.classList.contains('chip')) return;
-  const wrap=e.target.closest('[data-group]');
-  if(!wrap) return;
-  const group=wrap.dataset.group, mode=wrap.dataset.mode;
-  if(mode==='single'){wrap.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));e.target.classList.add('on');sel[group]=e.target.dataset.val||e.target.textContent;}
-  else{e.target.classList.toggle('on');}
-  if(group==='worker') document.getElementById('v-worker-other').classList.toggle('hidden',sel['worker']!=='Other');
-  if(group==='loc') document.getElementById('v-loc-other').classList.toggle('hidden',sel['loc']!=='Other');
-  if(group==='e-trainer') document.getElementById('e-trainer-other').classList.toggle('hidden',sel['e-trainer']!=='Other');
-});
-
-function getToggled(g){return Array.from(document.querySelectorAll('[data-group="'+g+'"] .chip.on')).map(c=>c.dataset.val||c.textContent).join('; ');}
-function toggleReversal(){document.getElementById('reversal-details').classList.toggle('hidden',!document.getElementById('reversal-toggle').checked);}
-
-async function submitIntake(btn){
-  const initials=document.getElementById('i-initials').value.trim().toUpperCase();
-  const year=document.getElementById('i-year').value.trim();
-  const gender=sel['gender']||document.getElementById('i-gender-other').value.trim();
-  const errEl=document.getElementById('intake-err');
-  if(!initials||!year||!gender){errEl.style.display='block';return;}
-  errEl.style.display='none';
-  const dup=registry.find(p=>p.initials===initials&&p.year===year);
-  let id;
-  if(dup){id=dup.id;}
-  else{const ex=registry.map(p=>p.id);do{id=Math.floor(Math.random()*9000)+1000;}while(ex.includes(id));registry.push({id,initials,year});}
-  btn.innerHTML='<span class="spinner"></span> Registering...';btn.disabled=true;
-  try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'registerParticipant',id,initials,birthYear:year,gender,race:getToggled('race'),housing:sel['housing']||'',participantType:getToggled('ptype')||'SSP',zip:document.getElementById('i-zip').value.trim(),county:document.getElementById('i-county').value})});}catch(e){}
-  document.getElementById('result-id').textContent=id;
-  document.getElementById('intake-form').classList.add('hidden');
-  document.getElementById('intake-result').classList.remove('hidden');
-  btn.innerHTML='Generate anonymous ID';btn.disabled=false;
-}
-
-function resetIntake(){
-  document.getElementById('intake-form').classList.remove('hidden');
-  document.getElementById('intake-result').classList.add('hidden');
-  ['i-initials','i-year','i-zip','i-gender-other'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('i-county').selectedIndex=0;
-  document.querySelectorAll('#screen-intake .chip').forEach(c=>c.classList.remove('on'));
-  ['gender','race','housing'].forEach(k=>delete sel[k]);
-}
-function goVisit(){document.getElementById('v-id').value=document.getElementById('result-id').textContent;showScreen('visit');}
-
-function lookupId(){
-  const initials=document.getElementById('l-initials').value.trim().toUpperCase();
-  const year=document.getElementById('l-year').value.trim();
-  const match=registry.find(p=>p.initials===initials&&p.year===year);
-  document.getElementById('lookup-result').classList.add('hidden');
-  document.getElementById('lookup-none').classList.add('hidden');
-  if(match){document.getElementById('lookup-id').textContent=match.id;document.getElementById('lookup-result').classList.remove('hidden');}
-  else{document.getElementById('lookup-none').classList.remove('hidden');}
-}
-function goVisitFromLookup(){document.getElementById('v-id').value=document.getElementById('lookup-id').textContent;showScreen('visit');}
-
-async function submitVisit(){
-  const id=document.getElementById('v-id').value,date=document.getElementById('v-date').value;
-  const errEl=document.getElementById('v-err');
-  if(!id||!date){errEl.style.display='block';return;}errEl.style.display='none';
-  const btn=document.getElementById('v-submit');
-  btn.innerHTML='<span class="spinner"></span> Submitting...';btn.disabled=true;
-  const reversal=document.getElementById('reversal-toggle').checked;
-  const worker=sel['worker']==='Other'?document.getElementById('v-worker-other').value.trim().toUpperCase():(sel['worker']||'');
-  try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logVisit',participantId:id,date,worker,location:sel['loc']==='Other'?document.getElementById('v-loc-other').value.trim():(sel['loc']||''),newOrReturning:sel['nr']||'',housing:sel['v-housing']||'',substances:getToggled('subst'),route:getToggled('route'),longs:sel['longs']||'0',shorts:sel['shorts']||'0',fts:sel['fts']||'0',altSupplies:getToggled('alt'),naloxIM:sel['nalox-im']||'0',naloxNasal:sel['nalox-nasal']||'0',secDistrib:sel['sec']||'0',training:sel['training']||'',reversal:reversal?'Yes':'No',reporterType:reversal?(sel['reporter']||''):'',odOutcome:reversal?(sel['od-outcome']||''):'',odNasalDoses:reversal?(sel['od-nasal']||''):'',odInjDoses:reversal?(sel['od-inj']||''):'',odGender:reversal?(sel['od-gender']||''):'',odRace:reversal?getToggled('od-race'):'',odAge:reversal?document.getElementById('od-age').value:'',odCounty:reversal?document.getElementById('od-county').value:'',services:getToggled('svc'),notes:document.getElementById('v-notes').value.trim()})});}catch(e){}
-  btn.classList.add('hidden');document.getElementById('v-success').classList.remove('hidden');
-}
-
-function resetVisit(){
-  const btn=document.getElementById('v-submit');btn.innerHTML='Submit Visit';btn.disabled=false;btn.classList.remove('hidden');
-  document.getElementById('v-success').classList.add('hidden');document.getElementById('v-err').style.display='none';
-  ['v-id','v-notes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('v-date').value='';
-  ['v-worker-other','v-loc-other'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).classList.add('hidden');});
-  document.getElementById('reversal-toggle').checked=false;document.getElementById('reversal-details').classList.add('hidden');
-  document.getElementById('od-age').selectedIndex=0;document.getElementById('od-county').selectedIndex=0;
-  document.querySelectorAll('#screen-visit .chip').forEach(c=>c.classList.remove('on'));
-  ['worker','nr','loc','v-housing','longs','shorts','fts','nalox-im','nalox-nasal','sec','training','reporter','od-outcome','od-nasal','od-inj','od-gender'].forEach(k=>delete sel[k]);
-}
-
-async function startEvent(){
-  const title=document.getElementById('e-title').value.trim();
-  const date=document.getElementById('e-date').value;
-  const etype=getToggled('etype');
-  const errEl=document.getElementById('e-err');
-  if(!title||!date||!etype){errEl.style.display='block';return;}errEl.style.display='none';
-  currentEventId='EVT-'+Date.now();attendeeCount=0;
-  const trainer=sel['e-trainer']==='Other'?document.getElementById('e-trainer-other').value.trim():(sel['e-trainer']||'');
-  try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'createEvent',eventId:currentEventId,title,date,eventType:etype,trainer,duration:sel['e-duration']||'',format:sel['e-format']||'',location:document.getElementById('e-location').value.trim(),partner:document.getElementById('e-partner').value.trim(),funder:sel['e-funder']||'',notes:document.getElementById('e-notes').value.trim()})});}catch(e){}
-  document.getElementById('ea-event-title').textContent=title;
-  document.getElementById('ea-event-meta').textContent=date+' · '+etype+(trainer?' · '+trainer:'');
-  document.getElementById('event-setup').classList.add('hidden');
-  document.getElementById('event-attendees').classList.remove('hidden');
-}
-
-async function addAttendee(btn){
-  const initials=document.getElementById('ea-initials').value.trim().toUpperCase();
-  const errEl=document.getElementById('ea-err');
-  if(!initials){errEl.style.display='block';return;}errEl.style.display='none';
-  btn.innerHTML='<span class="spinner"></span> Adding...';btn.disabled=true;
-  try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logAttendee',eventId:currentEventId,initials,ageRange:document.getElementById('ea-age').value,race:getToggled('ea-race'),zip:document.getElementById('ea-zip').value.trim(),county:document.getElementById('ea-county').value,relationship:sel['ea-rel']||'',naloxIM:sel['ea-nalox-im']||'0',naloxNasal:sel['ea-nalox-nasal']||'0',secDistrib:sel['ea-sec']||'0',participantId:document.getElementById('ea-pid').value.trim(),completion:document.getElementById('ea-completion').value})});}catch(e){}
-  attendeeCount++;
-  document.getElementById('ea-count').textContent=attendeeCount+' attendee'+(attendeeCount!==1?'s':'')+' logged';
-  const div=document.createElement('div');div.className='attendee-row';
-  div.innerHTML='<span class="row-num">#'+attendeeCount+'</span> '+initials+(document.getElementById('ea-pid').value?' (ID: '+document.getElementById('ea-pid').value+')':'');
-  document.getElementById('ea-logged-list').appendChild(div);
-  ['ea-initials','ea-zip','ea-pid'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('ea-age').selectedIndex=0;document.getElementById('ea-county').selectedIndex=0;document.getElementById('ea-completion').selectedIndex=0;
-  document.querySelectorAll('#event-attendees [data-group^="ea-"] .chip').forEach(c=>c.classList.remove('on'));
-  ['ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k=>delete sel[k]);
-  btn.innerHTML='+ Add This Attendee';btn.disabled=false;
-  document.getElementById('ea-initials').focus();
-}
-
-function finishEvent(){
-  document.getElementById('event-attendees').classList.add('hidden');
-  document.getElementById('event-done').classList.remove('hidden');
-  document.getElementById('event-done-msg').textContent=attendeeCount+' attendee'+(attendeeCount!==1?'s':'')+' logged for this event.';
-}
-
-function resetEvent(){
-  document.getElementById('event-setup').classList.remove('hidden');
-  document.getElementById('event-done').classList.add('hidden');
-  document.getElementById('ea-logged-list').innerHTML='';
-  ['e-title','e-location','e-partner','e-notes','e-trainer-other'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('e-date').value='';
-  document.querySelectorAll('#screen-events .chip').forEach(c=>c.classList.remove('on'));
-  ['e-trainer','e-duration','e-format','e-funder'].forEach(k=>delete sel[k]);
-  document.getElementById('e-trainer-other').classList.add('hidden');
-  currentEventId=null;attendeeCount=0;
-}
-
-document.addEventListener('DOMContentLoaded',function(){
-  var today=new Date().toISOString().split('T')[0];
-  document.getElementById('v-date').value=today;
-  document.getElementById('e-date').value=today;
-});
-
-// ── CHECK IN ──
-async function checkIn(btn) {
-  const initials = document.getElementById('ci-initials').value.trim().toUpperCase();
-  const year     = document.getElementById('ci-year').value.trim();
-  const directId = document.getElementById('ci-id').value.trim();
-  const notes    = document.getElementById('ci-notes').value.trim();
-  const errEl    = document.getElementById('ci-err');
-  let pid = null;
-  if (directId) {
-    pid = Number(directId);
-  } else if (initials && year) {
-    const match = registry.find(p => p.initials === initials && p.year === year);
-    if (match) { pid = match.id; }
-    else { errEl.textContent='No match found. Check spelling or use ID directly.'; errEl.style.display='block'; return; }
-  } else {
-    errEl.textContent='Enter initials + birth year, or participant ID.'; errEl.style.display='block'; return;
-  }
-  errEl.style.display='none';
-  btn.innerHTML='<span class="spinner"></span> Checking in...'; btn.disabled=true;
+async function loadParticipants() {
   try {
-    await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'checkIn',participantId:pid,notes:notes,time:new Date().toISOString()})});
-  } catch(e) {}
-  document.getElementById('ci-form').classList.add('hidden');
-  document.getElementById('ci-result-id').textContent=pid;
-  document.getElementById('ci-result-time').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('ci-success').classList.remove('hidden');
-  btn.innerHTML='Check In &rarr;'; btn.disabled=false;
+    const res = await fetch(WEB_APP_URL);
+    const data = await res.json();
+    participants = data.participants || [];
+    dataLoaded = true;
+  } catch (e) {
+    console.warn('Could not load participants:', e);
+  }
 }
-function resetCheckIn() {
-  document.getElementById('ci-form').classList.remove('hidden');
-  document.getElementById('ci-success').classList.add('hidden');
-  ['ci-initials','ci-year','ci-id','ci-notes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('ci-err').style.display='none';
+loadParticipants();
+
+// ── TABS ─────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
 }
+
+// ── STATUS BAR ───────────────────────────────────────────────
+let statusTimer;
+function showStatus(msg, type='info', dur=4000) {
+  const bar = document.getElementById('status-bar');
+  bar.textContent = msg;
+  bar.className = 'show ' + type;
+  clearTimeout(statusTimer);
+  if (dur > 0) statusTimer = setTimeout(() => bar.classList.remove('show'), dur);
+}
+
+// ── MULTI-SELECT CHIPS ───────────────────────────────────────
+document.querySelectorAll('.chip-group').forEach(group => {
+  const selectId = group.id.replace('chips-', '');
+  group.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('selected');
+      syncChipsToSelect(group.id, selectId);
+    });
+  });
+});
+
+function syncChipsToSelect(groupId, selectId) {
+  const group  = document.getElementById(groupId);
+  const sel    = document.getElementById(selectId);
+  if (!sel) return;
+  const vals = [...group.querySelectorAll('.chip.selected')].map(c => c.dataset.val);
+  // Update hidden select (for form reading)
+  sel._selected = vals;
+}
+
+function getToggled(selectId) {
+  const sel = document.getElementById(selectId);
+  if (sel && sel._selected) return sel._selected.join(', ');
+  // Fallback: read chips
+  const groupId = 'chips-' + selectId;
+  const group = document.getElementById(groupId);
+  if (!group) return '';
+  return [...group.querySelectorAll('.chip.selected')].map(c => c.dataset.val).join(', ');
+}
+
+// ── TODAY: Checked-in list (local) ───────────────────────────
+const todayList = [];
+function renderTodayQueue() {
+  const el = document.getElementById('today-queue');
+  if (todayList.length === 0) {
+    el.innerHTML = '<em style="color:#888">No check-ins yet today.</em>';
+    return;
+  }
+  el.innerHTML = todayList.map(item => `
+    <div class="today-card">
+      <div class="pid-badge">${item.pid}</div>
+      <div class="info">
+        <div><strong>ID ${item.pid}</strong> ${item.notes ? '· ' + item.notes : ''}</div>
+        <div class="time">Checked in at ${item.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── REVERSAL TOGGLE ──────────────────────────────────────────
+function toggleReversal(val) {
+  document.getElementById('reversal-section').classList.toggle('show', val === 'Yes');
+}
+
+// ── POST HELPER ──────────────────────────────────────────────
+async function postAction(payload) {
+  const res = await fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
+
+// ── REGISTER PARTICIPANT ─────────────────────────────────────
+async function registerParticipant() {
+  const initials  = document.getElementById('ini').value.trim().toUpperCase();
+  const birthYear = document.getElementById('yr').value.trim();
+  if (!initials || !birthYear) { showStatus('⚠ Initials and Birth Year required.', 'error'); return; }
+
+  const pid = Math.floor(Math.random() * 9000) + 1000;
+  const ptype = getToggled('ptype') || 'SSP';
+
+  showStatus('Registering...', 'info', 0);
+  try {
+    const result = await postAction({
+      action: 'registerParticipant',
+      id: pid, initials, birthYear,
+      gender: document.getElementById('gender').value,
+      race:   document.getElementById('race').value,
+      county: document.getElementById('county').value,
+      zip:    document.getElementById('zip').value,
+      housing: document.getElementById('housing').value,
+      participantType: ptype
+    });
+
+    if (result.success) {
+      const usedId = result.id || pid;
+      document.getElementById('new-pid').textContent = 'ID: ' + usedId;
+      document.getElementById('new-meta').textContent =
+        initials + ' · ' + birthYear + (result.duplicate ? ' (already registered)' : ' · Registered ✓');
+      document.getElementById('intake-result').classList.add('show');
+      showStatus(result.duplicate ? '⚠ Participant already exists: ' + usedId : '✅ Registered! ID: ' + usedId, 'success');
+      await loadParticipants();
+    } else {
+      showStatus('❌ Error: ' + (result.error || 'Unknown'), 'error');
+    }
+  } catch (e) {
+    showStatus('❌ Network error: ' + e.message, 'error');
+  }
+}
+
+function clearIntake() {
+  ['ini','yr','gender','race','county','zip','housing'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.querySelectorAll('#chips-ptype .chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('intake-result').classList.remove('show');
+}
+
+// ── LOOKUP ───────────────────────────────────────────────────
+function lookupParticipant() {
+  const ini = document.getElementById('lu-ini').value.trim().toUpperCase();
+  const yr  = document.getElementById('lu-yr').value.trim();
+  if (!ini || !yr) { showStatus('⚠ Enter initials and birth year.', 'error'); return; }
+
+  const matches = participants.filter(p =>
+    String(p.initials).toUpperCase() === ini && String(p.year) === yr
+  );
+
+  const resultDiv = document.getElementById('lookup-result');
+  if (matches.length === 0) {
+    document.getElementById('lu-pid').textContent = 'Not Found';
+    document.getElementById('lu-meta').textContent = 'No participant matches ' + ini + ' / ' + yr;
+    resultDiv.classList.add('show');
+    showStatus('No match found.', 'error');
+  } else {
+    const m = matches[0];
+    document.getElementById('lu-pid').textContent = 'ID: ' + m.id;
+    document.getElementById('lu-meta').textContent =
+      m.initials + ' · ' + m.year + (matches.length > 1 ? ' (' + matches.length + ' matches — check ID)' : ' · Found ✓');
+    resultDiv.classList.add('show');
+    showStatus('✅ Found: ID ' + m.id, 'success');
+  }
+}
+
+function lookupById() {
+  const id = String(document.getElementById('lu-id').value).trim();
+  if (!id) { showStatus('⚠ Enter an ID.', 'error'); return; }
+  const m = participants.find(p => String(p.id) === id);
+  const resultDiv = document.getElementById('lookup-id-result');
+  if (!m) {
+    document.getElementById('lu-id-pid').textContent = 'Not Found';
+    document.getElementById('lu-id-meta').textContent = 'No participant with ID ' + id;
+    resultDiv.classList.add('show');
+    showStatus('No match.', 'error');
+  } else {
+    document.getElementById('lu-id-pid').textContent = 'ID: ' + m.id;
+    document.getElementById('lu-id-meta').textContent = m.initials + ' · ' + m.year + ' · Found ✓';
+    resultDiv.classList.add('show');
+    showStatus('✅ Found: ' + m.initials, 'success');
+  }
+}
+
+// ── SUBMIT VISIT ─────────────────────────────────────────────
+async function submitVisit() {
+  const pid = document.getElementById('v-pid').value;
+  const date = document.getElementById('v-date').value;
+  if (!pid || !date) { showStatus('⚠ Date and Participant ID required.', 'error'); return; }
+
+  showStatus('Logging visit...', 'info', 0);
+  try {
+    const result = await postAction({
+      action:        'logVisit',
+      date,
+      participantId: pid,
+      newOrReturning: document.getElementById('v-nr').value,
+      worker:        document.getElementById('v-worker').value,
+      location:      document.getElementById('v-location').value,
+      housing:       document.getElementById('v-housing').value,
+      substances:    document.getElementById('v-substance').value,
+      route:         document.getElementById('v-route').value,
+      longs:         document.getElementById('v-longs').value,
+      shorts:        document.getElementById('v-shorts').value,
+      fts:           document.getElementById('v-fts').value,
+      naloxIM:       document.getElementById('v-nIM').value,
+      naloxNasal:    document.getElementById('v-nNasal').value,
+      secDistrib:    document.getElementById('v-sec').value,
+      altSupplies:   document.getElementById('v-alt').value,
+      training:      document.getElementById('v-training').value,
+      services:      document.getElementById('v-services').value,
+      reversal:      document.getElementById('v-reversal').value,
+      reporterType:  document.getElementById('v-rType').value,
+      odOutcome:     document.getElementById('v-odOutcome').value,
+      odGender:      document.getElementById('v-odGender').value,
+      odRace:        document.getElementById('v-odRace').value,
+      odAge:         document.getElementById('v-odAge').value,
+      odCounty:      document.getElementById('v-odCounty').value,
+      odNasalDoses:  document.getElementById('v-odNasal').value,
+      odInjDoses:    document.getElementById('v-odIM').value,
+      notes:         document.getElementById('v-notes').value
+    });
+    if (result.success) {
+      showStatus('✅ Visit logged for ID ' + pid, 'success');
+      clearVisit();
+    } else {
+      showStatus('❌ ' + (result.error || 'Error logging visit'), 'error');
+    }
+  } catch (e) {
+    showStatus('❌ ' + e.message, 'error');
+  }
+}
+
+function clearVisit() {
+  ['v-date','v-pid','v-nr','v-worker','v-location','v-housing',
+   'v-substance','v-route','v-alt','v-training','v-services','v-notes',
+   'v-rType','v-odOutcome','v-odGender','v-odRace','v-odAge','v-odCounty'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['v-longs','v-shorts','v-fts','v-nIM','v-nNasal','v-sec','v-odNasal','v-odIM']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = 0; });
+  document.getElementById('v-reversal').value = 'No';
+  document.getElementById('reversal-section').classList.remove('show');
+}
+
+// ── START EVENT ──────────────────────────────────────────────
+async function startEvent() {
+  const date  = document.getElementById('e-date').value;
+  const title = document.getElementById('e-title').value.trim();
+  if (!date || !title) { showStatus('⚠ Date and Title required.', 'error'); return; }
+
+  const eventId = 'EVT-' + Date.now();
+  showStatus('Creating event...', 'info', 0);
+  try {
+    const result = await postAction({
+      action:    'createEvent',
+      eventId,
+      date,
+      title,
+      eventType: getToggled('etype'),
+      trainer:   document.getElementById('e-trainer').value,
+      duration:  document.getElementById('e-duration').value,
+      format:    document.getElementById('e-format').value,
+      location:  document.getElementById('e-location').value,
+      partner:   document.getElementById('e-partner').value,
+      funder:    document.getElementById('e-funder').value,
+      notes:     document.getElementById('e-notes').value
+    });
+    if (result.success) {
+      showStatus('✅ Event created: ' + eventId, 'success');
+      const r = document.getElementById('event-result');
+      r.style.display = 'block';
+      r.innerHTML = '✅ Event ID: <strong>' + eventId + '</strong> — copy this for attendee logging.';
+      document.getElementById('ea-eventid').value = eventId;
+    } else {
+      showStatus('❌ ' + (result.error || 'Error'), 'error');
+    }
+  } catch (e) {
+    showStatus('❌ ' + e.message, 'error');
+  }
+}
+
+function clearEvent() {
+  ['e-date','e-title','e-trainer','e-duration','e-format','e-location','e-partner','e-funder','e-notes']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.querySelectorAll('#chips-etype .chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('event-result').style.display = 'none';
+}
+
+// ── LOG ATTENDEE ─────────────────────────────────────────────
+async function submitAttendee() {
+  const eventId = document.getElementById('ea-eventid').value.trim();
+  if (!eventId) { showStatus('⚠ Event ID required.', 'error'); return; }
+
+  showStatus('Logging attendee...', 'info', 0);
+  try {
+    const result = await postAction({
+      action:      'logAttendee',
+      eventId,
+      initials:    document.getElementById('ea-ini').value,
+      ageRange:    document.getElementById('ea-age').value,
+      race:        document.getElementById('ea-race').value,
+      zip:         document.getElementById('ea-zip').value,
+      county:      document.getElementById('ea-county').value,
+      relationship: document.getElementById('ea-rel').value,
+      naloxIM:     document.getElementById('ea-nIM').value,
+      naloxNasal:  document.getElementById('ea-nNasal').value,
+      secDistrib:  document.getElementById('ea-sec').value,
+      participantId: document.getElementById('ea-pid').value
+    });
+    if (result.success) {
+      showStatus('✅ Attendee logged!', 'success');
+      ['ea-ini','ea-age','ea-race','ea-zip','ea-county','ea-rel','ea-pid'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      ['ea-nIM','ea-nNasal','ea-sec'].forEach(id => { document.getElementById(id).value = 0; });
+    } else {
+      showStatus('❌ ' + (result.error || 'Error'), 'error');
+    }
+  } catch (e) {
+    showStatus('❌ ' + e.message, 'error');
+  }
+}
+
+// ── TODAY CHECK-IN ───────────────────────────────────────────
+function todayLookup() {
+  const ini = document.getElementById('t-ini').value.trim().toUpperCase();
+  const yr  = document.getElementById('t-yr').value.trim();
+  const resultEl = document.getElementById('today-lookup-result');
+  if (!ini || !yr) { resultEl.textContent = '⚠ Enter initials and year.'; return; }
+
+  const matches = participants.filter(p =>
+    String(p.initials).toUpperCase() === ini && String(p.year) === yr
+  );
+  if (matches.length === 0) {
+    resultEl.textContent = '❌ No match found for ' + ini + ' / ' + yr;
+  } else {
+    const m = matches[0];
+    resultEl.innerHTML = '✅ Found: <strong>ID ' + m.id + '</strong>';
+    document.getElementById('t-pid').value = m.id;
+  }
+}
+
+async function checkIn() {
+  const pid   = document.getElementById('t-pid').value;
+  const notes = document.getElementById('t-notes').value;
+  if (!pid) { showStatus('⚠ Participant ID required.', 'error'); return; }
+
+  showStatus('Checking in...', 'info', 0);
+  try {
+    const result = await postAction({ action: 'checkIn', participantId: pid, notes });
+    if (result.success) {
+      const now = new Date();
+      const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      todayList.push({ pid, notes, time });
+      renderTodayQueue();
+      document.getElementById('t-pid').value = '';
+      document.getElementById('t-notes').value = '';
+      document.getElementById('t-ini').value = '';
+      document.getElementById('t-yr').value = '';
+      document.getElementById('today-lookup-result').textContent = '';
+      showStatus('✅ Checked in: ID ' + pid, 'success');
+    } else {
+      showStatus('❌ ' + (result.error || 'Error'), 'error');
+    }
+  } catch (e) {
+    showStatus('❌ ' + e.message, 'error');
+  }
+}
+
+// ── SET DEFAULT DATE ─────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  ['v-date','e-date'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = today;
+  });
+});
 </script>
-
-<!-- CHECK IN SCREEN -->
-<div id="screen-checkin" class="screen">
-<div id="ci-form">
-<div class="card" style="background:rgba(27,107,107,.08);border-color:#1B6B6B">
-<div style="font-size:13px;font-weight:700;color:#1B6B6B;margin-bottom:4px">FRONT DESK CHECK-IN</div>
-<div style="font-size:11px;color:#6B5B4E">Look up by initials + year, or enter ID directly</div>
-</div>
-<div class="card">
-<div class="label">Find Participant</div>
-<div class="row2">
-<div class="field"><label>Initials</label><input id="ci-initials" maxlength="4" autocapitalize="characters" placeholder="AB"></div>
-<div class="field"><label>Birth Year</label><input id="ci-year" type="number" inputmode="numeric" placeholder="1990"></div>
-</div>
-<div class="field" style="margin-top:4px"><label>&mdash; or &mdash; Participant ID</label><input id="ci-id" type="number" inputmode="numeric" placeholder="1001"></div>
-</div>
-<div class="card">
-<div class="field"><label>Notes for staff (optional)</label><textarea id="ci-notes" placeholder="e.g. has questions, picking up for someone, urgent need..." style="min-height:60px"></textarea></div>
-</div>
-<div id="ci-err" class="err"></div>
-<button class="btn btn-teal" onclick="checkIn(this)">Check In &rarr;</button>
-</div>
-<div id="ci-success" class="hidden" style="padding-top:20px;text-align:center">
-<div class="id-box" style="background:rgba(27,107,107,.12);border:2px solid #1B6B6B">
-<div style="font-size:13px;color:#1B6B6B;font-weight:700;margin-bottom:6px">CHECKED IN ✓</div>
-<div class="id-num" style="color:#1B6B6B" id="ci-result-id"></div>
-<div class="id-sub" id="ci-result-time"></div>
-</div>
-<div style="font-size:12px;color:#6B5B4E;margin:8px 0 16px">Added to the queue — staff in back can see this now.</div>
-<button class="btn btn-outline-teal" onclick="resetCheckIn()">Check In Another</button>
-<button class="btn btn-sage" onclick="showScreen('visit');document.getElementById('v-id').value=document.getElementById('ci-result-id').textContent" style="margin-top:8px">Log Visit for This Person &rarr;</button>
-</div>
-</div>
-
 </body>
 </html>
