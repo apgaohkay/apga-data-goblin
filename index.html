@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Access Point SSP · RIGOR</title>
+<title>Access Point SSP Â· RIGOR</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
-/* ── RESET ── */
+/* ââ RESET ââ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Inter', sans-serif; font-size: 14px; color: #1a1a1a; min-height: 100vh; background-color: #c8b8a2; }
 
-/* ── PLAID BACKGROUND ── */
+/* ââ PLAID BACKGROUND ââ */
 body {
   background-color: #c8b8a2;
   background-image:
@@ -22,7 +22,7 @@ body {
     repeating-linear-gradient(90deg,  transparent, transparent 118px, rgba(180,140,80,0.13) 118px, rgba(180,140,80,0.13) 122px);
 }
 
-/* ── HEADER ── */
+/* ââ HEADER ââ */
 header {
   background: #2B0A0A;
   color: #fff;
@@ -47,7 +47,7 @@ header .subtitle {
   padding-bottom: 4px;
 }
 
-/* ── NAV TABS ── */
+/* ââ NAV TABS ââ */
 nav {
   display: flex;
   background: #3d0f0f;
@@ -73,11 +73,11 @@ nav button {
 nav button:hover { color: #fff; }
 nav button.active { color: #fff; border-bottom-color: #e8a045; }
 
-/* ── CONTENT PANEL ── */
+/* ââ CONTENT PANEL ââ */
 .panel { display: none; padding: 24px; max-width: 820px; margin: 0 auto; }
 .panel.active { display: block; }
 
-/* ── CARD ── */
+/* ââ CARD ââ */
 .card {
   background: rgba(255,255,255,0.93);
   border-radius: 10px;
@@ -104,7 +104,7 @@ nav button.active { color: #fff; border-bottom-color: #e8a045; }
   margin: 16px 0 8px;
 }
 
-/* ── FORM ELEMENTS ── */
+/* ââ FORM ELEMENTS ââ */
 label { display: block; font-size: 0.78rem; font-weight: 600; color: #5a2a2a; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
 input[type=text], input[type=number], input[type=date], select, textarea {
   width: 100%; padding: 8px 10px; border: 1.5px solid #c4a882;
@@ -121,9 +121,9 @@ textarea { resize: vertical; min-height: 60px; }
 .form-row.single { grid-template-columns: 1fr; }
 .field { margin-bottom: 12px; }
 
-/* ── MULTI-SELECT CHIPS ── */
+/* ââ MULTI-SELECT CHIPS ââ */
 [data-mode="multi"] {
-  display: none; /* hidden — chips shown instead */
+  display: none; /* hidden â chips shown instead */
 }
 .chip-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .chip {
@@ -134,7 +134,7 @@ textarea { resize: vertical; min-height: 60px; }
 .chip:hover { border-color: #8B2020; background: #f0ddd0; }
 .chip.selected { background: #8B2020; color: #fff; border-color: #8B2020; }
 
-/* ── BUTTONS ── */
+/* ââ BUTTONS ââ */
 .btn {
   padding: 10px 22px; border: none; border-radius: 7px; font-size: 0.88rem;
   font-weight: 600; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px;
@@ -148,7 +148,7 @@ textarea { resize: vertical; min-height: 60px; }
 .btn-success:hover { background: #145555; }
 .btn-row { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
 
-/* ── STATUS ── */
+/* ââ STATUS ââ */
 #status-bar {
   position: fixed; bottom: 20px; right: 20px;
   background: #2B0A0A; color: #fff; padding: 10px 20px;
@@ -160,7 +160,7 @@ textarea { resize: vertical; min-height: 60px; }
 #status-bar.error { border-left-color: #e84545; }
 #status-bar.success { border-left-color: #45e895; }
 
-/* ── LOOKUP RESULT ── */
+/* ââ LOOKUP RESULT ââ */
 .lookup-result {
   background: #fdf6ee; border: 1.5px solid #c4a882; border-radius: 8px;
   padding: 14px 18px; margin-top: 14px; display: none;
@@ -169,7 +169,7 @@ textarea { resize: vertical; min-height: 60px; }
 .lookup-result .pid { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #8B2020; letter-spacing: 2px; }
 .lookup-result .meta { font-size: 0.82rem; color: #666; margin-top: 4px; }
 
-/* ── TODAY TAB ── */
+/* ââ TODAY TAB ââ */
 .today-card {
   background: rgba(27,107,107,0.08); border: 1.5px solid #1B6B6B;
   border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
@@ -183,12 +183,12 @@ textarea { resize: vertical; min-height: 60px; }
 .today-card .info { flex: 1; font-size: 0.82rem; color: #333; }
 .today-card .time { font-size: 0.75rem; color: #888; }
 
-/* ── NUMBER INPUTS GRID ── */
+/* ââ NUMBER INPUTS GRID ââ */
 .num-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .num-field label { font-size: 0.72rem; }
 .num-field input { text-align: center; }
 
-/* ── SECTION DIVIDER ── */
+/* ââ SECTION DIVIDER ââ */
 .section-head {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px;
   text-transform: uppercase; color: #8B2020; margin: 18px 0 8px;
@@ -196,7 +196,7 @@ textarea { resize: vertical; min-height: 60px; }
 }
 .section-head::after { content: ''; flex: 1; height: 1px; background: #c4a882; }
 
-/* ── REVERSAL SECTION ── */
+/* ââ REVERSAL SECTION ââ */
 #reversal-section { display: none; }
 #reversal-section.show { display: block; }
 
@@ -208,7 +208,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
 <header>
   <div>
     <h1>RIGOR</h1>
-    <div class="subtitle">Access Point of Georgia · SSP / OEND Data System</div>
+    <div class="subtitle">Access Point of Georgia Â· SSP / OEND Data System</div>
   </div>
 </header>
 
@@ -220,9 +220,9 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
   <button onclick="showTab('today')">Today</button>
 </nav>
 
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <!-- TAB 1: NEW INTAKE                                        -->
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <div id="tab-intake" class="panel active">
   <div class="card">
     <h2>New Participant Intake</h2>
@@ -230,7 +230,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
     <div class="form-row">
       <div class="field">
         <label>Initials</label>
-        <input type="text" id="ini" maxlength="6" placeholder="e.g. JD" oninput="this.value=this.value.toUpperCase()"/>
+        <input type="text" id="ini" maxlength="6" placeholder%"e.g. JD" oninput="this.value=this.value.toUpperCase()"/>
       </div>
       <div class="field">
         <label>Birth Year</label>
@@ -241,7 +241,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
     <div class="field">
       <label>Gender Identity</label>
       <select id="gender">
-        <option value="">— Select —</option>
+        <option value="">â Select â</option>
         <option>Male</option>
         <option>Female</option>
         <option>Non-binary / Gender non-conforming</option>
@@ -255,7 +255,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
     <div class="field">
       <label>Race / Ethnicity</label>
       <select id="race">
-        <option value="">— Select —</option>
+        <option value="">â Select â</option>
         <option>American Indian / Alaska Native</option>
         <option>Asian</option>
         <option>Black / African American</option>
@@ -271,7 +271,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>County</label>
         <select id="county">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>Banks</option>
           <option>Barrow</option>
           <option>Clarke</option>
@@ -302,7 +302,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
     <div class="field">
       <label>Housing Status</label>
       <select id="housing">
-        <option value="">— Select —</option>
+        <option value="">â Select â</option>
         <option>Stably Housed</option>
         <option>Unstably Housed</option>
         <option>Homeless / Unsheltered</option>
@@ -336,10 +336,14 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <!-- TAB 2: LOOKUP ID                                         -->
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <div id="tab-lookup" class="panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+    <span class="participant-count" style="font-size:0.78rem;color:#888;font-style:italic;">Loading participantsâ¦</span>
+    <button class="btn btn-secondary btn-sm" onclick="loadParticipants(false)" style="font-size:0.75rem;padding:4px 12px;">â³ Reload Participants</button>
+  </div>
   <div class="card">
     <h2>Lookup Participant ID</h2>
     <div class="form-row">
@@ -377,9 +381,9 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <!-- TAB 3: VISIT LOG                                         -->
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <div id="tab-visit" class="panel">
   <div class="card">
     <h2>Log SSP Visit</h2>
@@ -399,7 +403,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>New or Returning</label>
         <select id="v-nr">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>New</option>
           <option>Returning</option>
         </select>
@@ -414,7 +418,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Location</label>
         <select id="v-location">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>Athens Office</option>
           <option>Mobile Unit</option>
           <option>Partner Site</option>
@@ -425,7 +429,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Housing Status (Today)</label>
         <select id="v-housing">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>Stably Housed</option>
           <option>Unstably Housed</option>
           <option>Homeless / Unsheltered</option>
@@ -440,7 +444,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Primary Substance</label>
         <select id="v-substance">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>Heroin</option>
           <option>Fentanyl</option>
           <option>Methamphetamine</option>
@@ -456,7 +460,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Route of Administration</label>
         <select id="v-route">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>IV / Injection</option>
           <option>Snorting / Intranasal</option>
           <option>Smoking / Inhalation</option>
@@ -481,7 +485,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
     <div class="field">
       <label>Alt Supplies Given</label>
       <select id="v-alt">
-        <option value="">— None —</option>
+        <option value="">â None â</option>
         <option>Cookers</option>
         <option>Cotton</option>
         <option>Alcohol Swabs</option>
@@ -495,7 +499,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Naloxone Training?</label>
         <select id="v-training">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>Yes</option>
           <option>No</option>
           <option>Refresher</option>
@@ -521,7 +525,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
         <div class="field">
           <label>Reporter Type</label>
           <select id="v-rType">
-            <option value="">— Select —</option>
+            <option value="">â Select â</option>
             <option>Participant</option>
             <option>Bystander</option>
             <option>Family Member</option>
@@ -532,7 +536,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
         <div class="field">
           <label>OD Outcome</label>
           <select id="v-odOutcome">
-            <option value="">— Select —</option>
+            <option value="">â Select â</option>
             <option>Survived</option>
             <option>Fatal</option>
             <option>Unknown</option>
@@ -541,7 +545,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
         <div class="field">
           <label>OD Gender</label>
           <select id="v-odGender">
-            <option value="">— Select —</option>
+            <option value="">â Select â</option>
             <option>Male</option>
             <option>Female</option>
             <option>Non-binary</option>
@@ -553,7 +557,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
         <div class="field">
           <label>OD Race</label>
           <select id="v-odRace">
-            <option value="">— Select —</option>
+            <option value="">â Select â</option>
             <option>White / Non-Hispanic</option>
             <option>Black / African American</option>
             <option>Hispanic / Latino</option>
@@ -563,12 +567,12 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
         <div class="field">
           <label>OD Age Range</label>
           <select id="v-odAge">
-            <option value="">— Select —</option>
+            <option value="">â Select â</option>
             <option>Under 18</option>
-            <option>18–24</option>
-            <option>25–34</option>
-            <option>35–44</option>
-            <option>45–54</option>
+            <option>18â24</option>
+            <option>25â34</option>
+            <option>35â44</option>
+            <option>45â54</option>
             <option>55+</option>
             <option>Unknown</option>
           </select>
@@ -576,7 +580,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
         <div class="field">
           <label>OD County</label>
           <select id="v-odCounty">
-            <option value="">— Select —</option>
+            <option value="">â Select â</option>
             <option>Clarke</option>
             <option>Barrow</option>
             <option>Madison</option>
@@ -613,9 +617,9 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <!-- TAB 4: EVENTS / OEND                                     -->
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <div id="tab-events" class="panel">
   <div class="card">
     <h2>Log Event / OEND Training</h2>
@@ -661,7 +665,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Format</label>
         <select id="e-format">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>In-Person</option>
           <option>Virtual</option>
           <option>Hybrid</option>
@@ -711,12 +715,12 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Age Range</label>
         <select id="ea-age">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>Under 18</option>
-          <option>18–24</option>
-          <option>25–34</option>
-          <option>35–44</option>
-          <option>45–54</option>
+          <option>18â24</option>
+          <option>25â34</option>
+          <option>35â44</option>
+          <option>45â54</option>
           <option>55+</option>
           <option>Unknown</option>
         </select>
@@ -726,7 +730,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Race / Ethnicity</label>
         <select id="ea-race">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>American Indian / Alaska Native</option>
           <option>Asian</option>
           <option>Black / African American</option>
@@ -739,7 +743,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>Relationship to Person Who Uses Drugs</label>
         <select id="ea-rel">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>Self</option>
           <option>Family Member</option>
           <option>Friend / Peer</option>
@@ -759,7 +763,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       <div class="field">
         <label>County</label>
         <select id="ea-county">
-          <option value="">— Select —</option>
+          <option value="">â Select â</option>
           <option>Clarke</option>
           <option>Barrow</option>
           <option>Banks</option>
@@ -791,9 +795,9 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <!-- TAB 5: TODAY                                             -->
-<!-- ════════════════════════════════════════════════════════ -->
+<!-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 <div id="tab-today" class="panel">
   <div class="card">
     <h2>Today's Check-In Queue</h2>
@@ -813,8 +817,9 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
         <input type="number" id="t-yr" placeholder="1990"/>
       </div>
     </div>
-    <div class="btn-row">
+    <div class="btn-row" style="align-items:center;gap:12px;flex-wrap:wrap;">
       <button class="btn btn-secondary btn-sm" onclick="todayLookup()">Find ID</button>
+      <span class="participant-count" style="font-size:0.75rem;color:#888;font-style:italic;">Loadingâ¦</span>
     </div>
     <div id="today-lookup-result" style="margin:8px 0; font-size:0.88rem; color:#2B0A0A; min-height:20px;"></div>
 
@@ -830,7 +835,7 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
       </div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-success" onclick="checkIn()">✓ Check In</button>
+      <button class="btn btn-success" onclick="checkIn()">â Check In</button>
     </div>
   </div>
 
@@ -846,26 +851,47 @@ hr { border: none; border-top: 1.5px solid #e0cfc0; margin: 16px 0; }
 <div id="status-bar"></div>
 
 <script>
-// ── CONFIG ───────────────────────────────────────────────────
+// ââ CONFIG âââââââââââââââââââââââââââââââââââââââââââââââââââ
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzyGxH8EurAx8cdAC1itwUlvoSWr7EDghzkQSyCnz2vclzPtC0nu27l4Il3Jlo-FTDn/exec';
 
-// ── PARTICIPANT CACHE ────────────────────────────────────────
+// ââ PARTICIPANT CACHE ââââââââââââââââââââââââââââââââââââââââ
 let participants = [];
 let dataLoaded   = false;
+let loadAttempts = 0;
 
-async function loadParticipants() {
+async function loadParticipants(silent = false) {
+  loadAttempts++;
+  if (!silent) showStatus('Loading participant listâ¦', 'info', 0);
   try {
-    const res = await fetch(WEB_APP_URL);
+    const res  = await fetch(WEB_APP_URL + '?t=' + Date.now(), { redirect: 'follow' });
     const data = await res.json();
     participants = data.participants || [];
-    dataLoaded = true;
+    dataLoaded   = true;
+    // Update all count badges
+    document.querySelectorAll('.participant-count').forEach(el => {
+      el.textContent = participants.length + ' participants loaded';
+      el.style.color = participants.length > 0 ? '#2a7a2a' : '#b02020';
+    });
+    if (!silent) {
+      if (participants.length > 0) {
+        showStatus('â ' + participants.length + ' participants loaded', 'success', 3000);
+      } else {
+        showStatus('â  0 participants found â run processRawSubmissions() in Apps Script if you have registered participants', 'error', 8000);
+      }
+    }
+    console.log('[RIGOR] Participants loaded:', participants.length, data.debug || '', 'cols:', data.cols);
   } catch (e) {
-    console.warn('Could not load participants:', e);
+    console.warn('[RIGOR] loadParticipants failed:', e);
+    document.querySelectorAll('.participant-count').forEach(el => {
+      el.textContent = 'â  Failed to load â click Reload';
+      el.style.color = '#b02020';
+    });
+    if (!silent) showStatus('â  Could not reach Apps Script â check deployment URL or try Reload', 'error', 8000);
   }
 }
-loadParticipants();
+loadParticipants(true);  // silent on first load, will show count badge once done
 
-// ── TABS ─────────────────────────────────────────────────────
+// ââ TABS âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function showTab(name) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -873,7 +899,7 @@ function showTab(name) {
   event.target.classList.add('active');
 }
 
-// ── STATUS BAR ───────────────────────────────────────────────
+// ââ STATUS BAR âââââââââââââââââââââââââââââââââââââââââââââââ
 let statusTimer;
 function showStatus(msg, type='info', dur=4000) {
   const bar = document.getElementById('status-bar');
@@ -883,7 +909,7 @@ function showStatus(msg, type='info', dur=4000) {
   if (dur > 0) statusTimer = setTimeout(() => bar.classList.remove('show'), dur);
 }
 
-// ── MULTI-SELECT CHIPS ───────────────────────────────────────
+// ââ MULTI-SELECT CHIPS âââââââââââââââââââââââââââââââââââââââ
 document.querySelectorAll('.chip-group').forEach(group => {
   const selectId = group.id.replace('chips-', '');
   group.querySelectorAll('.chip').forEach(chip => {
@@ -913,7 +939,7 @@ function getToggled(selectId) {
   return [...group.querySelectorAll('.chip.selected')].map(c => c.dataset.val).join(', ');
 }
 
-// ── TODAY: Checked-in list (local) ───────────────────────────
+// ââ TODAY: Checked-in list (local) âââââââââââââââââââââââââââ
 const todayList = [];
 function renderTodayQueue() {
   const el = document.getElementById('today-queue');
@@ -925,19 +951,19 @@ function renderTodayQueue() {
     <div class="today-card">
       <div class="pid-badge">${item.pid}</div>
       <div class="info">
-        <div><strong>ID ${item.pid}</strong> ${item.notes ? '· ' + item.notes : ''}</div>
+        <div><strong>ID ${item.pid}</strong> ${item.notes ? 'Â· ' + item.notes : ''}</div>
         <div class="time">Checked in at ${item.time}</div>
       </div>
     </div>
   `).join('');
 }
 
-// ── REVERSAL TOGGLE ──────────────────────────────────────────
+// ââ REVERSAL TOGGLE ââââââââââââââââââââââââââââââââââââââââââ
 function toggleReversal(val) {
   document.getElementById('reversal-section').classList.toggle('show', val === 'Yes');
 }
 
-// ── POST HELPER ──────────────────────────────────────────────
+// ââ POST HELPER ââââââââââââââââââââââââââââââââââââââââââââââ
 async function postAction(payload) {
   const res = await fetch(WEB_APP_URL, {
     method: 'POST',
@@ -946,11 +972,11 @@ async function postAction(payload) {
   return res.json();
 }
 
-// ── REGISTER PARTICIPANT ─────────────────────────────────────
+// ââ REGISTER PARTICIPANT âââââââââââââââââââââââââââââââââââââ
 async function registerParticipant() {
   const initials  = document.getElementById('ini').value.trim().toUpperCase();
   const birthYear = document.getElementById('yr').value.trim();
-  if (!initials || !birthYear) { showStatus('⚠ Initials and Birth Year required.', 'error'); return; }
+  if (!initials || !birthYear) { showStatus('â  Initials and Birth Year required.', 'error'); return; }
 
   const pid = Math.floor(Math.random() * 9000) + 1000;
   const ptype = getToggled('ptype') || 'SSP';
@@ -972,15 +998,15 @@ async function registerParticipant() {
       const usedId = result.id || pid;
       document.getElementById('new-pid').textContent = 'ID: ' + usedId;
       document.getElementById('new-meta').textContent =
-        initials + ' · ' + birthYear + (result.duplicate ? ' (already registered)' : ' · Registered ✓');
+        initials + ' Â· ' + birthYear + (result.duplicate ? ' (already registered)' : ' Â· Registered â');
       document.getElementById('intake-result').classList.add('show');
-      showStatus(result.duplicate ? '⚠ Participant already exists: ' + usedId : '✅ Registered! ID: ' + usedId, 'success');
+      showStatus(result.duplicate ? 'â  Participant already exists: ' + usedId : 'â Registered! ID: ' + usedId, 'success');
       await loadParticipants();
     } else {
-      showStatus('❌ Error: ' + (result.error || 'Unknown'), 'error');
+      showStatus('â Error: ' + (result.error || 'Unknown'), 'error');
     }
   } catch (e) {
-    showStatus('❌ Network error: ' + e.message, 'error');
+    showStatus('â Network error: ' + e.message, 'error');
   }
 }
 
@@ -993,55 +1019,77 @@ function clearIntake() {
   document.getElementById('intake-result').classList.remove('show');
 }
 
-// ── LOOKUP ───────────────────────────────────────────────────
-function lookupParticipant() {
+// ââ LOOKUP âââââââââââââââââââââââââââââââââââââââââââââââââââ
+async function lookupParticipant() {
   const ini = document.getElementById('lu-ini').value.trim().toUpperCase();
   const yr  = document.getElementById('lu-yr').value.trim();
-  if (!ini || !yr) { showStatus('⚠ Enter initials and birth year.', 'error'); return; }
+  if (!ini || !yr) { showStatus('â  Enter initials and birth year.', 'error'); return; }
+
+  // Auto-reload if not yet loaded
+  if (!dataLoaded || participants.length === 0) {
+    showStatus('Loading participantsâ¦', 'info', 0);
+    await loadParticipants(false);
+  }
+
+  const resultDiv = document.getElementById('lookup-result');
+
+  if (participants.length === 0) {
+    document.getElementById('lu-pid').textContent = 'â  No Data';
+    document.getElementById('lu-meta').textContent =
+      'Participant list is empty. Go to Apps Script and run processRawSubmissions(), then click â³ Reload Participants above.';
+    resultDiv.classList.add('show');
+    return;
+  }
 
   const matches = participants.filter(p =>
     String(p.initials).toUpperCase() === ini && String(p.year) === yr
   );
 
-  const resultDiv = document.getElementById('lookup-result');
   if (matches.length === 0) {
     document.getElementById('lu-pid').textContent = 'Not Found';
-    document.getElementById('lu-meta').textContent = 'No participant matches ' + ini + ' / ' + yr;
+    document.getElementById('lu-meta').textContent =
+      'No match for ' + ini + ' / ' + yr + ' in ' + participants.length + ' records. Check spelling or register as new.';
     resultDiv.classList.add('show');
-    showStatus('No match found.', 'error');
+    showStatus('No match found in ' + participants.length + ' records.', 'error');
   } else {
     const m = matches[0];
     document.getElementById('lu-pid').textContent = 'ID: ' + m.id;
     document.getElementById('lu-meta').textContent =
-      m.initials + ' · ' + m.year + (matches.length > 1 ? ' (' + matches.length + ' matches — check ID)' : ' · Found ✓');
+      m.initials + ' Â· ' + m.year + (matches.length > 1 ? ' (' + matches.length + ' matches â verify ID)' : ' Â· Found â');
     resultDiv.classList.add('show');
-    showStatus('✅ Found: ID ' + m.id, 'success');
+    showStatus('â Found: ID ' + m.id, 'success');
   }
 }
 
-function lookupById() {
+async function lookupById() {
   const id = String(document.getElementById('lu-id').value).trim();
-  if (!id) { showStatus('⚠ Enter an ID.', 'error'); return; }
+  if (!id) { showStatus('â  Enter an ID.', 'error'); return; }
+
+  if (!dataLoaded || participants.length === 0) {
+    await loadParticipants(false);
+  }
+
   const m = participants.find(p => String(p.id) === id);
   const resultDiv = document.getElementById('lookup-id-result');
   if (!m) {
     document.getElementById('lu-id-pid').textContent = 'Not Found';
-    document.getElementById('lu-id-meta').textContent = 'No participant with ID ' + id;
+    document.getElementById('lu-id-meta').textContent =
+      'No participant with ID ' + id + ' (searching ' + participants.length + ' records)';
     resultDiv.classList.add('show');
     showStatus('No match.', 'error');
   } else {
     document.getElementById('lu-id-pid').textContent = 'ID: ' + m.id;
-    document.getElementById('lu-id-meta').textContent = m.initials + ' · ' + m.year + ' · Found ✓';
+    document.getElementById('lu-id-meta').textContent = m.initials + ' Â· ' + m.year + ' Â· Found â';
     resultDiv.classList.add('show');
-    showStatus('✅ Found: ' + m.initials, 'success');
+    showStatus('â Found: ' + m.initials, 'success');
   }
 }
 
-// ── SUBMIT VISIT ─────────────────────────────────────────────
+// ââ SUBMIT VISIT âââââââââââââââââââââââââââââââââââââââââââââ
 async function submitVisit() {
   const pid = document.getElementById('v-pid').value;
   const date = document.getElementById('v-date').value;
-  if (!pid || !date) { showStatus('⚠ Date and Participant ID required.', 'error'); return; }
+  if (!pid || !date) { showStatus('â  Date and Participant ID required.', 'error'); return; }
 
   showStatus('Logging visit...', 'info', 0);
   try {
@@ -1076,13 +1124,13 @@ async function submitVisit() {
       notes:         document.getElementById('v-notes').value
     });
     if (result.success) {
-      showStatus('✅ Visit logged for ID ' + pid, 'success');
+      showStatus('â Visit logged for ID ' + pid, 'success');
       clearVisit();
     } else {
-      showStatus('❌ ' + (result.error || 'Error logging visit'), 'error');
+      showStatus('â ' + (result.error || 'Error logging visit'), 'error');
     }
   } catch (e) {
-    showStatus('❌ ' + e.message, 'error');
+    showStatus('â ' + e.message, 'error');
   }
 }
 
@@ -1093,17 +1141,17 @@ function clearVisit() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  ['v-longs','v-shorts','v-fts','v-nIM','v-nNasal','v-sec','v-odNasal','v-odIM']
+  ['v-longs','v-shorts','v-fts','v-nIM','v-nNasal','v-sec','v-odNasal','v-ofIM']
     .forEach(id => { const el = document.getElementById(id); if (el) el.value = 0; });
   document.getElementById('v-reversal').value = 'No';
   document.getElementById('reversal-section').classList.remove('show');
 }
 
-// ── START EVENT ──────────────────────────────────────────────
+// ââ START EVENT ââââââââââââââââââââââââââââââââââââââââââââââ
 async function startEvent() {
   const date  = document.getElementById('e-date').value;
   const title = document.getElementById('e-title').value.trim();
-  if (!date || !title) { showStatus('⚠ Date and Title required.', 'error'); return; }
+  if (!date || !title) { showStatus('â  Date and Title required.', 'error'); return; }
 
   const eventId = 'EVT-' + Date.now();
   showStatus('Creating event...', 'info', 0);
@@ -1123,16 +1171,16 @@ async function startEvent() {
       notes:     document.getElementById('e-notes').value
     });
     if (result.success) {
-      showStatus('✅ Event created: ' + eventId, 'success');
+      showStatus('â Event created: ' + eventId, 'success');
       const r = document.getElementById('event-result');
       r.style.display = 'block';
-      r.innerHTML = '✅ Event ID: <strong>' + eventId + '</strong> — copy this for attendee logging.';
+      r.innerHTML = 'â Event ID: <strong>' + eventId + '</strong> â copy this for attendee logging.';
       document.getElementById('ea-eventid').value = eventId;
     } else {
-      showStatus('❌ ' + (result.error || 'Error'), 'error');
+      showStatus('â ' + (result.error || 'Error'), 'error');
     }
   } catch (e) {
-    showStatus('❌ ' + e.message, 'error');
+    showStatus('â ' + e.message, 'error');
   }
 }
 
@@ -1143,10 +1191,10 @@ function clearEvent() {
   document.getElementById('event-result').style.display = 'none';
 }
 
-// ── LOG ATTENDEE ─────────────────────────────────────────────
+// ââ LOG ATTENDEE âââââââââââââââââââââââââââââââââââââââââââââ
 async function submitAttendee() {
   const eventId = document.getElementById('ea-eventid').value.trim();
-  if (!eventId) { showStatus('⚠ Event ID required.', 'error'); return; }
+  if (!eventId) { showStatus('â  Event ID required.', 'error'); return; }
 
   showStatus('Logging attendee...', 'info', 0);
   try {
@@ -1165,34 +1213,46 @@ async function submitAttendee() {
       participantId: document.getElementById('ea-pid').value
     });
     if (result.success) {
-      showStatus('✅ Attendee logged!', 'success');
+      showStatus('â Attendee logged!', 'success');
       ['ea-ini','ea-age','ea-race','ea-zip','ea-county','ea-rel','ea-pid'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
       });
       ['ea-nIM','ea-nNasal','ea-sec'].forEach(id => { document.getElementById(id).value = 0; });
     } else {
-      showStatus('❌ ' + (result.error || 'Error'), 'error');
+      showStatus('â ' + (result.error || 'Error'), 'error');
     }
   } catch (e) {
-    showStatus('❌ ' + e.message, 'error');
+    showStatus('â ' + e.message, 'error');
   }
 }
 
-// ── TODAY CHECK-IN ───────────────────────────────────────────
-function todayLookup() {
+// ââ TODAY CHECK-IN âââââââââââââââââââââââââââââââââââââââââââ
+async function todayLookup() {
   const ini = document.getElementById('t-ini').value.trim().toUpperCase();
   const yr  = document.getElementById('t-yr').value.trim();
   const resultEl = document.getElementById('today-lookup-result');
-  if (!ini || !yr) { resultEl.textContent = '⚠ Enter initials and year.'; return; }
+  if (!ini || !yr) { resultEl.textContent = 'â  Enter initials and year.'; return; }
+
+  // Auto-reload if needed
+  if (!dataLoaded || participants.length === 0) {
+    resultEl.textContent = 'Loading participant listâ¦';
+    await loadParticipants(false);
+  }
+
+  if (participants.length === 0) {
+    resultEl.innerHTML = 'â  No participants loaded. Run <strong>processRawSubmissions()</strong> in Apps Script, then click â³ Reload on the Lookup tab.';
+    return;
+  }
 
   const matches = participants.filter(p =>
     String(p.initials).toUpperCase() === ini && String(p.year) === yr
   );
   if (matches.length === 0) {
-    resultEl.textContent = '❌ No match found for ' + ini + ' / ' + yr;
+    resultEl.textContent = 'â No match for ' + ini + ' / ' + yr + ' (' + participants.length + ' records searched)';
   } else {
     const m = matches[0];
-    resultEl.innerHTML = '✅ Found: <strong>ID ' + m.id + '</strong>';
+    resultEl.innerHTML = 'â Found: <strong>ID ' + m.id + '</strong>' +
+      (matches.length > 1 ? ' <em>(' + matches.length + ' matches)</em>' : '');
     document.getElementById('t-pid').value = m.id;
   }
 }
@@ -1200,7 +1260,7 @@ function todayLookup() {
 async function checkIn() {
   const pid   = document.getElementById('t-pid').value;
   const notes = document.getElementById('t-notes').value;
-  if (!pid) { showStatus('⚠ Participant ID required.', 'error'); return; }
+  if (!pid) { showStatus('â  Participant ID required.', 'error'); return; }
 
   showStatus('Checking in...', 'info', 0);
   try {
@@ -1215,16 +1275,16 @@ async function checkIn() {
       document.getElementById('t-ini').value = '';
       document.getElementById('t-yr').value = '';
       document.getElementById('today-lookup-result').textContent = '';
-      showStatus('✅ Checked in: ID ' + pid, 'success');
+      showStatus('â Checked in: ID ' + pid, 'success');
     } else {
-      showStatus('❌ ' + (result.error || 'Error'), 'error');
+      showStatus('â ' + (result.error || 'Error'), 'error');
     }
   } catch (e) {
-    showStatus('❌ ' + e.message, 'error');
+    showStatus('â ' + e.message, 'error');
   }
 }
 
-// ── SET DEFAULT DATE ─────────────────────────────────────────
+// ââ SET DEFAULT DATE âââââââââââââââââââââââââââââââââââââââââ
 window.addEventListener('DOMContentLoaded', () => {
   const today = new Date().toISOString().split('T')[0];
   ['v-date','e-date'].forEach(id => {
