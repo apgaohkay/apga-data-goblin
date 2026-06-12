@@ -3,33 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Access Point SSP &middot; RIGOR</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<title>Access Point SSP</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Arial,sans-serif;color:#2D2926;padding:0 0 60px;
-  background-color:#EDE5DA;
-  background-image:
-    repeating-linear-gradient(180deg,tansparent 0,transparent 22px,rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,transparent 23px,transparent 45px,rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px),
-    repeating-linear-gradient(90deg,transparent 0,transparent 22px,rgba(181,69,27,.14) 22px,rgba(181,69,27,.14) 23px,transparent 23px,transparent 45px,rgba(74,103,65,.10) 45px,rgba(74,103,65,.10) 46px),
-    repeating-linear-gradient(180deg,transparent 0,transparent 89px,rgba(27,107,107,.09) 89px,rgba(27,107,107,.09) 91px),
-    repeating-linear-gradient(90deg,transparent 0,transparent 89px,rgba(27,107,107,.09) 89px,rgba(27,107,107,.09) 91px);
-}
-.top-bar{background:#2B0A0A;padding:11px 16px 9px;position:sticky;top:0;z-index:100;border-bottom:3px solid #B5451B;background-image:repeating-linear-gradient(90deg,transparent 0,transparent 30px,rgba(255,255,255,.03) 30px,rgba(255,255,255,.03) 31px),repeating-linear-gradient(180deg,transparent 0,transparent 14px,rgba(255,255,255,.03) 14px,rgba(255,255,255,.03) 15px)}
-.top-bar h1{font-family:'Bebas Neue',Arial,sans-serif;font-weight:400;font-size:21px;letter-spacing:0.22em;color:#fff;line-height:1.1}
-.top-bar p{color:rgba(255,255,255,.60);font-size:10px;margin-top:3px;letter-spacing:0.14em;text-transform:uppercase}
-.nav{display:flex;background:#1A1210;position:sticky;top:55px;z-index:99;flex-wrap:wrap;border-bottom:2px solid #3D1A10}
-.nav-btn{flex:1;padding:12px 4px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:12px;cursor:pointer;font-family:Arial,sans-serif;border-bottom:3px solid transparent;min-width:70px;letter-spacing:0.03em;transition:all 0.15s}
-.nav-btn.active{color:#fff;border-bottom-color:#B5451B;background:rgba(181,69,27,.14)}
+body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 60px}
+.top-bar{background:#B5451B;padding:14px 16px;position:sticky;top:0;z-index:100}
+.top-bar h1{color:#fff;font-size:16px;font-weight:600;letter-spacing:0.02em}
+.top-bar p{color:rgba(255,255,255,0.75);font-size:12px;margin-top:2px}
+.nav{display:flex;background:#2D2926;position:sticky;top:56px;z-index:99}
+.nav-btn{flex:1;padding:11px 2px;border:none;background:transparent;color:rgba(255,255,255,0.6);font-size:11px;cursor:pointer;font-family:Arial,sans-serif;border-bottom:3px solid transparent;white-space:nowrap}
+.nav-btn.active{color:#fff;border-bottom-color:#B5451B}
+.nav-btn.today-btn{color:#1B9B7B}
+.nav-btn.today-btn.active{border-bottom-color:#1B6B6B;color:#fff}
+.nav-btn.import-btn{color:#c4971f}
+.nav-btn.import-btn.active{border-bottom-color:#B5851B;color:#fff}
 .screen{display:none;padding:12px 12px 0}
 .screen.active{display:block}
-.card{background:rgba(255,255,255,.86);border:1px solid #D9CEBC;border-radius:10px;padding:14px;margin-bottom:10px;backdrop-filter:blur(3px)}
+.card{background:#fff;border:1px solid #E8E0D5;border-radius:10px;padding:14px;margin-bottom:10px}
 .label{font-size:11px;font-weight:700;color:#6B5B4E;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
-.multi-hint{font-size:11px;color:#8B7B6E;font-style:italic;margin-bottom:6px;margin-top:-4px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{padding:7px 13px;border:1px solid #C4B8A8;border-radius:20px;font-size:13px;cursor:pointer;background:transparent;color:#2D2926;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent;transition:background 0.12s,color 0.12s,border-color 0.12s}
+.chip{padding:7px 13px;border:1px solid #C4B8A8;border-radius:20px;font-size:13px;cursor:pointer;background:transparent;color:#2D2926;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
 .chip.on{background:#B5451B;color:#fff;border-color:#B5451B}
 .chip.sage.on{background:#4A6741;color:#fff;border-color:#4A6741}
 .chip.teal.on{background:#1B6B6B;color:#fff;border-color:#1B6B6B}
@@ -40,15 +33,16 @@ body{
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#B5451B}
 .field textarea{min-height:70px;resize:vertical}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
 .btn-rust{background:#B5451B;color:#fff}
 .btn-sage{background:#4A6741;color:#fff}
 .btn-teal{background:#1B6B6B;color:#fff}
-.btn-rust:disabled,.btn-sage:disabled,.btn-teal:disabled{opacity:0.5}
+.btn-amber{background:#B5851B;color:#fff}
+.btn-rust:disabled,.btn-sage:disabled,.btn-teal:disabled,.btn-amber:disabled{opacity:0.5}
 .btn-outline{background:transparent;color:#B5451B;border:1px solid #B5451B;margin-top:6px}
 .btn-outline-teal{background:transparent;color:#1B6B6B;border:1px solid #1B6B6B;margin-top:6px}
-.success-box{background:#EAF3DE;border:1px solid #C5DDAA;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px}
+.btn-outline-amber{background:transparent;color:#B5851B;border:1px solid #B5851B;margin-top:6px}
+.success-box{background:#EAF3DE;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px}
 .success-box h3{color:#3B6D11;font-size:16px;margin-bottom:4px}
 .success-box p{color:#3B6D11;font-size:13px;opacity:0.85}
 .id-box{background:#E8E0D5;border-radius:10px;padding:20px;text-align:center;margin-bottom:10px}
@@ -60,38 +54,47 @@ body{
 .toggle-row span{font-size:13px;font-weight:600}
 .toggle-row input[type=checkbox]{width:20px;height:20px;cursor:pointer}
 .hidden{display:none}
-.section-hdr{color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px;border-radius:6px;margin-bottom:8px;background:#2D2926}
+.section-hdr{background:#2D2926;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px;border-radius:6px;margin-bottom:8px}
 .section-hdr.teal-hdr{background:#1B6B6B}
 .section-hdr.sage-hdr{background:#4A6741}
+.section-hdr.amber-hdr{background:#B5851B}
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .attendee-row{background:#f0f7f7;border:1px solid #c4d8d8;border-radius:8px;padding:12px;margin-bottom:8px}
-.attendee-row .row-num{font-size:11px;font-weight:700;color:#1B6B6B;margin-bottom:6px}
 .attendee-count{text-align:center;font-size:14px;color:#6B5B4E;padding:8px;background:#E8E0D5;border-radius:8px;margin-bottom:10px}
-.registry-status{font-size:11px;color:#6B5B4E;font-style:italic;text-align:center;padding:6px 0 2px}
+/* Import tab */
+.import-table-wrap{overflow-x:auto;margin-top:10px}
+.import-table{width:100%;border-collapse:collapse;font-size:12px}
+.import-table th{background:#2D2926;color:#fff;padding:6px 8px;text-align:left;white-space:nowrap}
+.import-table td{padding:6px 8px;border-bottom:1px solid #E8E0D5;white-space:nowrap}
+.import-table tr:nth-child(even) td{background:#FAF7F2}
+.progress-bar-wrap{background:#E8E0D5;border-radius:8px;height:12px;overflow:hidden;margin:10px 0}
+.progress-bar{background:#B5451B;height:100%;transition:width 0.3s;border-radius:8px}
+.code-block{background:#2D2926;color:#EDE5DA;padding:12px;border-radius:8px;font-size:11px;font-family:monospace;overflow-x:auto;margin:8px 0;line-height:1.6;word-break:break-all}
 </style>
 </head>
 <body>
 
 <div class="top-bar">
-<h1>&#9651;CCESS POINT OF GEO&#174;GI&#9651;</h1>
-<p>Syringe Services &amp; Harm Reduction &middot; RIGOR</p>
+<h1>Access Point of Georgia</h1>
+<p>Syringe Services &amp; Harm Reduction Data System</p>
 </div>
 
 <div class="nav">
-<button class="nav-btn active" onclick="showScreen('intake')">New Intake</button>
-<button class="nav-btn" onclick="showScreen('lookup')">Lookup ID</button>
+<button class="nav-btn active" onclick="showScreen('intake')">Intake</button>
+<button class="nav-btn" onclick="showScreen('lookup')">Lookup</button>
 <button class="nav-btn" onclick="showScreen('visit')">Visit Log</button>
 <button class="nav-btn" onclick="showScreen('events')">Events</button>
+<button class="nav-btn today-btn" onclick="showScreen('checkin')">Today ✓</button>
+<button class="nav-btn import-btn" onclick="showScreen('import')">Import</button>
 </div>
 
-<!-- INTAKE -->
+<!-- ════ INTAKE ════ -->
 <div id="screen-intake" class="screen active">
 <div id="intake-form">
 <div class="card">
 <div class="label">Participant Type</div>
-<div class="multi-hint">Select all that apply</div>
-<div class="chips" data-group="ptype" data-mode="multi">
+<div class="chips" data-group="ptype" data-mode="single">
 <button class="chip" data-val="SSP">SSP</button>
 <button class="chip" data-val="OEND">OEND</button>
 <button class="chip" data-val="Community">Community</button>
@@ -120,7 +123,7 @@ body{
 <div class="row2">
 <div class="field"><label>ZIP</label><input id="i-zip" inputmode="numeric" maxlength="5" placeholder="30601"></div>
 <div class="field"><label>County</label>
-<select id="i-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option></select>
+<select id="i-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Other</option></select>
 </div>
 </div>
 <div class="field"><label>Housing Status</label></div>
@@ -134,33 +137,31 @@ body{
 <div id="intake-result" class="hidden">
 <div class="success-box"><h3>Participant Registered</h3><p>Anonymous ID assigned</p></div>
 <div class="id-box"><div id="result-id" class="id-num"></div><div class="id-sub">Write this on their card</div></div>
-<button class="btn btn-sage" onclick="goVisit()">Log visit for this ID &rarr;</button>
+<button class="btn btn-sage" onclick="goVisit()">Log visit for this ID →</button>
 <button class="btn btn-outline" onclick="resetIntake()">Register another</button>
 </div>
 </div>
 
-<!-- LOOKUP -->
+<!-- ════ LOOKUP ════ -->
 <div id="screen-lookup" class="screen">
 <div class="card">
 <div class="label">Find Participant ID</div>
-<div id="registry-status" class="registry-status">Loading participants&hellip;</div>
-<div class="row2" style="margin-top:8px">
+<div class="row2">
 <div class="field"><label>Initials</label><input id="l-initials" maxlength="4" autocapitalize="characters"></div>
 <div class="field"><label>Birth Year</label><input id="l-year" type="number" inputmode="numeric"></div>
 </div>
 <button class="btn btn-rust" onclick="lookupId()">Search</button>
-<button class="btn btn-outline" onclick="reloadRegistry()" style="margin-top:6px;font-size:13px;padding:9px">&#8635; Reload Participants</button>
 </div>
 <div id="lookup-result" class="hidden">
 <div class="id-box"><div id="lookup-id" class="id-num"></div></div>
-<button class="btn btn-sage" onclick="goVisitFromLookup()">Log visit &rarr;</button>
+<button class="btn btn-sage" onclick="goVisitFromLookup()">Log visit →</button>
 </div>
 <div id="lookup-none" class="hidden">
 <div class="card" style="text-align:center;color:#8B1A1A">No match found. Check spelling or register as new.</div>
 </div>
 </div>
 
-<!-- VISIT LOG -->
+<!-- ════ VISIT LOG ════ -->
 <div id="screen-visit" class="screen">
 <div class="card">
 <div class="label">Participant</div>
@@ -169,7 +170,6 @@ body{
 <div class="field"><label>Date</label><input id="v-date" type="date"></div>
 </div>
 </div>
-
 <div class="card">
 <div class="label">Worker</div>
 <div class="chips" data-group="worker" data-mode="single">
@@ -177,7 +177,6 @@ body{
 </div>
 <div class="field" style="margin-top:6px"><input id="v-worker-other" class="hidden" placeholder="Worker initials" autocapitalize="characters"></div>
 </div>
-
 <div class="card">
 <div class="label">Visit Details</div>
 <div class="chips" data-group="nr" data-mode="single">
@@ -193,27 +192,24 @@ body{
 <button class="chip">Stably housed</button><button class="chip">Unstably housed</button><button class="chip">Unhoused</button><button class="chip">Shelter</button><button class="chip">Unknown</button>
 </div>
 </div>
-
 <div class="card">
 <div class="section-hdr">Substance Use</div>
 <div class="label">Primary Substance (select all)</div>
-<div class="multi-hint">Tap to toggle &mdash; multiple OK</div>
 <div class="chips" data-group="subst" data-mode="multi">
 <button class="chip">Heroin/fentanyl</button><button class="chip">Methamphetamine</button><button class="chip">Cocaine/crack</button><button class="chip">Rx opioids</button><button class="chip">Cannabis</button><button class="chip">Benzodiazepines</button><button class="chip">Alcohol</button><button class="chip">Other / unknown</button><button class="chip">None/not disclosed</button>
 </div>
-<div class="field" style="margin-top:8px"><label>Route of Admin (select all)</label></div>
+<div class="field" style="margin-top:8px"><label>Route of Admin</label></div>
 <div class="chips" data-group="route" data-mode="multi">
 <button class="chip">Injection</button><button class="chip">Smoking</button><button class="chip">Snorting</button><button class="chip">Oral</button><button class="chip">Other</button>
 </div>
 </div>
-
 <div class="card">
 <div class="section-hdr">Supplies Distributed</div>
-<div class="label">Syringes &mdash; Longs</div>
+<div class="label">Syringes — Longs</div>
 <div class="chips" data-group="longs" data-mode="single">
 <button class="chip">0</button><button class="chip">10</button><button class="chip">20</button><button class="chip">30</button><button class="chip">40</button><button class="chip">50</button>
 </div>
-<div class="label" style="margin-top:10px">Syringes &mdash; Shorts</div>
+<div class="label" style="margin-top:10px">Syringes — Shorts</div>
 <div class="chips" data-group="shorts" data-mode="single">
 <button class="chip">0</button><button class="chip">10</button><button class="chip">20</button><button class="chip">30</button><button class="chip">40</button><button class="chip">50</button>
 </div>
@@ -226,7 +222,6 @@ body{
 <button class="chip">Condoms</button><button class="chip">Pipes</button><button class="chip">Tourniquets</button><button class="chip">Cookers</button><button class="chip">Cottons/filters</button><button class="chip">Alcohol pads</button><button class="chip">Sharps container</button><button class="chip">Wound care kit</button>
 </div>
 </div>
-
 <div class="card">
 <div class="section-hdr">Naloxone</div>
 <div class="label">Naloxone IM (kits)</div>
@@ -242,16 +237,14 @@ body{
 <button class="chip">0</button><button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button>
 </div>
 </div>
-
 <div class="card">
-<div class="section-hdr sage-hdr">Naloxone Training</div>
+<div class="section-hdr">Naloxone Training</div>
 <div class="chips" data-group="training" data-mode="single">
 <button class="chip sage">Trained by us (today)</button><button class="chip sage">Previously trained by AP</button><button class="chip sage">Trained elsewhere</button><button class="chip sage">No training</button>
 </div>
 </div>
-
 <div class="card">
-<div class="section-hdr sage-hdr">Recovery Support Services (Annex D)</div>
+<div class="section-hdr">Recovery Support Services (Annex D)</div>
 <div class="label">Peer Support</div>
 <div class="chips" data-group="svc" data-mode="multi">
 <button class="chip sage">Peer check-in</button><button class="chip sage">Safer use education</button><button class="chip sage">Emotional support</button><button class="chip sage">Resource navigation</button>
@@ -261,7 +254,6 @@ body{
 <button class="chip sage">MAT/MOUD referral</button><button class="chip sage">Mental health referral</button><button class="chip sage">Medical referral</button><button class="chip sage">Wound care</button><button class="chip sage">Housing support</button><button class="chip sage">Transportation support</button><button class="chip sage">Employment services</button><button class="chip sage">Vocational/GED referral</button><button class="chip sage">Family supports</button><button class="chip sage">Benefits/ID assistance</button><button class="chip sage">Legal aid referral</button><button class="chip sage">Secondary distribution</button>
 </div>
 </div>
-
 <div class="card">
 <div class="reversal-wrap">
 <div class="toggle-row"><span>Reported Reversal?</span><input type="checkbox" id="reversal-toggle" onchange="toggleReversal()"></div>
@@ -289,15 +281,13 @@ body{
 </div>
 <div class="row2" style="margin-top:8px">
 <div class="field"><label>Age Range</label><select id="od-age"><option value="">Select</option><option>Under 18</option><option>18-24</option><option>25-34</option><option>35-44</option><option>45-54</option><option>55-64</option><option>65+</option><option>Unknown</option></select></div>
-<div class="field"><label>County</label><select id="od-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option><option>Unknown</option></select></div>
+<div class="field"><label>County</label><select id="od-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Other</option><option>Unknown</option></select></div>
 </div>
 </div>
 </div>
-
 <div class="card">
 <div class="field"><label>Notes</label><textarea id="v-notes" placeholder="Anything notable about this visit..."></textarea></div>
 </div>
-
 <button id="v-submit" class="btn btn-sage" onclick="submitVisit()">Submit Visit</button>
 <div id="v-err" class="err">Participant ID and date are required.</div>
 <div id="v-success" class="hidden">
@@ -306,16 +296,15 @@ body{
 </div>
 </div>
 
-<!-- EVENTS -->
+<!-- ════ EVENTS ════ -->
 <div id="screen-events" class="screen">
 <div id="event-setup">
 <div class="card">
 <div class="section-hdr teal-hdr">Event / Training Details</div>
-<div class="field"><label>Event Title</label><input id="e-title" placeholder="e.g. OEND Training &mdash; Clarke Co Library"></div>
+<div class="field"><label>Event Title</label><input id="e-title" placeholder="e.g. OEND Training — Clarke Co Library"></div>
 <div class="field"><label>Date</label><input id="e-date" type="date"></div>
 <div class="label">Event Type</div>
-<div class="multi-hint">Select all that apply</div>
-<div class="chips" data-group="etype" data-mode="multi">
+<div class="chips" data-group="etype" data-mode="single">
 <button class="chip teal">OEND Training</button><button class="chip teal">Stigma Reduction</button><button class="chip teal">Recovery Support Group</button><button class="chip teal">Tabling/Outreach</button><button class="chip teal">Speaking/Presentation</button><button class="chip teal">Provider Training</button><button class="chip teal">Community Collaboration</button>
 </div>
 <div class="row2" style="margin-top:10px">
@@ -342,12 +331,11 @@ body{
 <button class="chip teal">SOR/DBHDD</button><button class="chip teal">Other grant</button><button class="chip teal">Unfunded</button>
 </div>
 </div>
-<div class="field"><label>Notes / Description</label><textarea id="e-notes" placeholder="Topic, curriculum used, audience, DBHDD visibility notes..."></textarea></div>
+<div class="field"><label>Notes / Description</label><textarea id="e-notes" placeholder="Topic, curriculum used, audience, visibility notes for DBHDD..."></textarea></div>
 </div>
-<button class="btn btn-teal" onclick="startEvent()">Start Event &rarr; Add Attendees</button>
-<div id="e-err" class="err">Title, date, and at least one event type are required.</div>
+<button class="btn btn-teal" onclick="createEvent()">Start Event → Add Attendees</button>
+<div id="e-err" class="err">Title, date, and event type are required.</div>
 </div>
-
 <div id="event-attendees" class="hidden">
 <div class="card" style="background:#e8f4f4;border-color:#1B6B6B">
 <div style="font-size:14px;font-weight:700;color:#1B6B6B" id="ea-event-title"></div>
@@ -366,7 +354,7 @@ body{
 </div>
 <div class="row2" style="margin-top:8px">
 <div class="field"><label>ZIP</label><input id="ea-zip" inputmode="numeric" maxlength="5" placeholder="30601"></div>
-<div class="field"><label>County</label><select id="ea-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Banks</option><option>Walton</option><option>Other</option></select></div>
+<div class="field"><label>County</label><select id="ea-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Other</option></select></div>
 </div>
 <div class="label">Relationship to Substance Use</div>
 <div class="chips" data-group="ea-rel" data-mode="single">
@@ -392,74 +380,136 @@ body{
 <div id="ea-logged-list" style="margin-top:12px"></div>
 <button class="btn btn-outline-teal" onclick="finishEvent()" style="margin-top:12px">Finish Event</button>
 </div>
-
 <div id="event-done" class="hidden">
 <div class="success-box"><h3>Event Saved</h3><p id="event-done-msg"></p></div>
 <button class="btn btn-outline-teal" onclick="resetEvent()">Log Another Event</button>
 </div>
 </div>
 
+<!-- ════ TODAY / CHECK-IN ════ -->
+<div id="screen-checkin" class="screen">
+<div id="ci-form">
+<div class="card" style="background:rgba(27,107,107,.08);border-color:#1B6B6B">
+<div style="font-size:14px;font-weight:700;color:#1B6B6B;margin-bottom:4px">FRONT DESK CHECK-IN</div>
+<div style="font-size:12px;color:#6B5B4E">Look up by initials + birth year, or enter ID directly. Staff in back will see the queue update.</div>
+</div>
+<div class="card">
+<div class="label">Find Participant</div>
+<div class="row2">
+<div class="field"><label>Initials</label><input id="ci-initials" maxlength="4" autocapitalize="characters" placeholder="AB"></div>
+<div class="field"><label>Birth Year</label><input id="ci-year" type="number" inputmode="numeric" placeholder="1990"></div>
+</div>
+<div class="field" style="margin-top:4px"><label>— or — Participant ID directly</label><input id="ci-id" type="number" inputmode="numeric" placeholder="1001"></div>
+</div>
+<div class="card">
+<div class="field"><label>Notes for staff (optional)</label><textarea id="ci-notes" placeholder="e.g. has questions, picking up for someone, urgent need..." style="min-height:60px"></textarea></div>
+</div>
+<div id="ci-err" class="err"></div>
+<button class="btn btn-teal" onclick="checkIn(this)">Check In →</button>
+</div>
+<div id="ci-success" class="hidden" style="padding-top:10px;text-align:center">
+<div class="id-box" style="background:rgba(27,107,107,.12);border:2px solid #1B6B6B">
+<div style="font-size:13px;color:#1B6B6B;font-weight:700;margin-bottom:6px">CHECKED IN ✓</div>
+<div class="id-num" style="color:#1B6B6B" id="ci-result-id"></div>
+<div class="id-sub" id="ci-result-time"></div>
+</div>
+<div style="font-size:12px;color:#6B5B4E;margin:8px 0 16px">Added to the queue — staff in back can see this now.</div>
+<button class="btn btn-outline-teal" onclick="resetCheckIn()">Check In Another</button>
+<button class="btn btn-sage" onclick="goVisitFromCheckIn()" style="margin-top:8px">Log Visit for This Person →</button>
+</div>
+</div>
+
+<!-- ════ IMPORT / BULK UPLOAD ════ -->
+<div id="screen-import" class="screen">
+<div id="import-setup">
+<div class="card" style="background:rgba(181,133,27,.08);border-color:#B5851B">
+<div style="font-size:14px;font-weight:700;color:#B5851B;margin-bottom:4px">BULK IMPORT — SSP VISITS</div>
+<div style="font-size:12px;color:#6B5B4E">Upload or paste a CSV of past visit records. Each row becomes one entry in SSP Visits. Use for backfilling historical data or entering a batch at once.</div>
+</div>
+<div class="card">
+<div class="section-hdr amber-hdr">CSV Format</div>
+<div style="font-size:12px;color:#6B5B4E;margin-bottom:8px">Required columns: <strong>Date</strong> and <strong>Participant ID</strong>. All others are optional. Dates can be YYYY-MM-DD or MM/DD/YYYY.</div>
+<div class="code-block">Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,FTS,Nalox IM,Nalox Nasal,Sec Distrib,Alt Supplies,Training,Services,Notes</div>
+<div style="font-size:11px;color:#8B7B6E;margin:4px 0 8px">Example row:</div>
+<div class="code-block">2026-04-15,1023,Returning,Office,OK,20,0,5,1,0,0,Condoms,Previously trained by AP,Peer check-in,</div>
+<button class="btn btn-outline-amber" onclick="downloadTemplate()" style="margin-top:4px">⬇ Download blank template</button>
+</div>
+<div class="card">
+<div class="section-hdr amber-hdr">Upload or Paste Data</div>
+<div class="field">
+<label>Upload .csv file</label>
+<input type="file" id="csv-file" accept=".csv,.txt" style="padding:6px;font-size:13px" onchange="handleFileUpload(this)">
+</div>
+<div style="text-align:center;font-size:12px;color:#8B7B6E;margin:4px 0">— or paste directly —</div>
+<div class="field">
+<label>Paste CSV data here</label>
+<textarea id="csv-paste" placeholder="Date,Participant ID,New/Returning,...&#10;2026-04-15,1023,Returning,..." style="min-height:120px;font-family:monospace;font-size:12px"></textarea>
+</div>
+<button class="btn btn-amber" onclick="parseAndPreview()">Parse &amp; Preview →</button>
+<div id="parse-err" class="err"></div>
+</div>
+<div id="preview-section" class="hidden">
+<div class="card">
+<div class="section-hdr amber-hdr">Preview</div>
+<div id="preview-summary" style="font-size:13px;color:#6B5B4E;margin-bottom:10px"></div>
+<div class="import-table-wrap">
+<table class="import-table">
+<thead><tr id="preview-header"></tr></thead>
+<tbody id="preview-body"></tbody>
+</table>
+</div>
+</div>
+<button id="submit-bulk-btn" class="btn btn-rust" onclick="submitBulk(this)">Submit All Visits</button>
+<button class="btn btn-outline" onclick="clearImport()" style="margin-top:6px">Clear &amp; Start Over</button>
+</div>
+</div>
+<div id="import-progress" class="hidden" style="padding-top:10px">
+<div class="card">
+<div style="font-size:14px;font-weight:700;color:#B5451B;margin-bottom:8px">Submitting...</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+<div id="progress-text" style="font-size:13px;color:#6B5B4E;text-align:center;margin-top:4px">0 / 0</div>
+</div>
+</div>
+<div id="import-done" class="hidden" style="padding-top:10px">
+<div class="success-box">
+<h3>Import Complete</h3>
+<p id="import-done-msg"></p>
+</div>
+<button class="btn btn-outline" onclick="resetImport()">Import More</button>
+</div>
+</div>
+
 <script>
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz2PYJZAX7idj8bDqGEdq8el0U4jyr7rQ4Nbx09BUG_EP787pBKv7RDeJZxwyQPmx0u/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzCYLYOWFZXG4KCWcf-nFAAvYzaBFNaiJ7aB3oE5-mzqyIZrS0cDIznBxTNbqxd1U-p/exec';
 
 let registry = [];
 const sel = {};
 let currentEventId = null;
 let attendeeCount = 0;
+let bulkRows = [];
 
-// Registry loading with async feedback
-function loadRegistry() {
-  const statusEl = document.getElementById('registry-status');
-  if (statusEl) statusEl.textContent = 'Loading participants…';
-  fetch(WEB_APP_URL)
-    .then(r => r.json())
-    .then(d => {
-      // Flexible: handle both {participants:[...]} and {ids:[...]} shapes
-      // Also tolerates varied column header names from the sheet
-      if (d.participants && Array.isArray(d.participants)) {
-        registry = d.participants.map(p => ({
-          id:       Number(p.id || p.ID || p.Id),
-          initials: String(p.initials || p.Initials || p.INITIALS || '').toUpperCase().trim(),
-          year:     String(p.year || p.Year || p['Birth Year'] || p.birthYear || '').trim()
-        })).filter(p => p.id);
-      } else if (d.ids && Array.isArray(d.ids)) {
-        registry = d.ids.map(id => ({ id: Number(id), initials: '', year: '' }));
-      }
-      if (statusEl) statusEl.textContent = registry.length + ' participants loaded';
-    })
-    .catch(() => {
-      if (statusEl) statusEl.textContent = 'Could not load — tap Reload to retry';
-    });
-}
+fetch(WEB_APP_URL)
+  .then(r => r.json())
+  .then(d => {
+    if (d.participants) registry = d.participants.map(p => ({ id: Number(p.id), initials: (p.initials||'').toUpperCase(), year: String(p.year||'') }));
+    else if (d.ids) registry = d.ids.map(id => ({ id: Number(id) }));
+  }).catch(() => {});
 
-function reloadRegistry() {
-  registry = [];
-  loadRegistry();
-}
-
-loadRegistry();
-
-// Navigation
+// ── Nav ──
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => {
-    b.classList.toggle('active',
-      name === 'intake'  ? b.textContent.toLowerCase().includes('intake')  :
-      name === 'lookup'  ? b.textContent.toLowerCase().includes('lookup')  :
-      name === 'visit'   ? b.textContent.toLowerCase().includes('visit')   :
-      b.textContent.toLowerCase().includes('event')
-    );
-  });
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const map = {intake:0,lookup:1,visit:2,events:3,checkin:4,import:5};
+  if (map[name] !== undefined) document.querySelectorAll('.nav-btn')[map[name]].classList.add('active');
 }
 
-// Chip logic
+// ── Chips ──
 document.addEventListener('click', function(e) {
   if (!e.target.classList.contains('chip')) return;
   const wrap = e.target.closest('[data-group]');
   if (!wrap) return;
-  const group = wrap.dataset.group;
-  const mode  = wrap.dataset.mode;
+  const group = wrap.dataset.group, mode = wrap.dataset.mode;
   if (mode === 'single') {
     wrap.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
     e.target.classList.add('on');
@@ -467,279 +517,287 @@ document.addEventListener('click', function(e) {
   } else {
     e.target.classList.toggle('on');
   }
-  if (group === 'worker')    document.getElementById('v-worker-other').classList.toggle('hidden', sel['worker']    !== 'Other');
-  if (group === 'loc')       document.getElementById('v-loc-other').classList.toggle('hidden',    sel['loc']       !== 'Other');
-  if (group === 'e-trainer') document.getElementById('e-trainer-other').classList.toggle('hidden',sel['e-trainer'] !== 'Other');
+  if (group === 'worker') document.getElementById('v-worker-other').classList.toggle('hidden', sel['worker'] !== 'Other');
+  if (group === 'loc') document.getElementById('v-loc-other').classList.toggle('hidden', sel['loc'] !== 'Other');
+  if (group === 'e-trainer') document.getElementById('e-trainer-other').classList.toggle('hidden', sel['e-trainer'] !== 'Other');
 });
 
-function getToggled(group) {
-  return Array.from(document.querySelectorAll('[data-group="' + group + '"] .chip.on'))
-    .map(c => c.dataset.val || c.textContent).join('; ');
+function getToggled(g) {
+  return Array.from(document.querySelectorAll('[data-group="'+g+'"] .chip.on')).map(c => c.dataset.val||c.textContent).join('; ');
 }
-
 function toggleReversal() {
   document.getElementById('reversal-details').classList.toggle('hidden', !document.getElementById('reversal-toggle').checked);
 }
 
-// INTAKE
+// ════ INTAKE ════
 async function submitIntake(btn) {
   const initials = document.getElementById('i-initials').value.trim().toUpperCase();
-  const year     = document.getElementById('i-year').value.trim();
-  const gender   = sel['gender'] || document.getElementById('i-gender-other').value.trim();
-  const errEl    = document.getElementById('intake-err');
-  if (!initials || !year || !gender) { errEl.style.display = 'block'; return; }
-  errEl.style.display = 'none';
-
-  const dup = registry.find(p =>
-    String(p.initials || '').toUpperCase().trim() === initials &&
-    String(p.year || '').trim() === year
-  );
+  const year = document.getElementById('i-year').value.trim();
+  const gender = sel['gender'] || document.getElementById('i-gender-other').value.trim();
+  const errEl = document.getElementById('intake-err');
+  if (!initials || !year || !gender) { errEl.style.display='block'; return; }
+  errEl.style.display='none';
+  const dup = registry.find(p => p.initials===initials && p.year===year);
   let id;
-  if (dup) { id = dup.id; }
+  if (dup) { id=dup.id; }
   else {
-    const existing = registry.map(p => p.id);
-    do { id = Math.floor(Math.random() * 9000) + 1000; } while (existing.includes(id));
-    registry.push({ id, initials, year });
+    const ex = registry.map(p => p.id);
+    do { id=Math.floor(Math.random()*9000)+1000; } while(ex.includes(id));
+    registry.push({id,initials,year});
   }
-
-  btn.innerHTML = '<span class="spinner"></span> Registering...';
-  btn.disabled = true;
-  try {
-    await fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'registerParticipant',
-        id, initials, birthYear: year, gender,
-        race: getToggled('race'),
-        housing: sel['housing'] || '',
-        participantType: getToggled('ptype') || 'SSP',
-        zip: document.getElementById('i-zip').value.trim(),
-        county: document.getElementById('i-county').value,
-      })
-    });
-  } catch(e) {}
-
-  document.getElementById('result-id').textContent = id;
+  btn.innerHTML='<span class="spinner"></span> Registering...'; btn.disabled=true;
+  try { await fetch(WEB_APP_URL, {method:'POST', body:JSON.stringify({action:'registerParticipant',id,initials,birthYear:year,gender,race:getToggled('race'),housing:sel['housing']||'',participantType:sel['ptype']||'SSP',zip:document.getElementById('i-zip').value.trim(),county:document.getElementById('i-county').value})}); } catch(e) {}
+  document.getElementById('result-id').textContent=id;
   document.getElementById('intake-form').classList.add('hidden');
   document.getElementById('intake-result').classList.remove('hidden');
-  btn.innerHTML = 'Generate anonymous ID';
-  btn.disabled = false;
+  btn.innerHTML='Generate anonymous ID'; btn.disabled=false;
 }
-
 function resetIntake() {
   document.getElementById('intake-form').classList.remove('hidden');
   document.getElementById('intake-result').classList.add('hidden');
-  ['i-initials','i-year','i-zip','i-gender-other'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('i-county').selectedIndex = 0;
-  document.querySelectorAll('#screen-intake .chip').forEach(c => c.classList.remove('on'));
-  ['gender','race','housing','ptype'].forEach(k => delete sel[k]);
+  ['i-initials','i-year','i-zip','i-gender-other'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('i-county').selectedIndex=0;
+  document.querySelectorAll('#screen-intake .chip').forEach(c=>c.classList.remove('on'));
+  ['gender','race','housing','ptype'].forEach(k=>delete sel[k]);
 }
+function goVisit() { document.getElementById('v-id').value=document.getElementById('result-id').textContent; showScreen('visit'); }
 
-function goVisit() {
-  document.getElementById('v-id').value = document.getElementById('result-id').textContent;
-  showScreen('visit');
-}
-
-// LOOKUP - flexible matching
+// ════ LOOKUP ════
 function lookupId() {
-  const initials = document.getElementById('l-initials').value.trim().toUpperCase();
-  const year     = document.getElementById('l-year').value.trim();
+  const initials=document.getElementById('l-initials').value.trim().toUpperCase();
+  const year=document.getElementById('l-year').value.trim();
+  const match=registry.find(p=>p.initials===initials&&p.year===year);
   document.getElementById('lookup-result').classList.add('hidden');
   document.getElementById('lookup-none').classList.add('hidden');
-  if (!initials || !year) return;
-
-  const match = registry.find(p => {
-    const pi = String(p.initials || '').toUpperCase().trim();
-    const py = String(p.year || '').trim();
-    return pi === initials && py === year;
-  });
-
-  if (match) {
-    document.getElementById('lookup-id').textContent = match.id;
-    document.getElementById('lookup-result').classList.remove('hidden');
-  } else {
-    document.getElementById('lookup-none').classList.remove('hidden');
-  }
+  if (match) { document.getElementById('lookup-id').textContent=match.id; document.getElementById('lookup-result').classList.remove('hidden'); }
+  else { document.getElementById('lookup-none').classList.remove('hidden'); }
 }
+function goVisitFromLookup() { document.getElementById('v-id').value=document.getElementById('lookup-id').textContent; showScreen('visit'); }
 
-function goVisitFromLookup() {
-  document.getElementById('v-id').value = document.getElementById('lookup-id').textContent;
-  showScreen('visit');
-}
-
-// VISIT LOG
+// ════ VISIT LOG ════
 async function submitVisit() {
-  const id    = document.getElementById('v-id').value;
-  const date  = document.getElementById('v-date').value;
-  const errEl = document.getElementById('v-err');
-  if (!id || !date) { errEl.style.display = 'block'; return; }
-  errEl.style.display = 'none';
-
-  const btn = document.getElementById('v-submit');
-  btn.innerHTML = '<span class="spinner"></span> Submitting...';
-  btn.disabled  = true;
-
-  const reversal = document.getElementById('reversal-toggle').checked;
-  const worker   = sel['worker'] === 'Other' ? document.getElementById('v-worker-other').value.trim().toUpperCase() : (sel['worker'] || '');
-
+  const id=document.getElementById('v-id').value, date=document.getElementById('v-date').value;
+  const errEl=document.getElementById('v-err');
+  if (!id||!date) { errEl.style.display='block'; return; } errEl.style.display='none';
+  const btn=document.getElementById('v-submit');
+  btn.innerHTML='<span class="spinner"></span> Submitting...'; btn.disabled=true;
+  const reversal=document.getElementById('reversal-toggle').checked;
+  const worker=sel['worker']==='Other'?document.getElementById('v-worker-other').value.trim().toUpperCase():(sel['worker']||'');
   try {
-    await fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'logVisit',
-        participantId: id, date, worker,
-        location: sel['loc'] === 'Other' ? document.getElementById('v-loc-other').value.trim() : (sel['loc'] || ''),
-        newOrReturning: sel['nr'] || '',
-        housing: sel['v-housing'] || '',
-        substances: getToggled('subst'),
-        route: getToggled('route'),
-        longs: sel['longs'] || '0',
-        shorts: sel['shorts'] || '0',
-        fts: sel['fts'] || '0',
-        altSupplies: getToggled('alt'),
-        naloxIM: sel['nalox-im'] || '0',
-        naloxNasal: sel['nalox-nasal'] || '0',
-        secDistrib: sel['sec'] || '0',
-        training: sel['training'] || '',
-        reversal: reversal ? 'Yes' : 'No',
-        reporterType: reversal ? (sel['reporter'] || '') : '',
-        odOutcome:    reversal ? (sel['od-outcome'] || '') : '',
-        odNasalDoses: reversal ? (sel['od-nasal'] || '') : '',
-        odInjDoses:   reversal ? (sel['od-inj'] || '') : '',
-        odGender:     reversal ? (sel['od-gender'] || '') : '',
-        odRace:       reversal ? getToggled('od-race') : '',
-        odAge:        reversal ? document.getElementById('od-age').value : '',
-        odCounty:     reversal ? document.getElementById('od-county').value : '',
-        services: getToggled('svc'),
-        notes: document.getElementById('v-notes').value.trim(),
-      })
-    });
+    await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logVisit',participantId:id,date,worker,location:sel['loc']==='Other'?document.getElementById('v-loc-other').value.trim():(sel['loc']||''),newOrReturning:sel['nr']||'',housing:sel['v-housing']||'',substances:getToggled('subst'),route:getToggled('route'),longs:sel['longs']||'0',shorts:sel['shorts']||'0',fts:sel['fts']||'0',altSupplies:getToggled('alt'),naloxIM:sel['nalox-im']||'0',naloxNasal:sel['nalox-nasal']||'0',secDistrib:sel['sec']||'0',training:sel['training']||'',reversal:reversal?'Yes':'No',reporterType:reversal?(sel['reporter']||''):'',odOutcome:reversal?(sel['od-outcome']||''):'',odNasalDoses:reversal?(sel['od-nasal']||''):'',odInjDoses:reversal?(sel['od-inj']||''):'',odGender:reversal?(sel['od-gender']||''):'',odRace:reversal?getToggled('od-race'):'',odAge:reversal?document.getElementById('od-age').value:'',odCounty:reversal?document.getElementById('od-county').value:'',services:getToggled('svc'),notes:document.getElementById('v-notes').value.trim()})});
   } catch(e) {}
-
-  btn.classList.add('hidden');
-  document.getElementById('v-success').classList.remove('hidden');
+  btn.classList.add('hidden'); document.getElementById('v-success').classList.remove('hidden');
 }
-
 function resetVisit() {
-  const btn = document.getElementById('v-submit');
-  btn.innerHTML = 'Submit Visit'; btn.disabled = false; btn.classList.remove('hidden');
-  document.getElementById('v-success').classList.add('hidden');
-  document.getElementById('v-err').style.display = 'none';
-  ['v-id','v-notes'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('v-date').value = '';
-  document.getElementById('v-worker-other').value = ''; document.getElementById('v-worker-other').classList.add('hidden');
-  document.getElementById('v-loc-other').value = ''; document.getElementById('v-loc-other').classList.add('hidden');
-  document.getElementById('reversal-toggle').checked = false;
-  document.getElementById('reversal-details').classList.add('hidden');
-  document.getElementById('od-age').selectedIndex = 0; document.getElementById('od-county').selectedIndex = 0;
-  document.querySelectorAll('#screen-visit .chip').forEach(c => c.classList.remove('on'));
-  ['worker','nr','loc','v-housing','longs','shorts','fts','nalox-im','nalox-nasal','sec','training','reporter','od-outcome','od-nasal','od-inj','od-gender'].forEach(k => delete sel[k]);
+  const btn=document.getElementById('v-submit'); btn.innerHTML='Submit Visit'; btn.disabled=false; btn.classList.remove('hidden');
+  document.getElementById('v-success').classList.add('hidden'); document.getElementById('v-err').style.display='none';
+  ['v-id','v-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('v-date').value=new Date().toISOString().split('T')[0];
+  ['v-worker-other','v-loc-other'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).classList.add('hidden');});
+  document.getElementById('reversal-toggle').checked=false; document.getElementById('reversal-details').classList.add('hidden');
+  document.getElementById('od-age').selectedIndex=0; document.getElementById('od-county').selectedIndex=0;
+  document.querySelectorAll('#screen-visit .chip').forEach(c=>c.classList.remove('on'));
+  ['worker','nr','loc','v-housing','subst','route','longs','shorts','fts','alt','nalox-im','nalox-nasal','sec','training','svc','reporter','od-outcome','od-nasal','od-inj','od-gender','od-race'].forEach(k=>delete sel[k]);
 }
 
-// EVENTS
-async function startEvent() {
-  const title  = document.getElementById('e-title').value.trim();
-  const date   = document.getElementById('e-date').value;
-  const etype  = getToggled('etype');
-  const errEl  = document.getElementById('e-err');
-  if (!title || !date || !etype) { errEl.style.display = 'block'; return; }
-  errEl.style.display = 'none';
-
-  currentEventId = 'EVT-' + Date.now();
-  attendeeCount  = 0;
-
-  const trainer = sel['e-trainer'] === 'Other' ? document.getElementById('e-trainer-other').value.trim() : (sel['e-trainer'] || '');
-
-  try {
-    await fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'createEvent',
-        eventId: currentEventId, title, date, eventType: etype, trainer,
-        duration: sel['e-duration'] || '', format: sel['e-format'] || '',
-        location: document.getElementById('e-location').value.trim(),
-        partner: document.getElementById('e-partner').value.trim(),
-        funder: sel['e-funder'] || '',
-        notes: document.getElementById('e-notes').value.trim(),
-      })
-    });
-  } catch(e) {}
-
-  document.getElementById('ea-event-title').textContent = title;
-  document.getElementById('ea-event-meta').textContent  = date + ' · ' + etype + (trainer ? ' · ' + trainer : '');
+// ════ EVENTS ════
+async function createEvent() {
+  const title=document.getElementById('e-title').value.trim(), date=document.getElementById('e-date').value, etype=sel['etype']||'';
+  const errEl=document.getElementById('e-err');
+  if (!title||!date||!etype) { errEl.style.display='block'; return; } errEl.style.display='none';
+  currentEventId='EVT-'+Date.now(); attendeeCount=0;
+  const trainer=sel['e-trainer']==='Other'?document.getElementById('e-trainer-other').value.trim():(sel['e-trainer']||'');
+  try { await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'createEvent',eventId:currentEventId,title,date,eventType:etype,trainer,duration:sel['e-duration']||'',format:sel['e-format']||'',location:document.getElementById('e-location').value.trim(),partner:document.getElementById('e-partner').value.trim(),funder:sel['e-funder']||'',notes:document.getElementById('e-notes').value.trim()})}); } catch(e) {}
+  document.getElementById('ea-event-title').textContent=title;
+  document.getElementById('ea-event-meta').textContent=date+' · '+etype+(trainer?' · '+trainer:'');
   document.getElementById('event-setup').classList.add('hidden');
   document.getElementById('event-attendees').classList.remove('hidden');
 }
-
 async function addAttendee(btn) {
-  const initials = document.getElementById('ea-initials').value.trim().toUpperCase();
-  const errEl    = document.getElementById('ea-err');
-  if (!initials) { errEl.style.display = 'block'; return; }
-  errEl.style.display = 'none';
-
-  btn.innerHTML = '<span class="spinner"></span> Adding...';
-  btn.disabled  = true;
-
-  try {
-    await fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'logAttendee', eventId: currentEventId, initials,
-        ageRange: document.getElementById('ea-age').value,
-        race: getToggled('ea-race'),
-        zip: document.getElementById('ea-zip').value.trim(),
-        county: document.getElementById('ea-county').value,
-        relationship: sel['ea-rel'] || '',
-        naloxIM: sel['ea-nalox-im'] || '0',
-        naloxNasal: sel['ea-nalox-nasal'] || '0',
-        secDistrib: sel['ea-sec'] || '0',
-        participantId: document.getElementById('ea-pid').value.trim(),
-        completion: document.getElementById('ea-completion').value,
-      })
-    });
-  } catch(e) {}
-
+  const initials=document.getElementById('ea-initials').value.trim().toUpperCase();
+  const errEl=document.getElementById('ea-err');
+  if (!initials) { errEl.style.display='block'; return; } errEl.style.display='none';
+  btn.innerHTML='<span class="spinner"></span> Adding...'; btn.disabled=true;
+  try { await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logAttendee',eventId:currentEventId,initials,ageRange:document.getElementById('ea-age').value,race:getToggled('ea-race'),zip:document.getElementById('ea-zip').value.trim(),county:document.getElementById('ea-county').value,relationship:sel['ea-rel']||'',naloxIM:sel['ea-nalox-im']||'0',naloxNasal:sel['ea-nalox-nasal']||'0',secDistrib:sel['ea-sec']||'0',participantId:document.getElementById('ea-pid').value.trim(),completion:document.getElementById('ea-completion').value})}); } catch(e) {}
   attendeeCount++;
-  document.getElementById('ea-count').textContent = attendeeCount + ' attendee' + (attendeeCount !== 1 ? 's' : '') + ' logged';
-  const div = document.createElement('div');
-  div.className = 'attendee-row';
-  div.innerHTML = '<span class="row-num">#' + attendeeCount + '</span> ' + initials + (document.getElementById('ea-pid').value ? ' (ID: ' + document.getElementById('ea-pid').value + ')' : '');
+  document.getElementById('ea-count').textContent=attendeeCount+' attendee'+(attendeeCount!==1?'s':'')+' logged';
+  const div=document.createElement('div'); div.className='attendee-row';
+  div.innerHTML='<span style="font-size:11px;font-weight:700;color:#1B6B6B">#'+attendeeCount+'</span>  '+initials+(document.getElementById('ea-pid').value?' (ID: '+document.getElementById('ea-pid').value+')':'');
   document.getElementById('ea-logged-list').appendChild(div);
-
-  ['ea-initials','ea-zip','ea-pid'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('ea-age').selectedIndex = 0;
-  document.getElementById('ea-county').selectedIndex = 0;
-  document.getElementById('ea-completion').selectedIndex = 0;
-  document.querySelectorAll('#event-attendees [data-group^="ea-"] .chip').forEach(c => c.classList.remove('on'));
-  ['ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k => delete sel[k]);
-
-  btn.innerHTML = '+ Add This Attendee';
-  btn.disabled  = false;
+  ['ea-initials','ea-zip','ea-pid'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ea-age').selectedIndex=0; document.getElementById('ea-county').selectedIndex=0; document.getElementById('ea-completion').selectedIndex=0;
+  document.querySelectorAll('#event-attendees [data-group^="ea-"] .chip').forEach(c=>c.classList.remove('on'));
+  ['ea-race','ea-rel','ea-nalox-im','ea-nalox-nasal','ea-sec'].forEach(k=>delete sel[k]);
+  btn.innerHTML='+ Add This Attendee'; btn.disabled=false;
   document.getElementById('ea-initials').focus();
 }
-
 function finishEvent() {
   document.getElementById('event-attendees').classList.add('hidden');
   document.getElementById('event-done').classList.remove('hidden');
-  document.getElementById('event-done-msg').textContent = attendeeCount + ' attendee' + (attendeeCount !== 1 ? 's' : '') + ' logged for this event.';
+  document.getElementById('event-done-msg').textContent=attendeeCount+' attendee'+(attendeeCount!==1?'s':'')+' logged for this event.';
 }
-
 function resetEvent() {
   document.getElementById('event-setup').classList.remove('hidden');
   document.getElementById('event-done').classList.add('hidden');
-  document.getElementById('ea-logged-list').innerHTML = '';
-  ['e-title','e-location','e-partner','e-notes','e-trainer-other'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('e-date').value = '';
-  document.querySelectorAll('#screen-events .chip').forEach(c => c.classList.remove('on'));
-  ['e-trainer','e-duration','e-format','e-funder'].forEach(k => delete sel[k]);
+  document.getElementById('ea-logged-list').innerHTML='';
+  ['e-title','e-location','e-partner','e-notes','e-trainer-other'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('e-date').value='';
+  document.querySelectorAll('#screen-events .chip').forEach(c=>c.classList.remove('on'));
+  ['etype','e-trainer','e-duration','e-format','e-funder'].forEach(k=>delete sel[k]);
   document.getElementById('e-trainer-other').classList.add('hidden');
-  currentEventId = null; attendeeCount = 0;
+  currentEventId=null; attendeeCount=0;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('v-date').value = today;
-  document.getElementById('e-date').value = today;
+// ════ TODAY / CHECK-IN ════
+async function checkIn(btn) {
+  const initials=document.getElementById('ci-initials').value.trim().toUpperCase();
+  const year=document.getElementById('ci-year').value.trim();
+  const directId=document.getElementById('ci-id').value.trim();
+  const notes=document.getElementById('ci-notes').value.trim();
+  const errEl=document.getElementById('ci-err');
+  let pid=null;
+  if (directId) {
+    pid=Number(directId);
+  } else if (initials && year) {
+    const match=registry.find(p=>p.initials===initials&&p.year===year);
+    if (match) { pid=match.id; }
+    else { errEl.textContent='No match found. Check spelling or enter ID directly.'; errEl.style.display='block'; return; }
+  } else {
+    errEl.textContent='Enter initials + birth year, or participant ID directly.'; errEl.style.display='block'; return;
+  }
+  errEl.style.display='none';
+  btn.innerHTML='<span class="spinner"></span> Checking in...'; btn.disabled=true;
+  try {
+    await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'checkIn',participantId:pid,notes,time:new Date().toISOString()})});
+  } catch(e) {}
+  document.getElementById('ci-result-id').textContent=pid;
+  document.getElementById('ci-result-time').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('ci-form').classList.add('hidden');
+  document.getElementById('ci-success').classList.remove('hidden');
+  btn.innerHTML='Check In →'; btn.disabled=false;
+}
+function resetCheckIn() {
+  document.getElementById('ci-form').classList.remove('hidden');
+  document.getElementById('ci-success').classList.add('hidden');
+  ['ci-initials','ci-year','ci-id','ci-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ci-err').style.display='none';
+}
+function goVisitFromCheckIn() {
+  document.getElementById('v-id').value=document.getElementById('ci-result-id').textContent;
+  showScreen('visit');
+}
+
+// ════ IMPORT / BULK ════
+function downloadTemplate() {
+  const header='Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,FTS,Nalox IM,Nalox Nasal,Sec Distrib,Alt Supplies,Training,Services,Notes\n';
+  const example='2026-04-15,1023,Returning,Office,OK,20,0,5,1,0,0,Condoms,Previously trained by AP,Peer check-in,\n';
+  const blob=new Blob([header+example],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ssp_visits_import_template.csv'; a.click();
+}
+function handleFileUpload(input) {
+  const file=input.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{ document.getElementById('csv-paste').value=e.target.result; };
+  reader.readAsText(file);
+}
+function parseCSVLine(line) {
+  const result=[]; let inQ=false, cur='';
+  for (let i=0;i<line.length;i++) {
+    const ch=line[i];
+    if (ch==='"') { inQ=!inQ; }
+    else if (ch===',' && !inQ) { result.push(cur); cur=''; }
+    else { cur+=ch; }
+  }
+  result.push(cur); return result;
+}
+function parseCSV(text) {
+  const lines=text.trim().split('\n').filter(l=>l.trim());
+  if (lines.length<2) return null;
+  const headers=parseCSVLine(lines[0]).map(h=>h.trim());
+  const rows=[];
+  for (let i=1;i<lines.length;i++) {
+    const cols=parseCSVLine(lines[i]);
+    const row={};
+    headers.forEach((h,idx)=>{ row[h]=(cols[idx]||'').trim(); });
+    rows.push(row);
+  }
+  return {headers,rows};
+}
+function normalizeDate(d) {
+  if (!d) return '';
+  if (d.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+    const p=d.split('/'); return p[2]+'-'+p[0].padStart(2,'0')+'-'+p[1].padStart(2,'0');
+  }
+  return d;
+}
+function rowToPayload(row) {
+  return {action:'logVisit',participantId:row['Participant ID']||'',date:normalizeDate(row['Date']||''),newOrReturning:row['New/Returning']||'',location:row['Location']||'',worker:row['Worker']||'',longs:row['Longs']||'0',shorts:row['Shorts']||'0',fts:row['FTS']||'0',naloxIM:row['Nalox IM']||'0',naloxNasal:row['Nalox Nasal']||'0',secDistrib:row['Sec Distrib']||'0',altSupplies:row['Alt Supplies']||'',training:row['Training']||'',services:row['Services']||'',notes:row['Notes']||'',reversal:'No',substances:'',route:'',housing:''};
+}
+function parseAndPreview() {
+  const text=document.getElementById('csv-paste').value.trim();
+  const errEl=document.getElementById('parse-err');
+  if (!text) { errEl.textContent='Paste CSV data or upload a file first.'; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+  const parsed=parseCSV(text);
+  if (!parsed) { errEl.textContent='Could not parse. Need at least a header row and one data row.'; errEl.style.display='block'; return; }
+  const {headers,rows}=parsed;
+  if (!headers.includes('Date')||!headers.includes('Participant ID')) {
+    errEl.textContent='Missing required columns: "Date" and "Participant ID". Check your header row.'; errEl.style.display='block'; return;
+  }
+  bulkRows=rows.filter(r=>(r['Date']||'').trim()&&(r['Participant ID']||'').trim());
+  const skipped=rows.length-bulkRows.length;
+  const previewCols=['Date','Participant ID','New/Returning','Location','Worker','Longs','Shorts','FTS','Nalox IM','Nalox Nasal'];
+  const thead=document.getElementById('preview-header');
+  thead.innerHTML='<th>#</th>'+previewCols.map(h=>'<th>'+h+'</th>').join('');
+  const tbody=document.getElementById('preview-body');
+  tbody.innerHTML='';
+  bulkRows.slice(0,30).forEach((row,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+(i+1)+'</td>'+previewCols.map(h=>'<td>'+(row[h]||'')+'</td>').join('');
+    tbody.appendChild(tr);
+  });
+  document.getElementById('preview-summary').innerHTML='<strong>'+bulkRows.length+' valid rows</strong> ready to import'+(skipped?' ('+skipped+' skipped — missing Date or ID)':'')+(bulkRows.length>30?' — showing first 30':'')+'.' ;
+  document.getElementById('submit-bulk-btn').textContent='Submit All '+bulkRows.length+' Visits';
+  document.getElementById('preview-section').classList.remove('hidden');
+}
+async function submitBulk(btn) {
+  if (!bulkRows.length) return;
+  btn.disabled=true;
+  document.getElementById('preview-section').classList.add('hidden');
+  document.getElementById('import-progress').classList.remove('hidden');
+  const total=bulkRows.length;
+  let done=0;
+  const BATCH=20;
+  for (let i=0;i<total;i+=BATCH) {
+    const batch=bulkRows.slice(i,i+BATCH).map(rowToPayload);
+    try { await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'bulkLogVisits',visits:batch})}); } catch(e) {}
+    done=Math.min(i+BATCH,total);
+    document.getElementById('progress-bar').style.width=Math.round(done/total*100)+'%';
+    document.getElementById('progress-text').textContent=done+' / '+total;
+    if (done<total) await new Promise(r=>setTimeout(r,500));
+  }
+  document.getElementById('import-progress').classList.add('hidden');
+  document.getElementById('import-done').classList.remove('hidden');
+  document.getElementById('import-done-msg').textContent=done+' visits submitted. Check SSP Visits sheet to confirm.';
+}
+function clearImport() {
+  document.getElementById('csv-paste').value='';
+  document.getElementById('csv-file').value='';
+  document.getElementById('preview-section').classList.add('hidden');
+  document.getElementById('parse-err').style.display='none';
+  bulkRows=[];
+}
+function resetImport() {
+  clearImport();
+  document.getElementById('import-setup').style.display='';
+  document.getElementById('import-done').classList.add('hidden');
+}
+
+// Set today's date
+document.addEventListener('DOMContentLoaded',function(){
+  const t=new Date().toISOString().split('T')[0];
+  document.getElementById('v-date').value=t;
+  document.getElementById('e-date').value=t;
 });
 </script>
 </body>
