@@ -38,10 +38,12 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 .btn-sage{background:#4A6741;color:#fff}
 .btn-teal{background:#1B6B6B;color:#fff}
 .btn-amber{background:#B5851B;color:#fff}
-.btn-rust:disabled,.btn-sage:disabled,.btn-teal:disabled,.btn-amber:disabled{opacity:0.5}
+.btn-red{background:#8B1A1A;color:#fff}
+.btn-rust:disabled,.btn-sage:disabled,.btn-teal:disabled,.btn-amber:disabled,.btn-red:disabled{opacity:0.5}
 .btn-outline{background:transparent;color:#B5451B;border:1px solid #B5451B;margin-top:6px}
 .btn-outline-teal{background:transparent;color:#1B6B6B;border:1px solid #1B6B6B;margin-top:6px}
 .btn-outline-amber{background:transparent;color:#B5851B;border:1px solid #B5851B;margin-top:6px}
+.btn-outline-red{background:transparent;color:#8B1A1A;border:1px solid #8B1A1A;margin-top:6px}
 .success-box{background:#EAF3DE;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px}
 .success-box h3{color:#3B6D11;font-size:16px;margin-bottom:4px}
 .success-box p{color:#3B6D11;font-size:13px;opacity:0.85}
@@ -49,19 +51,23 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 .id-num{font-size:56px;font-weight:700;color:#B5451B;letter-spacing:0.1em}
 .id-sub{font-size:12px;color:#6B5B4E;margin-top:6px}
 .err{color:#8B1A1A;font-size:12px;margin-top:6px;display:none;padding:8px;background:#F5DCDC;border-radius:6px}
-.reversal-wrap{background:#F5DCDC;border-radius:8px;padding:12px;margin-top:8px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between}
-.toggle-row span{font-size:13px;font-weight:600}
-.toggle-row input[type=checkbox]{width:20px;height:20px;cursor:pointer}
 .hidden{display:none}
 .section-hdr{background:#2D2926;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px;border-radius:6px;margin-bottom:8px}
 .section-hdr.teal-hdr{background:#1B6B6B}
 .section-hdr.sage-hdr{background:#4A6741}
 .section-hdr.amber-hdr{background:#B5851B}
+.section-hdr.red-hdr{background:#8B1A1A}
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .attendee-row{background:#f0f7f7;border:1px solid #c4d8d8;border-radius:8px;padding:12px;margin-bottom:8px}
 .attendee-count{text-align:center;font-size:14px;color:#6B5B4E;padding:8px;background:#E8E0D5;border-radius:8px;margin-bottom:10px}
+.reversal-item{background:#F5DCDC;border:1px solid #d4a0a0;border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.reversal-item-text{font-size:12px;color:#5B1A1A;flex:1;line-height:1.5}
+.reversal-item-del{background:none;border:none;color:#8B1A1A;cursor:pointer;font-size:18px;padding:0 2px;line-height:1;flex-shrink:0}
+.toggle-row{display:flex;align-items:center;justify-content:space-between}
+.toggle-row span{font-size:13px;font-weight:600}
+.toggle-row input[type=checkbox]{width:20px;height:20px;cursor:pointer}
+.reversal-form{background:#FFF0F0;border:1px solid #d4a0a0;border-radius:8px;padding:12px;margin-top:8px}
 /* Import tab */
 .import-table-wrap{overflow-x:auto;margin-top:10px}
 .import-table{width:100%;border-collapse:collapse;font-size:12px}
@@ -93,8 +99,8 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div id="screen-intake" class="screen active">
 <div id="intake-form">
 <div class="card">
-<div class="label">Participant Type</div>
-<div class="chips" data-group="ptype" data-mode="single">
+<div class="label">Participant Type (select all that apply)</div>
+<div class="chips" data-group="ptype" data-mode="multi">
 <button class="chip" data-val="SSP">SSP</button>
 <button class="chip" data-val="OEND">OEND</button>
 <button class="chip" data-val="Community">Community</button>
@@ -108,14 +114,20 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="field"><label>Initials</label><input id="i-initials" maxlength="4" autocapitalize="characters" placeholder="AB"></div>
 <div class="field"><label>Birth Year</label><input id="i-year" type="number" inputmode="numeric" placeholder="1990"></div>
 </div>
-<div class="field"><label>Gender Identity</label></div>
+<div class="field"><label>Gender / Sex</label></div>
 <div class="chips" data-group="gender" data-mode="single">
-<button class="chip">Woman</button><button class="chip">Man</button><button class="chip">Non-binary</button><button class="chip">Transgender</button><button class="chip">Other</button>
+<button class="chip">M</button><button class="chip">F</button><button class="chip">N</button><button class="chip">O</button>
 </div>
-<div class="field" style="margin-top:6px"><input id="i-gender-other" placeholder="If other, specify"></div>
-<div class="field"><label>Race / Ethnicity (select all)</label></div>
+<div class="field" style="margin-top:10px"><label>Race / Ethnicity (select all)</label></div>
 <div class="chips" data-group="race" data-mode="multi">
-<button class="chip">White</button><button class="chip">Black</button><button class="chip">Hispanic/Latino</button><button class="chip">Native American</button><button class="chip">Asian</button><button class="chip">Pacific Islander</button><button class="chip">Multiracial</button><button class="chip">Other</button>
+<button class="chip" data-val="W">White</button>
+<button class="chip" data-val="B">Black</button>
+<button class="chip" data-val="H">Hispanic/Latino</button>
+<button class="chip" data-val="NA">Native American</button>
+<button class="chip" data-val="A">Asian</button>
+<button class="chip" data-val="PI">Pacific Islander</button>
+<button class="chip" data-val="M">Multiracial</button>
+<button class="chip" data-val="O">Other</button>
 </div>
 </div>
 <div class="card">
@@ -125,10 +137,6 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="field"><label>County</label>
 <select id="i-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Elbert</option><option>Hart</option><option>Franklin</option><option>Stephens</option><option>Habersham</option><option>Rabun</option><option>Other</option></select>
 </div>
-</div>
-<div class="field"><label>Housing Status</label></div>
-<div class="chips" data-group="housing" data-mode="single">
-<button class="chip">Stably housed</button><button class="chip">Unstably housed</button><button class="chip">Unhoused</button><button class="chip">Shelter</button><button class="chip">Unknown</button>
 </div>
 </div>
 <button class="btn btn-rust" onclick="submitIntake(this)">Generate anonymous ID</button>
@@ -193,18 +201,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 </div>
 </div>
 <div class="card">
-<div class="section-hdr">Substance Use</div>
-<div class="label">Primary Substance (select all)</div>
-<div class="chips" data-group="subst" data-mode="multi">
-<button class="chip">Heroin/fentanyl</button><button class="chip">Methamphetamine</button><button class="chip">Cocaine/crack</button><button class="chip">Rx opioids</button><button class="chip">Cannabis</button><button class="chip">Benzodiazepines</button><button class="chip">Alcohol</button><button class="chip">Other / unknown</button><button class="chip">None/not disclosed</button>
-</div>
-<div class="field" style="margin-top:8px"><label>Route of Admin</label></div>
-<div class="chips" data-group="route" data-mode="multi">
-<button class="chip">Injection</button><button class="chip">Smoking</button><button class="chip">Snorting</button><button class="chip">Oral</button><button class="chip">Other</button>
-</div>
-</div>
-<div class="card">
-<div class="section-hdr">Supplies Distributed</div>
+<div class="section-hdr">Supplies</div>
 <div class="label">Syringes — Longs</div>
 <div class="chips" data-group="longs" data-mode="single">
 <button class="chip">0</button><button class="chip">10</button><button class="chip">20</button><button class="chip">30</button><button class="chip">40</button><button class="chip">50</button>
@@ -213,18 +210,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="chips" data-group="shorts" data-mode="single">
 <button class="chip">0</button><button class="chip">10</button><button class="chip">20</button><button class="chip">30</button><button class="chip">40</button><button class="chip">50</button>
 </div>
-<div class="label" style="margin-top:10px">Fentanyl Test Strips</div>
-<div class="chips" data-group="fts" data-mode="single">
-<button class="chip">0</button><button class="chip">5</button><button class="chip">10</button><button class="chip">20</button><button class="chip">50</button>
-</div>
-<div class="label" style="margin-top:10px">Alt Supplies (select all)</div>
-<div class="chips" data-group="alt" data-mode="multi">
-<button class="chip">Condoms</button><button class="chip">Pipes</button><button class="chip">Tourniquets</button><button class="chip">Cookers</button><button class="chip">Cottons/filters</button><button class="chip">Alcohol pads</button><button class="chip">Sharps container</button><button class="chip">Wound care kit</button>
-</div>
-</div>
-<div class="card">
-<div class="section-hdr">Naloxone</div>
-<div class="label">Naloxone IM (kits)</div>
+<div class="label" style="margin-top:10px">Naloxone IM (kits)</div>
 <div class="chips" data-group="nalox-im" data-mode="single">
 <button class="chip">0</button><button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button>
 </div>
@@ -232,59 +218,58 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="chips" data-group="nalox-nasal" data-mode="single">
 <button class="chip">0</button><button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button>
 </div>
-<div class="label" style="margin-top:10px">Sec Distrib Kits</div>
+<div style="margin-top:12px">
+<div class="toggle-row">
+<span>Secondary Distribution?</span>
+<input type="checkbox" id="sec-distrib-toggle" onchange="toggleSecDistrib()">
+</div>
+<div id="sec-count" class="hidden" style="margin-top:10px">
+<div class="label">How many kits?</div>
 <div class="chips" data-group="sec" data-mode="single">
-<button class="chip">0</button><button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button>
+<button class="chip">1</button><button class="chip">2</button><button class="chip">3</button><button class="chip">4</button><button class="chip">5</button><button class="chip">6</button><button class="chip">7</button><button class="chip">8</button><button class="chip">9</button><button class="chip">10+</button>
 </div>
 </div>
+</div>
+</div>
+
+<!-- ════ REVERSALS ════ -->
 <div class="card">
-<div class="section-hdr">Naloxone Training</div>
-<div class="chips" data-group="training" data-mode="single">
-<button class="chip sage">Trained by us (today)</button><button class="chip sage">Previously trained by AP</button><button class="chip sage">Trained elsewhere</button><button class="chip sage">No training</button>
-</div>
-</div>
-<div class="card">
-<div class="section-hdr">Recovery Support Services (Annex D)</div>
-<div class="label">Peer Support</div>
-<div class="chips" data-group="svc" data-mode="multi">
-<button class="chip sage">Peer check-in</button><button class="chip sage">Safer use education</button><button class="chip sage">Emotional support</button><button class="chip sage">Resource navigation</button>
-</div>
-<div class="label" style="margin-top:10px">Referrals &amp; Services</div>
-<div class="chips" data-group="svc" data-mode="multi">
-<button class="chip sage">MAT/MOUD referral</button><button class="chip sage">Mental health referral</button><button class="chip sage">Medical referral</button><button class="chip sage">Wound care</button><button class="chip sage">Housing support</button><button class="chip sage">Transportation support</button><button class="chip sage">Employment services</button><button class="chip sage">Vocational/GED referral</button><button class="chip sage">Family supports</button><button class="chip sage">Benefits/ID assistance</button><button class="chip sage">Legal aid referral</button><button class="chip sage">Secondary distribution</button>
-</div>
-</div>
-<div class="card">
-<div class="reversal-wrap">
-<div class="toggle-row"><span>Reported Reversal?</span><input type="checkbox" id="reversal-toggle" onchange="toggleReversal()"></div>
-</div>
-<div id="reversal-details" class="hidden" style="margin-top:10px">
+<div class="section-hdr red-hdr">Overdose Reversals</div>
+<div id="reversal-list"></div>
+<button class="btn btn-outline-red" onclick="showReversalForm()" id="add-reversal-btn" style="margin-top:0">+ Log a Reversal</button>
+<div id="reversal-entry" class="reversal-form hidden">
+<div style="font-size:12px;font-weight:700;color:#8B1A1A;margin-bottom:10px" id="reversal-entry-label">Reversal #1</div>
 <div class="label">Reporter Type</div>
-<div class="chips" data-group="reporter" data-mode="single">
+<div class="chips" data-group="rev-reporter" data-mode="single">
 <button class="chip danger">SSP Participant</button><button class="chip danger">OEND Participant</button><button class="chip danger">Community Member</button><button class="chip danger">Sec Distro Recipient</button><button class="chip danger">Staff/Volunteer</button>
 </div>
 <div class="label" style="margin-top:10px">OD Outcome</div>
-<div class="chips" data-group="od-outcome" data-mode="single">
+<div class="chips" data-group="rev-outcome" data-mode="single">
 <button class="chip danger">Alive and well</button><button class="chip danger">Alive - hospital</button><button class="chip danger">Alive - unknown condition</button><button class="chip danger">Deceased</button><button class="chip danger">Unknown</button>
 </div>
-<div class="row2" style="margin-top:8px">
-<div><div class="label">Nasal doses used</div><div class="chips" data-group="od-nasal" data-mode="single"><button class="chip danger">0</button><button class="chip danger">1</button><button class="chip danger">2</button><button class="chip danger">3</button><button class="chip danger">4</button></div></div>
-<div><div class="label">IM doses used</div><div class="chips" data-group="od-inj" data-mode="single"><button class="chip danger">0</button><button class="chip danger">1</button><button class="chip danger">2</button><button class="chip danger">3</button><button class="chip danger">4</button></div></div>
+<div class="row2" style="margin-top:10px">
+<div><div class="label">Nasal doses used</div><div class="chips" data-group="rev-nasal" data-mode="single"><button class="chip danger">0</button><button class="chip danger">1</button><button class="chip danger">2</button><button class="chip danger">3</button><button class="chip danger">4</button></div></div>
+<div><div class="label">IM doses used</div><div class="chips" data-group="rev-inj" data-mode="single"><button class="chip danger">0</button><button class="chip danger">1</button><button class="chip danger">2</button><button class="chip danger">3</button><button class="chip danger">4</button></div></div>
 </div>
 <div class="label" style="margin-top:10px">OD Demographics (de-identified)</div>
-<div class="chips" data-group="od-gender" data-mode="single">
+<div class="chips" data-group="rev-gender" data-mode="single">
 <button class="chip danger">Woman</button><button class="chip danger">Man</button><button class="chip danger">Non-binary</button><button class="chip danger">Unknown</button>
 </div>
 <div class="field" style="margin-top:6px"><label>Race/Ethnicity</label></div>
-<div class="chips" data-group="od-race" data-mode="multi">
+<div class="chips" data-group="rev-race" data-mode="multi">
 <button class="chip danger">White</button><button class="chip danger">Black</button><button class="chip danger">Hispanic/Latino</button><button class="chip danger">Native American</button><button class="chip danger">Other</button><button class="chip danger">Unknown</button>
 </div>
 <div class="row2" style="margin-top:8px">
-<div class="field"><label>Age Range</label><select id="od-age"><option value="">Select</option><option>Under 18</option><option>18-24</option><option>25-34</option><option>35-44</option><option>45-54</option><option>55-64</option><option>65+</option><option>Unknown</option></select></div>
-<div class="field"><label>County</label><select id="od-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Other</option><option>Unknown</option></select></div>
+<div class="field"><label>Age Range</label><select id="rev-age"><option value="">Select</option><option>Under 18</option><option>18-24</option><option>25-34</option><option>35-44</option><option>45-54</option><option>55-64</option><option>65+</option><option>Unknown</option></select></div>
+<div class="field"><label>County</label><select id="rev-county"><option value="">Select</option><option>Clarke</option><option>Oconee</option><option>Jackson</option><option>Madison</option><option>Barrow</option><option>Oglethorpe</option><option>Other</option><option>Unknown</option></select></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:4px">
+<button class="btn btn-red" onclick="saveReversal()" style="margin-top:0">Save Reversal</button>
+<button class="btn btn-outline-red" onclick="cancelReversal()" style="margin-top:0">Cancel</button>
 </div>
 </div>
 </div>
+
 <div class="card">
 <div class="field"><label>Notes</label><textarea id="v-notes" placeholder="Anything notable about this visit..."></textarea></div>
 </div>
@@ -391,7 +376,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div id="ci-form">
 <div class="card" style="background:rgba(27,107,107,.08);border-color:#1B6B6B">
 <div style="font-size:14px;font-weight:700;color:#1B6B6B;margin-bottom:4px">FRONT DESK CHECK-IN</div>
-<div style="font-size:12px;color:#6B5B4E">Look up by initials + birth year, or enter ID directly. Staff in back will see the queue update.</div>
+<div style="font-size:12px;color:#6B5B4E">Look up by initials + birth year, or enter ID directly.</div>
 </div>
 <div class="card">
 <div class="label">Find Participant</div>
@@ -413,7 +398,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="id-num" style="color:#1B6B6B" id="ci-result-id"></div>
 <div class="id-sub" id="ci-result-time"></div>
 </div>
-<div style="font-size:12px;color:#6B5B4E;margin:8px 0 16px">Added to the queue — staff in back can see this now.</div>
+<div style="font-size:12px;color:#6B5B4E;margin:8px 0 16px">Added to the queue.</div>
 <button class="btn btn-outline-teal" onclick="resetCheckIn()">Check In Another</button>
 <button class="btn btn-sage" onclick="goVisitFromCheckIn()" style="margin-top:8px">Log Visit for This Person →</button>
 </div>
@@ -424,14 +409,12 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div id="import-setup">
 <div class="card" style="background:rgba(181,133,27,.08);border-color:#B5851B">
 <div style="font-size:14px;font-weight:700;color:#B5851B;margin-bottom:4px">BULK IMPORT — SSP VISITS</div>
-<div style="font-size:12px;color:#6B5B4E">Upload or paste a CSV of past visit records. Each row becomes one entry in SSP Visits. Use for backfilling historical data or entering a batch at once.</div>
+<div style="font-size:12px;color:#6B5B4E">Upload or paste a CSV of past visit records. Each row becomes one entry in SSP Visits.</div>
 </div>
 <div class="card">
 <div class="section-hdr amber-hdr">CSV Format</div>
-<div style="font-size:12px;color:#6B5B4E;margin-bottom:8px">Required columns: <strong>Date</strong> and <strong>Participant ID</strong>. All others are optional. Dates can be YYYY-MM-DD or MM/DD/YYYY.</div>
-<div class="code-block">Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,FTS,Nalox IM,Nalox Nasal,Sec Distrib,Alt Supplies,Training,Services,Notes</div>
-<div style="font-size:11px;color:#8B7B6E;margin:4px 0 8px">Example row:</div>
-<div class="code-block">2026-04-15,1023,Returning,Office,OK,20,0,5,1,0,0,Condoms,Previously trained by AP,Peer check-in,</div>
+<div style="font-size:12px;color:#6B5B4E;margin-bottom:8px">Required: <strong>Date</strong> and <strong>Participant ID</strong>. Dates can be YYYY-MM-DD or MM/DD/YYYY.</div>
+<div class="code-block">Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,Nalox IM,Nalox Nasal,Sec Distrib,Notes</div>
 <button class="btn btn-outline-amber" onclick="downloadTemplate()" style="margin-top:4px">⬇ Download blank template</button>
 </div>
 <div class="card">
@@ -442,8 +425,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 </div>
 <div style="text-align:center;font-size:12px;color:#8B7B6E;margin:4px 0">— or paste directly —</div>
 <div class="field">
-<label>Paste CSV data here</label>
-<textarea id="csv-paste" placeholder="Date,Participant ID,New/Returning,...&#10;2026-04-15,1023,Returning,..." style="min-height:120px;font-family:monospace;font-size:12px"></textarea>
+<textarea id="csv-paste" placeholder="Date,Participant ID,..." style="min-height:120px;font-family:monospace;font-size:12px"></textarea>
 </div>
 <button class="btn btn-amber" onclick="parseAndPreview()">Parse &amp; Preview →</button>
 <div id="parse-err" class="err"></div>
@@ -471,10 +453,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 </div>
 </div>
 <div id="import-done" class="hidden" style="padding-top:10px">
-<div class="success-box">
-<h3>Import Complete</h3>
-<p id="import-done-msg"></p>
-</div>
+<div class="success-box"><h3>Import Complete</h3><p id="import-done-msg"></p></div>
 <button class="btn btn-outline" onclick="resetImport()">Import More</button>
 </div>
 </div>
@@ -487,6 +466,7 @@ const sel = {};
 let currentEventId = null;
 let attendeeCount = 0;
 let bulkRows = [];
+let reversals = [];
 
 fetch(WEB_APP_URL)
   .then(r => r.json())
@@ -525,15 +505,85 @@ document.addEventListener('click', function(e) {
 function getToggled(g) {
   return Array.from(document.querySelectorAll('[data-group="'+g+'"] .chip.on')).map(c => c.dataset.val||c.textContent).join('; ');
 }
-function toggleReversal() {
-  document.getElementById('reversal-details').classList.toggle('hidden', !document.getElementById('reversal-toggle').checked);
+
+// ── Secondary Distrib toggle ──
+function toggleSecDistrib() {
+  const checked = document.getElementById('sec-distrib-toggle').checked;
+  document.getElementById('sec-count').classList.toggle('hidden', !checked);
+  if (!checked) {
+    delete sel['sec'];
+    document.querySelectorAll('[data-group="sec"] .chip').forEach(c => c.classList.remove('on'));
+  }
+}
+
+// ── Reversals ──
+function showReversalForm() {
+  document.getElementById('reversal-entry-label').textContent = 'Reversal #' + (reversals.length + 1);
+  document.getElementById('reversal-entry').classList.remove('hidden');
+  document.getElementById('add-reversal-btn').classList.add('hidden');
+}
+
+function cancelReversal() {
+  resetReversalForm();
+  document.getElementById('reversal-entry').classList.add('hidden');
+  document.getElementById('add-reversal-btn').classList.remove('hidden');
+}
+
+function saveReversal() {
+  const r = {
+    reporterType: sel['rev-reporter'] || '',
+    odOutcome: sel['rev-outcome'] || '',
+    nasalDoses: sel['rev-nasal'] || '',
+    imDoses: sel['rev-inj'] || '',
+    odGender: sel['rev-gender'] || '',
+    odRace: getToggled('rev-race'),
+    odAge: document.getElementById('rev-age').value,
+    odCounty: document.getElementById('rev-county').value
+  };
+  reversals.push(r);
+  renderReversals();
+  resetReversalForm();
+  document.getElementById('reversal-entry').classList.add('hidden');
+  document.getElementById('add-reversal-btn').classList.remove('hidden');
+}
+
+function removeReversal(i) {
+  reversals.splice(i, 1);
+  renderReversals();
+}
+
+function renderReversals() {
+  const list = document.getElementById('reversal-list');
+  list.innerHTML = '';
+  reversals.forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = 'reversal-item';
+    const summary = [
+      r.odOutcome || 'Outcome unknown',
+      r.reporterType || '',
+      r.odGender || '',
+      r.nasalDoses ? 'Nasal: ' + r.nasalDoses : '',
+      r.imDoses ? 'IM: ' + r.imDoses : '',
+      r.odCounty || ''
+    ].filter(Boolean).join(' · ');
+    div.innerHTML = '<div class="reversal-item-text"><strong>Reversal #' + (i+1) + '</strong><br>' + summary + '</div>'
+      + '<button class="reversal-item-del" onclick="removeReversal(' + i + ')">✕</button>';
+    list.appendChild(div);
+  });
+}
+
+function resetReversalForm() {
+  ['rev-reporter','rev-outcome','rev-nasal','rev-inj','rev-gender','rev-race'].forEach(k => delete sel[k]);
+  document.querySelectorAll('#reversal-entry .chip').forEach(c => c.classList.remove('on'));
+  document.getElementById('rev-age').selectedIndex = 0;
+  document.getElementById('rev-county').selectedIndex = 0;
 }
 
 // ════ INTAKE ════
 async function submitIntake(btn) {
   const initials = document.getElementById('i-initials').value.trim().toUpperCase();
   const year = document.getElementById('i-year').value.trim();
-  const gender = sel['gender'] || document.getElementById('i-gender-other').value.trim();
+  const gender = sel['gender'] || '';
   const errEl = document.getElementById('intake-err');
   if (!initials || !year || !gender) { errEl.style.display='block'; return; }
   errEl.style.display='none';
@@ -546,20 +596,34 @@ async function submitIntake(btn) {
     registry.push({id,initials,year});
   }
   btn.innerHTML='<span class="spinner"></span> Registering...'; btn.disabled=true;
-  try { await fetch(WEB_APP_URL, {method:'POST', body:JSON.stringify({action:'registerParticipant',id,initials,birthYear:year,gender,race:getToggled('race'),housing:sel['housing']||'',participantType:sel['ptype']||'SSP',zip:document.getElementById('i-zip').value.trim(),county:document.getElementById('i-county').value})}); } catch(e) {}
+  try {
+    await fetch(WEB_APP_URL, {method:'POST', body:JSON.stringify({
+      action:'registerParticipant',
+      id,
+      initials,
+      birthYear:year,
+      gender,
+      race:getToggled('race'),
+      participantType:getToggled('ptype'),
+      zip:document.getElementById('i-zip').value.trim(),
+      county:document.getElementById('i-county').value
+    })});
+  } catch(e) {}
   document.getElementById('result-id').textContent=id;
   document.getElementById('intake-form').classList.add('hidden');
   document.getElementById('intake-result').classList.remove('hidden');
   btn.innerHTML='Generate anonymous ID'; btn.disabled=false;
 }
+
 function resetIntake() {
   document.getElementById('intake-form').classList.remove('hidden');
   document.getElementById('intake-result').classList.add('hidden');
-  ['i-initials','i-year','i-zip','i-gender-other'].forEach(id=>document.getElementById(id).value='');
+  ['i-initials','i-year','i-zip'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('i-county').selectedIndex=0;
   document.querySelectorAll('#screen-intake .chip').forEach(c=>c.classList.remove('on'));
-  ['gender','race','housing','ptype'].forEach(k=>delete sel[k]);
+  ['gender','race','ptype'].forEach(k=>delete sel[k]);
 }
+
 function goVisit() { document.getElementById('v-id').value=document.getElementById('result-id').textContent; showScreen('visit'); }
 
 // ════ LOOKUP ════
@@ -581,23 +645,45 @@ async function submitVisit() {
   if (!id||!date) { errEl.style.display='block'; return; } errEl.style.display='none';
   const btn=document.getElementById('v-submit');
   btn.innerHTML='<span class="spinner"></span> Submitting...'; btn.disabled=true;
-  const reversal=document.getElementById('reversal-toggle').checked;
   const worker=sel['worker']==='Other'?document.getElementById('v-worker-other').value.trim().toUpperCase():(sel['worker']||'');
+  const secOn = document.getElementById('sec-distrib-toggle').checked;
   try {
-    await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'logVisit',participantId:id,date,worker,location:sel['loc']==='Other'?document.getElementById('v-loc-other').value.trim():(sel['loc']||''),newOrReturning:sel['nr']||'',housing:sel['v-housing']||'',substances:getToggled('subst'),route:getToggled('route'),longs:sel['longs']||'0',shorts:sel['shorts']||'0',fts:sel['fts']||'0',altSupplies:getToggled('alt'),naloxIM:sel['nalox-im']||'0',naloxNasal:sel['nalox-nasal']||'0',secDistrib:sel['sec']||'0',training:sel['training']||'',reversal:reversal?'Yes':'No',reporterType:reversal?(sel['reporter']||''):'',odOutcome:reversal?(sel['od-outcome']||''):'',odNasalDoses:reversal?(sel['od-nasal']||''):'',odInjDoses:reversal?(sel['od-inj']||''):'',odGender:reversal?(sel['od-gender']||''):'',odRace:reversal?getToggled('od-race'):'',odAge:reversal?document.getElementById('od-age').value:'',odCounty:reversal?document.getElementById('od-county').value:'',services:getToggled('svc'),notes:document.getElementById('v-notes').value.trim()})});
+    await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({
+      action:'logVisit',
+      participantId:id,
+      date,
+      worker,
+      location:sel['loc']==='Other'?document.getElementById('v-loc-other').value.trim():(sel['loc']||''),
+      newOrReturning:sel['nr']||'',
+      housing:sel['v-housing']||'',
+      longs:sel['longs']||'0',
+      shorts:sel['shorts']||'0',
+      naloxIM:sel['nalox-im']||'0',
+      naloxNasal:sel['nalox-nasal']||'0',
+      secDistrib:secOn?(sel['sec']||'1'):'0',
+      reversals:reversals,
+      reversalCount:String(reversals.length),
+      notes:document.getElementById('v-notes').value.trim()
+    })});
   } catch(e) {}
   btn.classList.add('hidden'); document.getElementById('v-success').classList.remove('hidden');
 }
+
 function resetVisit() {
   const btn=document.getElementById('v-submit'); btn.innerHTML='Submit Visit'; btn.disabled=false; btn.classList.remove('hidden');
   document.getElementById('v-success').classList.add('hidden'); document.getElementById('v-err').style.display='none';
   ['v-id','v-notes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('v-date').value=new Date().toISOString().split('T')[0];
   ['v-worker-other','v-loc-other'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).classList.add('hidden');});
-  document.getElementById('reversal-toggle').checked=false; document.getElementById('reversal-details').classList.add('hidden');
-  document.getElementById('od-age').selectedIndex=0; document.getElementById('od-county').selectedIndex=0;
+  document.getElementById('sec-distrib-toggle').checked=false;
+  document.getElementById('sec-count').classList.add('hidden');
+  reversals=[];
+  document.getElementById('reversal-list').innerHTML='';
+  document.getElementById('reversal-entry').classList.add('hidden');
+  document.getElementById('add-reversal-btn').classList.remove('hidden');
+  resetReversalForm();
   document.querySelectorAll('#screen-visit .chip').forEach(c=>c.classList.remove('on'));
-  ['worker','nr','loc','v-housing','subst','route','longs','shorts','fts','alt','nalox-im','nalox-nasal','sec','training','svc','reporter','od-outcome','od-nasal','od-inj','od-gender','od-race'].forEach(k=>delete sel[k]);
+  ['worker','nr','loc','v-housing','longs','shorts','nalox-im','nalox-nasal','sec'].forEach(k=>delete sel[k]);
 }
 
 // ════ EVENTS ════
@@ -667,9 +753,7 @@ async function checkIn(btn) {
   }
   errEl.style.display='none';
   btn.innerHTML='<span class="spinner"></span> Checking in...'; btn.disabled=true;
-  try {
-    await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'checkIn',participantId:pid,notes,time:new Date().toISOString()})});
-  } catch(e) {}
+  try { await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'checkIn',participantId:pid,notes,time:new Date().toISOString()})}); } catch(e) {}
   document.getElementById('ci-result-id').textContent=pid;
   document.getElementById('ci-result-time').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   document.getElementById('ci-form').classList.add('hidden');
@@ -689,8 +773,8 @@ function goVisitFromCheckIn() {
 
 // ════ IMPORT / BULK ════
 function downloadTemplate() {
-  const header='Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,FTS,Nalox IM,Nalox Nasal,Sec Distrib,Alt Supplies,Training,Services,Notes\n';
-  const example='2026-04-15,1023,Returning,Office,OK,20,0,5,1,0,0,Condoms,Previously trained by AP,Peer check-in,\n';
+  const header='Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,Nalox IM,Nalox Nasal,Sec Distrib,Notes\n';
+  const example='2026-04-15,1023,Returning,Office,OK,20,0,1,0,0,\n';
   const blob=new Blob([header+example],{type:'text/csv'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ssp_visits_import_template.csv'; a.click();
 }
@@ -731,7 +815,7 @@ function normalizeDate(d) {
   return d;
 }
 function rowToPayload(row) {
-  return {action:'logVisit',participantId:row['Participant ID']||'',date:normalizeDate(row['Date']||''),newOrReturning:row['New/Returning']||'',location:row['Location']||'',worker:row['Worker']||'',longs:row['Longs']||'0',shorts:row['Shorts']||'0',fts:row['FTS']||'0',naloxIM:row['Nalox IM']||'0',naloxNasal:row['Nalox Nasal']||'0',secDistrib:row['Sec Distrib']||'0',altSupplies:row['Alt Supplies']||'',training:row['Training']||'',services:row['Services']||'',notes:row['Notes']||'',reversal:'No',substances:'',route:'',housing:''};
+  return {action:'logVisit',participantId:row['Participant ID']||'',date:normalizeDate(row['Date']||''),newOrReturning:row['New/Returning']||'',location:row['Location']||'',worker:row['Worker']||'',longs:row['Longs']||'0',shorts:row['Shorts']||'0',naloxIM:row['Nalox IM']||'0',naloxNasal:row['Nalox Nasal']||'0',secDistrib:row['Sec Distrib']||'0',notes:row['Notes']||'',reversals:[],reversalCount:'0',housing:''};
 }
 function parseAndPreview() {
   const text=document.getElementById('csv-paste').value.trim();
@@ -742,11 +826,11 @@ function parseAndPreview() {
   if (!parsed) { errEl.textContent='Could not parse. Need at least a header row and one data row.'; errEl.style.display='block'; return; }
   const {headers,rows}=parsed;
   if (!headers.includes('Date')||!headers.includes('Participant ID')) {
-    errEl.textContent='Missing required columns: "Date" and "Participant ID". Check your header row.'; errEl.style.display='block'; return;
+    errEl.textContent='Missing required columns: "Date" and "Participant ID".'; errEl.style.display='block'; return;
   }
   bulkRows=rows.filter(r=>(r['Date']||'').trim()&&(r['Participant ID']||'').trim());
   const skipped=rows.length-bulkRows.length;
-  const previewCols=['Date','Participant ID','New/Returning','Location','Worker','Longs','Shorts','FTS','Nalox IM','Nalox Nasal'];
+  const previewCols=['Date','Participant ID','New/Returning','Location','Worker','Longs','Shorts','Nalox IM','Nalox Nasal','Sec Distrib'];
   const thead=document.getElementById('preview-header');
   thead.innerHTML='<th>#</th>'+previewCols.map(h=>'<th>'+h+'</th>').join('');
   const tbody=document.getElementById('preview-body');
@@ -756,7 +840,7 @@ function parseAndPreview() {
     tr.innerHTML='<td>'+(i+1)+'</td>'+previewCols.map(h=>'<td>'+(row[h]||'')+'</td>').join('');
     tbody.appendChild(tr);
   });
-  document.getElementById('preview-summary').innerHTML='<strong>'+bulkRows.length+' valid rows</strong> ready to import'+(skipped?' ('+skipped+' skipped — missing Date or ID)':'')+(bulkRows.length>30?' — showing first 30':'')+'.' ;
+  document.getElementById('preview-summary').innerHTML='<strong>'+bulkRows.length+' valid rows</strong> ready to import'+(skipped?' ('+skipped+' skipped)':'')+(bulkRows.length>30?' — showing first 30':'')+'.' ;
   document.getElementById('submit-bulk-btn').textContent='Submit All '+bulkRows.length+' Visits';
   document.getElementById('preview-section').classList.remove('hidden');
 }
