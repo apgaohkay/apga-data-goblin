@@ -230,6 +230,16 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 </div>
 </div>
 </div>
+<div style="margin-top:12px">
+<div class="toggle-row">
+<span>Returned syringes for biohazard disposal?</span>
+<input type="checkbox" id="biohazard-toggle" onchange="toggleBiohazard()">
+</div>
+<div id="biohazard-count" class="hidden" style="margin-top:10px">
+<div class="label">How many returned?</div>
+<input type="number" id="biohazard-qty" inputmode="numeric" min="1" placeholder="e.g. 20" style="width:100%;padding:9px 11px;border:1px solid #C4B8A8;border-radius:8px;font-size:14px;font-family:Arial,sans-serif;background:#fff;color:#2D2926">
+</div>
+</div>
 </div>
 
 <!-- ════ REVERSALS ════ -->
@@ -414,7 +424,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div class="card">
 <div class="section-hdr amber-hdr">CSV Format</div>
 <div style="font-size:12px;color:#6B5B4E;margin-bottom:8px">Required: <strong>Date</strong> and <strong>Participant ID</strong>. Dates can be YYYY-MM-DD or MM/DD/YYYY.</div>
-<div class="code-block">Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,Nalox IM,Nalox Nasal,Sec Distrib,Notes</div>
+<div class="code-block">Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,Nalox IM,Nalox Nasal,Sec Distrib,Returned Syringes,Notes</div>
 <button class="btn btn-outline-amber" onclick="downloadTemplate()" style="margin-top:4px">⬇ Download blank template</button>
 </div>
 <div class="card">
@@ -514,6 +524,12 @@ function toggleSecDistrib() {
     delete sel['sec'];
     document.querySelectorAll('[data-group="sec"] .chip').forEach(c => c.classList.remove('on'));
   }
+}
+
+function toggleBiohazard() {
+  const checked = document.getElementById('biohazard-toggle').checked;
+  document.getElementById('biohazard-count').classList.toggle('hidden', !checked);
+  if (!checked) document.getElementById('biohazard-qty').value = '';
 }
 
 // ── Reversals ──
@@ -647,6 +663,7 @@ async function submitVisit() {
   btn.innerHTML='<span class="spinner"></span> Submitting...'; btn.disabled=true;
   const worker=sel['worker']==='Other'?document.getElementById('v-worker-other').value.trim().toUpperCase():(sel['worker']||'');
   const secOn = document.getElementById('sec-distrib-toggle').checked;
+  const bioOn = document.getElementById('biohazard-toggle').checked;
   try {
     await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({
       action:'logVisit',
@@ -661,6 +678,7 @@ async function submitVisit() {
       naloxIM:sel['nalox-im']||'0',
       naloxNasal:sel['nalox-nasal']||'0',
       secDistrib:secOn?(sel['sec']||'1'):'0',
+      returnedSyringes:bioOn?(document.getElementById('biohazard-qty').value.trim()||'yes'):'0',
       reversals:reversals,
       reversalCount:String(reversals.length),
       notes:document.getElementById('v-notes').value.trim()
@@ -677,6 +695,9 @@ function resetVisit() {
   ['v-worker-other','v-loc-other'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).classList.add('hidden');});
   document.getElementById('sec-distrib-toggle').checked=false;
   document.getElementById('sec-count').classList.add('hidden');
+  document.getElementById('biohazard-toggle').checked=false;
+  document.getElementById('biohazard-count').classList.add('hidden');
+  document.getElementById('biohazard-qty').value='';
   reversals=[];
   document.getElementById('reversal-list').innerHTML='';
   document.getElementById('reversal-entry').classList.add('hidden');
@@ -773,8 +794,8 @@ function goVisitFromCheckIn() {
 
 // ════ IMPORT / BULK ════
 function downloadTemplate() {
-  const header='Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,Nalox IM,Nalox Nasal,Sec Distrib,Notes\n';
-  const example='2026-04-15,1023,Returning,Office,OK,20,0,1,0,0,\n';
+  const header='Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,Nalox IM,Nalox Nasal,Sec Distrib,Returned Syringes,Notes\n';
+  const example='2026-04-15,1023,Returning,Office,OK,20,0,1,0,0,0,\n';
   const blob=new Blob([header+example],{type:'text/csv'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ssp_visits_import_template.csv'; a.click();
 }
@@ -815,7 +836,7 @@ function normalizeDate(d) {
   return d;
 }
 function rowToPayload(row) {
-  return {action:'logVisit',participantId:row['Participant ID']||'',date:normalizeDate(row['Date']||''),newOrReturning:row['New/Returning']||'',location:row['Location']||'',worker:row['Worker']||'',longs:row['Longs']||'0',shorts:row['Shorts']||'0',naloxIM:row['Nalox IM']||'0',naloxNasal:row['Nalox Nasal']||'0',secDistrib:row['Sec Distrib']||'0',notes:row['Notes']||'',reversals:[],reversalCount:'0',housing:''};
+  return {action:'logVisit',participantId:row['Participant ID']||'',date:normalizeDate(row['Date']||''),newOrReturning:row['New/Returning']||'',location:row['Location']||'',worker:row['Worker']||'',longs:row['Longs']||'0',shorts:row['Shorts']||'0',naloxIM:row['Nalox IM']||'0',naloxNasal:row['Nalox Nasal']||'0',secDistrib:row['Sec Distrib']||'0',returnedSyringes:row['Returned Syringes']||'0',notes:row['Notes']||'',reversals:[],reversalCount:'0',housing:''};
 }
 function parseAndPreview() {
   const text=document.getElementById('csv-paste').value.trim();
@@ -830,6 +851,8 @@ function parseAndPreview() {
   }
   bulkRows=rows.filter(r=>(r['Date']||'').trim()&&(r['Participant ID']||'').trim());
   const skipped=rows.length-bulkRows.length;
+  const supplyCols=['Longs','Shorts','Nalox IM','Nalox Nasal'];
+  const warnRows=bulkRows.filter(r=>supplyCols.every(c=>!(r[c]||'').trim()));
   const previewCols=['Date','Participant ID','New/Returning','Location','Worker','Longs','Shorts','Nalox IM','Nalox Nasal','Sec Distrib'];
   const thead=document.getElementById('preview-header');
   thead.innerHTML='<th>#</th>'+previewCols.map(h=>'<th>'+h+'</th>').join('');
@@ -837,10 +860,19 @@ function parseAndPreview() {
   tbody.innerHTML='';
   bulkRows.slice(0,30).forEach((row,i)=>{
     const tr=document.createElement('tr');
-    tr.innerHTML='<td>'+(i+1)+'</td>'+previewCols.map(h=>'<td>'+(row[h]||'')+'</td>').join('');
+    const hasEmptySupplies=supplyCols.every(c=>!(row[c]||'').trim());
+    if (hasEmptySupplies) tr.style.background='#FFF3CD';
+    tr.innerHTML='<td>'+(i+1)+(hasEmptySupplies?' ⚠':'')+'</td>'+previewCols.map(h=>{
+      const val=row[h]||'';
+      const warn=supplyCols.includes(h)&&!val.trim()?'style="color:#8B6914;font-weight:700"':'';
+      return '<td '+warn+'>'+(val||'—')+'</td>';
+    }).join('');
     tbody.appendChild(tr);
   });
-  document.getElementById('preview-summary').innerHTML='<strong>'+bulkRows.length+' valid rows</strong> ready to import'+(skipped?' ('+skipped+' skipped)':'')+(bulkRows.length>30?' — showing first 30':'')+'.' ;
+  let summary='<strong>'+bulkRows.length+' valid rows</strong> ready to import'+(skipped?' ('+skipped+' skipped)':'')+(bulkRows.length>30?' — showing first 30':'');
+  if (warnRows.length) summary+='<br><span style="color:#8B6914">⚠ '+warnRows.length+' row'+(warnRows.length!==1?'s':'')+' have all supply counts empty (highlighted in yellow) — check your CSV columns match exactly: Longs, Shorts, Nalox IM, Nalox Nasal</span>';
+  summary+='.';
+  document.getElementById('preview-summary').innerHTML=summary;
   document.getElementById('submit-bulk-btn').textContent='Submit All '+bulkRows.length+' Visits';
   document.getElementById('preview-section').classList.remove('hidden');
 }
