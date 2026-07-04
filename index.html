@@ -74,6 +74,20 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 .import-table th{background:#2D2926;color:#fff;padding:6px 8px;text-align:left;white-space:nowrap}
 .import-table td{padding:6px 8px;border-bottom:1px solid #E8E0D5;white-space:nowrap}
 .import-table tr:nth-child(even) td{background:#FAF7F2}
+/* Entry grid */
+.entry-grid-wrap{overflow-x:auto;margin-top:8px}
+.entry-grid{border-collapse:collapse;font-size:12px;min-width:900px;width:100%}
+.entry-grid th{background:#B5851B;color:#fff;padding:6px 8px;text-align:left;white-space:nowrap;font-size:11px}
+.entry-grid td{padding:3px 4px;border-bottom:1px solid #E8E0D5;vertical-align:middle}
+.entry-grid tr:nth-child(even) td{background:#FAF7F2}
+.entry-grid input,.entry-grid select{width:100%;padding:5px 6px;border:1px solid #C4B8A8;border-radius:5px;font-size:12px;font-family:Arial,sans-serif;background:#fff;color:#2D2926;-webkit-appearance:none;box-sizing:border-box}
+.entry-grid input:focus,.entry-grid select:focus{outline:none;border-color:#B5851B}
+.entry-grid td.row-num{color:#8B7B6E;font-size:11px;text-align:center;width:24px;padding:3px 6px}
+.entry-grid td.del-col{width:28px;text-align:center}
+.del-row-btn{background:none;border:none;color:#8B1A1A;cursor:pointer;font-size:15px;padding:0 2px;line-height:1}
+.import-mode-tabs{display:flex;gap:8px;margin-bottom:10px}
+.import-mode-tab{flex:1;padding:9px;border:1px solid #C4B8A8;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#6B5B4E;font-family:Arial,sans-serif;text-align:center}
+.import-mode-tab.active{background:#B5851B;color:#fff;border-color:#B5851B}
 .progress-bar-wrap{background:#E8E0D5;border-radius:8px;height:12px;overflow:hidden;margin:10px 0}
 .progress-bar{background:#B5451B;height:100%;transition:width 0.3s;border-radius:8px}
 .code-block{background:#2D2926;color:#EDE5DA;padding:12px;border-radius:8px;font-size:11px;font-family:monospace;overflow-x:auto;margin:8px 0;line-height:1.6;word-break:break-all}
@@ -416,10 +430,54 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 
 <!-- ════ IMPORT / BULK UPLOAD ════ -->
 <div id="screen-import" class="screen">
-<div id="import-setup">
+
+<!-- mode tabs -->
+<div class="import-mode-tabs">
+<button class="import-mode-tab active" onclick="switchImportMode('grid')" id="tab-grid">✏️ Manual Entry</button>
+<button class="import-mode-tab" onclick="switchImportMode('csv')" id="tab-csv">📄 CSV Import</button>
+</div>
+
+<!-- ── MANUAL ENTRY GRID ── -->
+<div id="import-grid-mode">
+<div class="card" style="background:rgba(181,133,27,.08);border-color:#B5851B;margin-bottom:8px">
+<div style="font-size:13px;font-weight:700;color:#B5851B;margin-bottom:2px">Quick Entry — SSP Visits</div>
+<div style="font-size:12px;color:#6B5B4E">Fill rows directly. Red-outlined cells are required. Submit when done.</div>
+</div>
+<div class="entry-grid-wrap">
+<table class="entry-grid" id="entry-grid">
+<thead><tr>
+<th style="width:24px">#</th>
+<th>Date*</th>
+<th>PID*</th>
+<th>N/R</th>
+<th>Location</th>
+<th>Worker</th>
+<th>Longs</th>
+<th>Shorts</th>
+<th>Nal IM</th>
+<th>Nal Nas</th>
+<th>Sec</th>
+<th>Ret'd Syr</th>
+<th>Notes</th>
+<th></th>
+</tr></thead>
+<tbody id="entry-grid-body"></tbody>
+</table>
+</div>
+<div style="display:flex;gap:8px;margin-top:8px">
+<button class="btn btn-outline-amber" onclick="addEntryRows(5)" style="margin-top:0;flex:1">+ 5 rows</button>
+<button class="btn btn-outline-amber" onclick="addEntryRows(1)" style="margin-top:0;flex:1">+ 1 row</button>
+</div>
+<div id="grid-row-count" style="text-align:center;font-size:12px;color:#6B5B4E;margin-top:6px"></div>
+<button class="btn btn-amber" onclick="previewGrid()" style="margin-top:8px">Preview →</button>
+<div id="grid-err" class="err"></div>
+</div>
+
+<!-- ── CSV IMPORT ── -->
+<div id="import-csv-mode" class="hidden">
 <div class="card" style="background:rgba(181,133,27,.08);border-color:#B5851B">
-<div style="font-size:14px;font-weight:700;color:#B5851B;margin-bottom:4px">BULK IMPORT — SSP VISITS</div>
-<div style="font-size:12px;color:#6B5B4E">Upload or paste a CSV of past visit records. Each row becomes one entry in SSP Visits.</div>
+<div style="font-size:14px;font-weight:700;color:#B5851B;margin-bottom:4px">CSV Import — SSP Visits</div>
+<div style="font-size:12px;color:#6B5B4E">Upload or paste a CSV. Each row becomes one entry in SSP Visits.</div>
 </div>
 <div class="card">
 <div class="section-hdr amber-hdr">CSV Format</div>
@@ -440,6 +498,10 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <button class="btn btn-amber" onclick="parseAndPreview()">Parse &amp; Preview →</button>
 <div id="parse-err" class="err"></div>
 </div>
+</div>
+
+<!-- shared: preview + progress + done -->
+<div id="import-setup">
 <div id="preview-section" class="hidden">
 <div class="card">
 <div class="section-hdr amber-hdr">Preview</div>
@@ -792,6 +854,124 @@ function goVisitFromCheckIn() {
   showScreen('visit');
 }
 
+// ════ IMPORT MODE SWITCH ════
+function switchImportMode(mode) {
+  document.getElementById('import-grid-mode').classList.toggle('hidden', mode !== 'grid');
+  document.getElementById('import-csv-mode').classList.toggle('hidden', mode !== 'csv');
+  document.getElementById('tab-grid').classList.toggle('active', mode === 'grid');
+  document.getElementById('tab-csv').classList.toggle('active', mode === 'csv');
+  document.getElementById('preview-section').classList.add('hidden');
+  bulkRows = [];
+}
+
+// ════ MANUAL ENTRY GRID ════
+const ENTRY_COLS = ['date','pid','nr','loc','worker','longs','shorts','naloxIM','naloxNasal','sec','returned','notes'];
+
+function makeEntryRow(n) {
+  const today = new Date().toISOString().split('T')[0];
+  const tr = document.createElement('tr');
+  tr.innerHTML =
+    `<td class="row-num">${n}</td>` +
+    `<td><input type="date" name="date" value="${today}" style="min-width:110px"></td>` +
+    `<td><input type="number" name="pid" inputmode="numeric" placeholder="1001" style="min-width:60px;border-color:#B5851B"></td>` +
+    `<td><select name="nr"><option value="">—</option><option>New</option><option>Returning</option></select></td>` +
+    `<td><select name="loc"><option value="">—</option><option>Office</option><option>Mobile</option><option>Paradise</option><option>Other</option></select></td>` +
+    `<td><select name="worker"><option value="">—</option><option>OK</option><option>RK</option><option>Other</option></select></td>` +
+    `<td><select name="longs"><option>0</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select></td>` +
+    `<td><select name="shorts"><option>0</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select></td>` +
+    `<td><select name="naloxIM"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
+    `<td><select name="naloxNasal"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
+    `<td><select name="sec"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
+    `<td><input type="number" name="returned" min="0" placeholder="0" style="min-width:50px"></td>` +
+    `<td><input type="text" name="notes" placeholder="optional" style="min-width:120px"></td>` +
+    `<td class="del-col"><button class="del-row-btn" onclick="deleteEntryRow(this)" title="Remove row">✕</button></td>`;
+  return tr;
+}
+
+function addEntryRows(n) {
+  const tbody = document.getElementById('entry-grid-body');
+  const start = tbody.rows.length;
+  for (let i = 0; i < n; i++) {
+    tbody.appendChild(makeEntryRow(start + i + 1));
+  }
+  updateGridCount();
+}
+
+function deleteEntryRow(btn) {
+  btn.closest('tr').remove();
+  renumberGrid();
+  updateGridCount();
+}
+
+function renumberGrid() {
+  document.querySelectorAll('#entry-grid-body tr').forEach((tr, i) => {
+    tr.querySelector('.row-num').textContent = i + 1;
+  });
+}
+
+function updateGridCount() {
+  const rows = document.querySelectorAll('#entry-grid-body tr');
+  const filled = Array.from(rows).filter(tr => {
+    return tr.querySelector('[name="pid"]').value.trim() !== '';
+  }).length;
+  document.getElementById('grid-row-count').textContent =
+    rows.length + ' rows · ' + filled + ' have a Participant ID';
+}
+
+function getGridRows() {
+  const rows = [];
+  document.querySelectorAll('#entry-grid-body tr').forEach(tr => {
+    const pid = tr.querySelector('[name="pid"]').value.trim();
+    const date = tr.querySelector('[name="date"]').value.trim();
+    if (!pid || !date) return; // skip blank rows
+    rows.push({
+      action: 'logVisit',
+      date,
+      participantId: pid,
+      newOrReturning: tr.querySelector('[name="nr"]').value,
+      location:       tr.querySelector('[name="loc"]').value,
+      worker:         tr.querySelector('[name="worker"]').value,
+      longs:          tr.querySelector('[name="longs"]').value   || '0',
+      shorts:         tr.querySelector('[name="shorts"]').value  || '0',
+      naloxIM:        tr.querySelector('[name="naloxIM"]').value || '0',
+      naloxNasal:     tr.querySelector('[name="naloxNasal"]').value || '0',
+      secDistrib:     tr.querySelector('[name="sec"]').value     || '0',
+      returnedSyringes: tr.querySelector('[name="returned"]').value || '0',
+      notes:          tr.querySelector('[name="notes"]').value   || '',
+      reversals: [], reversalCount: '0', housing: ''
+    });
+  });
+  return rows;
+}
+
+function previewGrid() {
+  const rows = getGridRows();
+  const errEl = document.getElementById('grid-err');
+  if (!rows.length) { errEl.textContent = 'No rows with a Participant ID and date. Fill in at least one row.'; errEl.style.display='block'; return; }
+  errEl.style.display = 'none';
+  bulkRows = rows;
+
+  const previewCols = ['date','participantId','newOrReturning','location','worker','longs','shorts','naloxIM','naloxNasal','secDistrib','returnedSyringes'];
+  const labels      = ['Date','PID','N/R','Location','Worker','Longs','Shorts','Nal IM','Nal Nas','Sec','Ret Syr'];
+
+  const thead = document.getElementById('preview-header');
+  thead.innerHTML = '<th>#</th>' + labels.map(h => '<th>'+h+'</th>').join('');
+  const tbody = document.getElementById('preview-body');
+  tbody.innerHTML = '';
+  rows.slice(0, 50).forEach((row, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>'+(i+1)+'</td>' + previewCols.map(k => '<td>'+(row[k]||'')+'</td>').join('');
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('preview-summary').innerHTML =
+    '<strong>' + rows.length + ' visits</strong> ready to submit' +
+    (rows.length > 50 ? ' — showing first 50' : '') + '.';
+  document.getElementById('submit-bulk-btn').textContent = 'Submit All ' + rows.length + ' Visits';
+  document.getElementById('preview-section').classList.remove('hidden');
+  document.getElementById('preview-section').scrollIntoView({behavior:'smooth'});
+}
+
 // ════ IMPORT / BULK ════
 function downloadTemplate() {
   const header='Date,Participant ID,New/Returning,Location,Worker,Longs,Shorts,Nalox IM,Nalox Nasal,Sec Distrib,Returned Syringes,Notes\n';
@@ -901,19 +1081,24 @@ function clearImport() {
   document.getElementById('csv-file').value='';
   document.getElementById('preview-section').classList.add('hidden');
   document.getElementById('parse-err').style.display='none';
+  document.getElementById('grid-err').style.display='none';
   bulkRows=[];
 }
 function resetImport() {
   clearImport();
-  document.getElementById('import-setup').style.display='';
   document.getElementById('import-done').classList.add('hidden');
+  // reset grid
+  document.getElementById('entry-grid-body').innerHTML='';
+  addEntryRows(10);
 }
 
-// Set today's date
+// Set today's date + init entry grid
 document.addEventListener('DOMContentLoaded',function(){
   const t=new Date().toISOString().split('T')[0];
   document.getElementById('v-date').value=t;
   document.getElementById('e-date').value=t;
+  addEntryRows(10);
+  document.getElementById('entry-grid-body').addEventListener('input', updateGridCount);
 });
 </script>
 </body>
