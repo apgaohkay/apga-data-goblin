@@ -439,11 +439,10 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 
 <!-- ── MANUAL ENTRY GRID ── -->
 <div id="import-grid-mode">
-<div class="card" style="background:rgba(181,133,27,.08);border-color:#B5851B;margin-bottom:8px">
-<div style="font-size:13px;font-weight:700;color:#B5851B;margin-bottom:2px">Quick Entry — SSP Visits</div>
-<div style="font-size:12px;color:#6B5B4E">Type a participant code in the <strong>Code</strong> column — it auto-fills demographics and looks up the PID.<br>
-Format: <code style="background:#fff;padding:1px 5px;border-radius:4px;border:1px solid #C4B8A8">INITIALS-GENDER-YEAR-RACE</code> &nbsp;e.g. <code style="background:#fff;padding:1px 5px;border-radius:4px;border:1px solid #C4B8A8">AS-F-1985-W</code><br>
-Gender: M F N O &nbsp;·&nbsp; Race: W B H NA A PI MR O &nbsp;·&nbsp; Green PID = found · Amber = new participant</div>
+<div class="card" style="background:rgba(74,103,65,.08);border-color:#4A6741;margin-bottom:8px">
+<div style="font-size:13px;font-weight:700;color:#4A6741;margin-bottom:2px">Bulk Visit Entry</div>
+<div style="font-size:12px;color:#6B5B4E">Fill in demographics — <strong>PID is assigned automatically</strong> (green = existing participant found, amber = new, will be registered on submit).<br>
+Initials + Birth Year are required per row. Everything else optional but encouraged.</div>
 <div style="margin-top:6px;font-size:12px;display:flex;align-items:center;gap:8px">
   <span id="registry-status" style="color:#888">⏳ Loading registry…</span>
   <button id="registry-reload-btn" onclick="loadRegistry()" style="font-size:11px;padding:2px 8px;border:1px solid #C4B8A8;border-radius:4px;background:#fff;cursor:pointer;display:none">↺ Reload</button>
@@ -453,24 +452,24 @@ Gender: M F N O &nbsp;·&nbsp; Race: W B H NA A PI MR O &nbsp;·&nbsp; Green PID
 <table class="entry-grid" id="entry-grid">
 <thead><tr>
 <th style="width:24px">#</th>
-<th title="INITIALS-GENDER-YEAR-RACE e.g. AS-F-1985-W">Code*</th>
-<th>PID</th>
-<th>Initials</th>
-<th>Yr</th>
-<th>Gen</th>
-<th>Race</th>
+<th title="First + last initials, e.g. AS">Initials*</th>
+<th title="4-digit birth year">Yr*</th>
+<th>Gender</th>
+<th>Race/Eth</th>
 <th>County</th>
 <th>Zip</th>
+<th title="Auto-assigned — green=found, amber=new">PID</th>
 <th>Date*</th>
 <th>N/R</th>
 <th>Location</th>
 <th>Worker</th>
-<th>Longs</th>
-<th>Shorts</th>
-<th>Nal IM</th>
-<th>Nal Nas</th>
-<th>Sec</th>
-<th>Ret'd Syr</th>
+<th title="Long syringes distributed">Lng</th>
+<th title="Short syringes distributed">Sht</th>
+<th title="Naloxone IM (injectable)">NalIM</th>
+<th title="Naloxone nasal spray">NalNas</th>
+<th title="Returned syringes for disposal">Ret Syr</th>
+<th title="Participant reported using naloxone to reverse an overdose">Rev?</th>
+<th title="Other services provided">Svcs</th>
 <th>Notes</th>
 <th></th>
 </tr></thead>
@@ -960,19 +959,72 @@ function applyCode(tr) {
   updateGridCount();
 }
 
+const OTHER_SVCS = ['Fentanyl test strips','Wound care','Safe sex supplies','Sharps container','Food/hygiene','Housing referral','Treatment referral','Mental health referral','Medical referral','ID assistance','Other'];
+
+function makeSvcsSelect(id) {
+  // compact multi-select rendered as a button+popover for space
+  const wrap = document.createElement('td');
+  wrap.style.position = 'relative';
+  wrap.style.minWidth = '90px';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'svcs-btn';
+  btn.style.cssText = 'font-size:11px;padding:2px 5px;border:1px solid #C4B8A8;border-radius:4px;background:#fff;cursor:pointer;width:100%;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px';
+  btn.textContent = 'None';
+  btn.setAttribute('data-svcs','');
+  const pop = document.createElement('div');
+  pop.style.cssText = 'display:none;position:absolute;z-index:999;background:#fff;border:1px solid #C4B8A8;border-radius:6px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,.15);min-width:180px;left:0;top:100%';
+  OTHER_SVCS.forEach(svc => {
+    const lbl = document.createElement('label');
+    lbl.style.cssText = 'display:block;font-size:12px;padding:2px 0;white-space:nowrap;cursor:pointer';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = svc;
+    cb.style.marginRight = '5px';
+    cb.addEventListener('change', () => {
+      const checked = Array.from(pop.querySelectorAll('input:checked')).map(c=>c.value);
+      btn.setAttribute('data-svcs', checked.join(','));
+      btn.textContent = checked.length ? checked.length+' svc'+(checked.length>1?'s':'') : 'None';
+    });
+    lbl.appendChild(cb); lbl.appendChild(document.createTextNode(svc));
+    pop.appendChild(lbl);
+  });
+  btn.addEventListener('click', e => { e.stopPropagation(); pop.style.display = pop.style.display==='none'?'block':'none'; });
+  document.addEventListener('click', () => { pop.style.display='none'; }, {capture:false});
+  wrap.appendChild(btn); wrap.appendChild(pop);
+  wrap.setAttribute('data-svcs-cell','1');
+  return wrap;
+}
+
+function resolveAndMarkPID(tr) {
+  const initials = (tr.querySelector('[name="initials"]').value||'').trim().toUpperCase();
+  const year     = (tr.querySelector('[name="year"]').value||'').trim();
+  const pidEl    = tr.querySelector('[name="pid"]');
+  if (!initials || !year) { pidEl.value=''; pidEl.style.borderColor=''; pidEl.title=''; return; }
+  const found = lookupPID(initials, year);
+  if (found) {
+    pidEl.value = found;
+    pidEl.style.borderColor = '#4A6741';
+    pidEl.title = 'Found in registry';
+  } else {
+    pidEl.value = '';
+    pidEl.style.borderColor = '#B5851B';
+    pidEl.title = 'New participant — will be registered on submit';
+  }
+  updateGridCount();
+}
+
 function makeEntryRow(n) {
   const today = new Date().toISOString().split('T')[0];
   const tr = document.createElement('tr');
   tr.innerHTML =
     `<td class="row-num">${n}</td>` +
-    `<td><input type="text" name="code" placeholder="AS-F-1985-W" style="min-width:110px;font-family:monospace;font-size:11px" autocapitalize="characters"></td>` +
-    `<td><input type="number" name="pid" inputmode="numeric" placeholder="auto" style="min-width:55px"></td>` +
-    `<td><input type="text" name="initials" maxlength="4" placeholder="AS" style="min-width:42px;text-transform:uppercase" autocapitalize="characters"></td>` +
-    `<td><input type="number" name="year" inputmode="numeric" placeholder="1985" style="min-width:50px"></td>` +
+    `<td><input type="text" name="initials" maxlength="4" placeholder="AS" style="min-width:46px;text-transform:uppercase;font-weight:600" autocapitalize="characters"></td>` +
+    `<td><input type="number" name="year" inputmode="numeric" placeholder="1985" style="min-width:52px"></td>` +
     `<td><select name="gender"><option value="">—</option><option>Man</option><option>Woman</option><option>Non-binary</option><option>Other</option></select></td>` +
     `<td><select name="race"><option value="">—</option><option>White</option><option>Black</option><option>Hispanic/Latino</option><option>Native American</option><option>Asian</option><option>Pacific Islander</option><option>Multiracial</option><option>Other</option></select></td>` +
-    `<td><input type="text" name="county" placeholder="County" style="min-width:80px"></td>` +
-    `<td><input type="text" name="zip" inputmode="numeric" maxlength="5" placeholder="Zip" style="min-width:55px"></td>` +
+    `<td><input type="text" name="county" placeholder="County" style="min-width:72px"></td>` +
+    `<td><input type="text" name="zip" inputmode="numeric" maxlength="5" placeholder="Zip" style="min-width:48px"></td>` +
+    `<td><input type="number" name="pid" inputmode="numeric" placeholder="auto" style="min-width:52px" readonly tabindex="-1"></td>` +
     `<td><input type="date" name="date" value="${today}" style="min-width:110px"></td>` +
     `<td><select name="nr"><option value="">—</option><option>New</option><option>Returning</option></select></td>` +
     `<td><select name="loc"><option value="">—</option><option>Office</option><option>Mobile</option><option>Other</option></select></td>` +
@@ -981,13 +1033,22 @@ function makeEntryRow(n) {
     `<td><select name="shorts"><option>0</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select></td>` +
     `<td><select name="naloxIM"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
     `<td><select name="naloxNasal"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
-    `<td><select name="sec"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
-    `<td><input type="number" name="returned" min="0" placeholder="0" style="min-width:45px"></td>` +
-    `<td><input type="text" name="notes" placeholder="optional" style="min-width:110px"></td>` +
-    `<td class="del-col"><button class="del-row-btn" onclick="deleteEntryRow(this)" title="Remove row">✕</button></td>`;
-  // wire up code field
-  tr.querySelector('[name="code"]').addEventListener('blur', () => applyCode(tr));
-  tr.querySelector('[name="code"]').addEventListener('keydown', e => { if(e.key==='Enter'||e.key==='\t') applyCode(tr); });
+    `<td><input type="number" name="returned" min="0" placeholder="0" style="min-width:46px"></td>` +
+    `<td style="text-align:center"><input type="checkbox" name="reversal" title="Reported a reversal this visit"></td>`;
+  // services multi-select cell
+  tr.appendChild(makeSvcsSelect());
+  // notes + delete
+  const notesTd = document.createElement('td');
+  notesTd.innerHTML = `<input type="text" name="notes" placeholder="optional" style="min-width:110px">`;
+  tr.appendChild(notesTd);
+  const delTd = document.createElement('td');
+  delTd.className = 'del-col';
+  delTd.innerHTML = `<button class="del-row-btn" onclick="deleteEntryRow(this)" title="Remove row">✕</button>`;
+  tr.appendChild(delTd);
+  // auto-resolve PID when initials or year change
+  ['initials','year'].forEach(n => {
+    tr.querySelector('[name="'+n+'"]').addEventListener('blur', () => resolveAndMarkPID(tr));
+  });
   return tr;
 }
 
@@ -1014,19 +1075,23 @@ function renumberGrid() {
 
 function updateGridCount() {
   const rows = document.querySelectorAll('#entry-grid-body tr');
-  const filled = Array.from(rows).filter(tr => {
-    const pid  = tr.querySelector('[name="pid"]').value.trim();
-    const ini  = tr.querySelector('[name="initials"]').value.trim();
-    return pid !== '' || ini !== '';
-  }).length;
+  const filled = Array.from(rows).filter(tr =>
+    tr.querySelector('[name="initials"]').value.trim() !== ''
+  ).length;
   document.getElementById('grid-row-count').textContent =
-    rows.length + ' rows · ' + filled + ' have participant info';
+    rows.length + ' rows · ' + filled + ' with initials';
+}
+
+function autoGeneratePID() {
+  const used = new Set(registry.map(p => p.id));
+  let id;
+  do { id = Math.floor(Math.random() * 9000) + 1000; } while (used.has(id));
+  return id;
 }
 
 function getGridRows() {
   const rows = [];
   document.querySelectorAll('#entry-grid-body tr').forEach(tr => {
-    // clear previous validation highlight
     tr.style.background = '';
     tr.removeAttribute('title');
 
@@ -1036,22 +1101,40 @@ function getGridRows() {
     let   pid      = tr.querySelector('[name="pid"]').value.trim();
 
     // skip completely blank rows silently
-    const hasSupplies = ['longs','shorts','naloxIM','naloxNasal','sec','returned']
-      .some(n => { const el = tr.querySelector('[name="'+n+'"]'); return el && Number(el.value) > 0; });
-    if (!date && !pid && !initials && !hasSupplies) return;
+    const hasData = initials || pid || date;
+    if (!hasData) return;
 
-    // highlight and skip rows missing participant info
-    if (!pid && !initials) {
+    // rows missing initials get flagged
+    if (!initials) {
       tr.style.background = 'rgba(192,57,43,0.12)';
-      tr.title = 'Missing participant — enter a Code or Initials';
+      tr.title = 'Missing initials — required';
       return;
     }
 
-    // if no PID yet, try registry one more time
-    if (!pid && initials && year) {
+    // resolve PID: existing registry match → use it; otherwise auto-generate new
+    if (!pid) {
       const found = lookupPID(initials, year);
-      if (found) pid = String(found);
+      if (found) {
+        pid = String(found);
+      } else {
+        // auto-generate and pre-register in local registry so duplicates don't re-use the same ID
+        const newId = autoGeneratePID();
+        registry.push({ id: newId, initials, year });
+        pid = String(newId);
+        // mark amber on PID cell
+        const pidEl = tr.querySelector('[name="pid"]');
+        pidEl.value = newId;
+        pidEl.style.borderColor = '#B5851B';
+        pidEl.title = 'New participant — will be registered';
+      }
     }
+
+    // services
+    const svcsCell = tr.querySelector('[data-svcs-cell]');
+    const svcs = svcsCell ? (svcsCell.querySelector('.svcs-btn').getAttribute('data-svcs') || '') : '';
+
+    // reversal
+    const reversalReported = tr.querySelector('[name="reversal"]').checked ? 'Yes' : 'No';
 
     rows.push({
       action: 'logVisit',
@@ -1062,18 +1145,20 @@ function getGridRows() {
       gender:         tr.querySelector('[name="gender"]').value  || '',
       race:           tr.querySelector('[name="race"]').value    || '',
       county:         tr.querySelector('[name="county"]').value  || '',
-      zip:            tr.querySelector('[name="zip"]').value      || '',
-      newOrReturning: tr.querySelector('[name="nr"]').value,
-      location:       tr.querySelector('[name="loc"]').value,
-      worker:         tr.querySelector('[name="worker"]').value,
-      longs:          tr.querySelector('[name="longs"]').value        || '0',
-      shorts:         tr.querySelector('[name="shorts"]').value       || '0',
-      naloxIM:        tr.querySelector('[name="naloxIM"]').value      || '0',
-      naloxNasal:     tr.querySelector('[name="naloxNasal"]').value   || '0',
-      secDistrib:     tr.querySelector('[name="sec"]').value          || '0',
-      returnedSyringes: tr.querySelector('[name="returned"]').value   || '0',
-      notes:          tr.querySelector('[name="notes"]').value        || '',
-      reversals: [], reversalCount: '0', housing: ''
+      zip:            tr.querySelector('[name="zip"]').value     || '',
+      newOrReturning: tr.querySelector('[name="nr"]').value      || '',
+      location:       tr.querySelector('[name="loc"]').value     || '',
+      worker:         tr.querySelector('[name="worker"]').value  || '',
+      longs:          tr.querySelector('[name="longs"]').value   || '0',
+      shorts:         tr.querySelector('[name="shorts"]').value  || '0',
+      naloxIM:        tr.querySelector('[name="naloxIM"]').value || '0',
+      naloxNasal:     tr.querySelector('[name="naloxNasal"]').value || '0',
+      secDistrib:     '0',
+      returnedSyringes: tr.querySelector('[name="returned"]').value || '0',
+      otherServices:  svcs,
+      reversalReported,
+      notes:          tr.querySelector('[name="notes"]').value   || '',
+      reversals: [], reversalCount: reversalReported === 'Yes' ? '1' : '0', housing: ''
     });
   });
   return rows;
