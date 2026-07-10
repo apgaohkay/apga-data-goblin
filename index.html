@@ -463,11 +463,11 @@ Initials + Birth Year are required per row. Everything else optional but encoura
 <th>N/R</th>
 <th>Location</th>
 <th>Worker</th>
+<th title="Returned syringes for biohazard disposal">Ret Syr</th>
 <th title="Long syringes distributed">Lng</th>
 <th title="Short syringes distributed">Sht</th>
 <th title="Naloxone IM (injectable)">NalIM</th>
 <th title="Naloxone nasal spray">NalNas</th>
-<th title="Returned syringes for disposal">Ret Syr</th>
 <th title="Participant reported using naloxone to reverse an overdose">Rev?</th>
 <th title="Other services provided">Svcs</th>
 <th>Notes</th>
@@ -1029,11 +1029,11 @@ function makeEntryRow(n) {
     `<td><select name="nr"><option value="">—</option><option>New</option><option>Returning</option></select></td>` +
     `<td><select name="loc"><option value="">—</option><option>Office</option><option>Mobile</option><option>Other</option></select></td>` +
     `<td><select name="worker"><option value="">—</option><option>OK</option><option>RK</option><option>Other</option></select></td>` +
+    `<td style="text-align:center"><input type="checkbox" name="returned" title="Returned syringes for biohazard disposal"></td>` +
     `<td><select name="longs"><option>0</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select></td>` +
     `<td><select name="shorts"><option>0</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select></td>` +
     `<td><select name="naloxIM"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
     `<td><select name="naloxNasal"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
-    `<td><input type="number" name="returned" min="0" placeholder="0" style="min-width:46px"></td>` +
     `<td style="text-align:center"><input type="checkbox" name="reversal" title="Reported a reversal this visit"></td>`;
   // services multi-select cell
   tr.appendChild(makeSvcsSelect());
@@ -1154,7 +1154,7 @@ function getGridRows() {
       naloxIM:        tr.querySelector('[name="naloxIM"]').value || '0',
       naloxNasal:     tr.querySelector('[name="naloxNasal"]').value || '0',
       secDistrib:     '0',
-      returnedSyringes: tr.querySelector('[name="returned"]').value || '0',
+      returnedSyringes: tr.querySelector('[name="returned"]').checked ? 'Yes' : 'No',
       otherServices:  svcs,
       reversalReported,
       notes:          tr.querySelector('[name="notes"]').value   || '',
