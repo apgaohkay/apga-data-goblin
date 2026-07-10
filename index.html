@@ -1026,13 +1026,26 @@ function updateGridCount() {
 function getGridRows() {
   const rows = [];
   document.querySelectorAll('#entry-grid-body tr').forEach(tr => {
+    // clear previous validation highlight
+    tr.style.background = '';
+    tr.removeAttribute('title');
+
     const initials = (tr.querySelector('[name="initials"]').value || '').trim().toUpperCase();
     const year     = (tr.querySelector('[name="year"]').value    || '').trim();
     const date     = tr.querySelector('[name="date"]').value.trim();
     let   pid      = tr.querySelector('[name="pid"]').value.trim();
 
-    // need at least a date and either PID or initials+year
-    if (!date || (!pid && !initials)) return;
+    // skip completely blank rows silently
+    const hasSupplies = ['longs','shorts','naloxIM','naloxNasal','sec','returned']
+      .some(n => { const el = tr.querySelector('[name="'+n+'"]'); return el && Number(el.value) > 0; });
+    if (!date && !pid && !initials && !hasSupplies) return;
+
+    // highlight and skip rows missing participant info
+    if (!pid && !initials) {
+      tr.style.background = 'rgba(192,57,43,0.12)';
+      tr.title = 'Missing participant — enter a Code or Initials';
+      return;
+    }
 
     // if no PID yet, try registry one more time
     if (!pid && initials && year) {
@@ -1069,8 +1082,20 @@ function getGridRows() {
 function previewGrid() {
   const rows = getGridRows();
   const errEl = document.getElementById('grid-err');
-  if (!rows.length) { errEl.textContent = 'No rows with a Participant ID and date. Fill in at least one row.'; errEl.style.display='block'; return; }
-  errEl.style.display = 'none';
+  const skipped = document.querySelectorAll('#entry-grid-body tr[title]').length;
+  if (!rows.length) {
+    errEl.innerHTML = skipped
+      ? '<strong>' + skipped + ' row' + (skipped>1?'s':'') + ' highlighted in red</strong> — each needs a participant Code or Initials+Year before submitting.'
+      : 'No rows with a date and participant info. Fill in the Code column or Initials/Year.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (skipped) {
+    errEl.innerHTML = '<strong>' + skipped + ' row' + (skipped>1?'s are':' is') + ' highlighted red</strong> and will be skipped (missing participant info). ' + rows.length + ' valid row' + (rows.length>1?'s':'') + ' will submit.';
+    errEl.style.display = 'block';
+  } else {
+    errEl.style.display = 'none';
+  }
   bulkRows = rows;
 
   const previewCols = ['date','participantId','newOrReturning','location','worker','longs','shorts','naloxIM','naloxNasal','secDistrib','returnedSyringes'];
