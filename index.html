@@ -455,6 +455,8 @@ Gender: M F N O &nbsp;·&nbsp; Race: W B H NA A PI MR O &nbsp;·&nbsp; Green PID
 <th>Yr</th>
 <th>Gen</th>
 <th>Race</th>
+<th>County</th>
+<th>Zip</th>
 <th>Date*</th>
 <th>N/R</th>
 <th>Location</th>
@@ -941,6 +943,8 @@ function makeEntryRow(n) {
     `<td><input type="number" name="year" inputmode="numeric" placeholder="1985" style="min-width:50px"></td>` +
     `<td><select name="gender"><option value="">—</option><option>Man</option><option>Woman</option><option>Non-binary</option><option>Other</option></select></td>` +
     `<td><select name="race"><option value="">—</option><option>White</option><option>Black</option><option>Hispanic/Latino</option><option>Native American</option><option>Asian</option><option>Pacific Islander</option><option>Multiracial</option><option>Other</option></select></td>` +
+    `<td><input type="text" name="county" placeholder="County" style="min-width:80px"></td>` +
+    `<td><input type="text" name="zip" inputmode="numeric" maxlength="5" placeholder="Zip" style="min-width:55px"></td>` +
     `<td><input type="date" name="date" value="${today}" style="min-width:110px"></td>` +
     `<td><select name="nr"><option value="">—</option><option>New</option><option>Returning</option></select></td>` +
     `<td><select name="loc"><option value="">—</option><option>Office</option><option>Mobile</option><option>Other</option></select></td>` +
@@ -1016,6 +1020,8 @@ function getGridRows() {
       birthYear:      year,
       gender:         tr.querySelector('[name="gender"]').value  || '',
       race:           tr.querySelector('[name="race"]').value    || '',
+      county:         tr.querySelector('[name="county"]').value  || '',
+      zip:            tr.querySelector('[name="zip"]').value      || '',
       newOrReturning: tr.querySelector('[name="nr"]').value,
       location:       tr.querySelector('[name="loc"]').value,
       worker:         tr.querySelector('[name="worker"]').value,
