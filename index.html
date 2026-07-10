@@ -444,6 +444,10 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div style="font-size:12px;color:#6B5B4E">Type a participant code in the <strong>Code</strong> column — it auto-fills demographics and looks up the PID.<br>
 Format: <code style="background:#fff;padding:1px 5px;border-radius:4px;border:1px solid #C4B8A8">INITIALS-GENDER-YEAR-RACE</code> &nbsp;e.g. <code style="background:#fff;padding:1px 5px;border-radius:4px;border:1px solid #C4B8A8">AS-F-1985-W</code><br>
 Gender: M F N O &nbsp;·&nbsp; Race: W B H NA A PI MR O &nbsp;·&nbsp; Green PID = found · Amber = new participant</div>
+<div style="margin-top:6px;font-size:12px;display:flex;align-items:center;gap:8px">
+  <span id="registry-status" style="color:#888">⏳ Loading registry…</span>
+  <button id="registry-reload-btn" onclick="loadRegistry()" style="font-size:11px;padding:2px 8px;border:1px solid #C4B8A8;border-radius:4px;background:#fff;cursor:pointer;display:none">↺ Reload</button>
+</div>
 </div>
 <div class="entry-grid-wrap">
 <table class="entry-grid" id="entry-grid">
@@ -549,12 +553,36 @@ let attendeeCount = 0;
 let bulkRows = [];
 let reversals = [];
 
-fetch(WEB_APP_URL)
-  .then(r => r.json())
-  .then(d => {
-    if (d.participants) registry = d.participants.map(p => ({ id: Number(p.id), initials: (p.initials||'').toUpperCase(), year: String(p.year||'') }));
-    else if (d.ids) registry = d.ids.map(id => ({ id: Number(id) }));
-  }).catch(() => {});
+function loadRegistry() {
+  const statusEl = document.getElementById('registry-status');
+  const reloadBtn = document.getElementById('registry-reload-btn');
+  if (statusEl) { statusEl.style.color='#888'; statusEl.textContent='⏳ Loading registry…'; }
+  if (reloadBtn) reloadBtn.style.display='none';
+  fetch(WEB_APP_URL)
+    .then(r => { if (!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(d => {
+      if (d.participants && d.participants.length) {
+        registry = d.participants.map(p => ({
+          id:       Number(p.id),
+          initials: (p.initials||'').toUpperCase(),
+          // normalize: handle "1985", 1985, or "1985-01-01T..." formats
+          year:     String(p.year||'').replace(/^(\d{4}).*/, '$1')
+        }));
+        if (statusEl) { statusEl.style.color='#4A6741'; statusEl.textContent='✓ Registry loaded — '+registry.length+' participants'; }
+      } else if (d.ids) {
+        registry = d.ids.map(id => ({ id: Number(id) }));
+        if (statusEl) { statusEl.style.color='#4A6741'; statusEl.textContent='✓ Registry loaded (IDs only)'; }
+      } else {
+        throw new Error('Unexpected response format');
+      }
+    })
+    .catch(err => {
+      console.error('Registry load failed:', err);
+      if (statusEl) { statusEl.style.color='#c0392b'; statusEl.textContent='✗ Registry failed to load — lookup disabled'; }
+      if (reloadBtn) reloadBtn.style.display='inline-block';
+    });
+}
+loadRegistry();
 
 // ── Nav ──
 function showScreen(name) {
