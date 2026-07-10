@@ -206,7 +206,7 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 </div>
 <div class="field" style="margin-top:8px"><label>Location</label></div>
 <div class="chips" data-group="loc" data-mode="single">
-<button class="chip">Office</button><button class="chip">Mobile</button><button class="chip">Paradise</button><button class="chip">Other</button>
+<button class="chip">Office</button><button class="chip">Mobile</button><button class="chip">Other</button>
 </div>
 <div class="field" style="margin-top:6px"><input id="v-loc-other" class="hidden" placeholder="Location name"></div>
 <div class="field" style="margin-top:8px"><label>Housing Status</label></div>
@@ -441,14 +441,23 @@ body{font-family:Arial,sans-serif;background:#FAF7F2;color:#2D2926;padding:0 0 6
 <div id="import-grid-mode">
 <div class="card" style="background:rgba(181,133,27,.08);border-color:#B5851B;margin-bottom:8px">
 <div style="font-size:13px;font-weight:700;color:#B5851B;margin-bottom:2px">Quick Entry — SSP Visits</div>
-<div style="font-size:12px;color:#6B5B4E">Fill rows directly. Red-outlined cells are required. Submit when done.</div>
+<div style="font-size:12px;color:#6B5B4E">Type a participant code in the <strong>Code</strong> column — it auto-fills demographics and looks up the PID.<br>
+Format: <code style="background:#fff;padding:1px 5px;border-radius:4px;border:1px solid #C4B8A8">INITIALS-GENDER-YEAR-RACE</code> &nbsp;e.g. <code style="background:#fff;padding:1px 5px;border-radius:4px;border:1px solid #C4B8A8">AS-F-1985-W</code><br>
+Gender: M F N O &nbsp;·&nbsp; Race: W B H NA A PI MR O &nbsp;·&nbsp; Green PID = found · Amber = new participant</div>
 </div>
 <div class="entry-grid-wrap">
 <table class="entry-grid" id="entry-grid">
 <thead><tr>
 <th style="width:24px">#</th>
+<th title="INITIALS-GENDER-YEAR-RACE e.g. AS-F-1985-W">Code*</th>
+<th>PID</th>
+<th>Initials</th>
+<th>Yr</th>
+<th>Gen</th>
+<th>Race</th>
+<th>County</th>
+<th>Zip</th>
 <th>Date*</th>
-<th>PID*</th>
 <th>N/R</th>
 <th>Location</th>
 <th>Worker</th>
@@ -865,26 +874,92 @@ function switchImportMode(mode) {
 }
 
 // ════ MANUAL ENTRY GRID ════
-const ENTRY_COLS = ['date','pid','nr','loc','worker','longs','shorts','naloxIM','naloxNasal','sec','returned','notes'];
+const GENDER_MAP = {M:'Man',F:'Woman',W:'Woman',N:'Non-binary',NB:'Non-binary',O:'Other'};
+const RACE_MAP   = {W:'White',B:'Black',H:'Hispanic/Latino',NA:'Native American',A:'Asian',PI:'Pacific Islander',MR:'Multiracial',M:'Multiracial',O:'Other'};
+
+function parseCode(raw) {
+  const parts = raw.trim().toUpperCase().split(/[-_\s]+/);
+  if (parts.length < 2) return null;
+  const initials = parts[0];
+  let gender='', year='', race='';
+  // find year (4-digit number)
+  const yIdx = parts.findIndex(p => /^\d{4}$/.test(p));
+  if (yIdx > 0) {
+    year = parts[yIdx];
+    const rest = parts.filter((_,i) => i !== 0 && i !== yIdx);
+    // first remaining part → gender, rest → race
+    if (rest[0]) gender = GENDER_MAP[rest[0]] || rest[0];
+    if (rest[1]) race   = RACE_MAP[rest[1]]   || rest[1];
+    else if (rest[0] && !GENDER_MAP[parts.find((_,i)=>i>0&&i!==yIdx)]) race = RACE_MAP[rest[0]] || rest[0];
+  } else {
+    // fallback: parts[1]=gender, parts[2]=race, no year
+    if (parts[1]) gender = GENDER_MAP[parts[1]] || parts[1];
+    if (parts[2]) race   = RACE_MAP[parts[2]]   || parts[2];
+  }
+  return {initials, gender, year, race};
+}
+
+function lookupPID(initials, year) {
+  const match = registry.find(p =>
+    p.initials === initials.toUpperCase() && p.year === String(year)
+  );
+  return match ? match.id : null;
+}
+
+function applyCode(tr) {
+  const raw = tr.querySelector('[name="code"]').value;
+  if (!raw.trim()) return;
+  const parsed = parseCode(raw);
+  if (!parsed) return;
+  tr.querySelector('[name="initials"]').value = parsed.initials;
+  tr.querySelector('[name="year"]').value     = parsed.year;
+  tr.querySelector('[name="gender"]').value   = parsed.gender;
+  tr.querySelector('[name="race"]').value     = parsed.race;
+  // PID lookup
+  const pidEl = tr.querySelector('[name="pid"]');
+  if (parsed.initials && parsed.year) {
+    const found = lookupPID(parsed.initials, parsed.year);
+    if (found) {
+      pidEl.value = found;
+      pidEl.style.borderColor = '#4A6741';
+      pidEl.title = 'Found in registry';
+    } else {
+      pidEl.value = '';
+      pidEl.style.borderColor = '#B5851B';
+      pidEl.title = 'Not in registry — will register as new';
+    }
+  }
+  updateGridCount();
+}
 
 function makeEntryRow(n) {
   const today = new Date().toISOString().split('T')[0];
   const tr = document.createElement('tr');
   tr.innerHTML =
     `<td class="row-num">${n}</td>` +
+    `<td><input type="text" name="code" placeholder="AS-F-1985-W" style="min-width:110px;font-family:monospace;font-size:11px" autocapitalize="characters"></td>` +
+    `<td><input type="number" name="pid" inputmode="numeric" placeholder="auto" style="min-width:55px"></td>` +
+    `<td><input type="text" name="initials" maxlength="4" placeholder="AS" style="min-width:42px;text-transform:uppercase" autocapitalize="characters"></td>` +
+    `<td><input type="number" name="year" inputmode="numeric" placeholder="1985" style="min-width:50px"></td>` +
+    `<td><select name="gender"><option value="">—</option><option>Man</option><option>Woman</option><option>Non-binary</option><option>Other</option></select></td>` +
+    `<td><select name="race"><option value="">—</option><option>White</option><option>Black</option><option>Hispanic/Latino</option><option>Native American</option><option>Asian</option><option>Pacific Islander</option><option>Multiracial</option><option>Other</option></select></td>` +
+    `<td><input type="text" name="county" placeholder="County" style="min-width:80px"></td>` +
+    `<td><input type="text" name="zip" inputmode="numeric" maxlength="5" placeholder="Zip" style="min-width:55px"></td>` +
     `<td><input type="date" name="date" value="${today}" style="min-width:110px"></td>` +
-    `<td><input type="number" name="pid" inputmode="numeric" placeholder="1001" style="min-width:60px;border-color:#B5851B"></td>` +
     `<td><select name="nr"><option value="">—</option><option>New</option><option>Returning</option></select></td>` +
-    `<td><select name="loc"><option value="">—</option><option>Office</option><option>Mobile</option><option>Paradise</option><option>Other</option></select></td>` +
+    `<td><select name="loc"><option value="">—</option><option>Office</option><option>Mobile</option><option>Other</option></select></td>` +
     `<td><select name="worker"><option value="">—</option><option>OK</option><option>RK</option><option>Other</option></select></td>` +
     `<td><select name="longs"><option>0</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select></td>` +
     `<td><select name="shorts"><option>0</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select></td>` +
     `<td><select name="naloxIM"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
     `<td><select name="naloxNasal"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
     `<td><select name="sec"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>` +
-    `<td><input type="number" name="returned" min="0" placeholder="0" style="min-width:50px"></td>` +
-    `<td><input type="text" name="notes" placeholder="optional" style="min-width:120px"></td>` +
+    `<td><input type="number" name="returned" min="0" placeholder="0" style="min-width:45px"></td>` +
+    `<td><input type="text" name="notes" placeholder="optional" style="min-width:110px"></td>` +
     `<td class="del-col"><button class="del-row-btn" onclick="deleteEntryRow(this)" title="Remove row">✕</button></td>`;
+  // wire up code field
+  tr.querySelector('[name="code"]').addEventListener('blur', () => applyCode(tr));
+  tr.querySelector('[name="code"]').addEventListener('keydown', e => { if(e.key==='Enter'||e.key==='\t') applyCode(tr); });
   return tr;
 }
 
@@ -912,32 +987,51 @@ function renumberGrid() {
 function updateGridCount() {
   const rows = document.querySelectorAll('#entry-grid-body tr');
   const filled = Array.from(rows).filter(tr => {
-    return tr.querySelector('[name="pid"]').value.trim() !== '';
+    const pid  = tr.querySelector('[name="pid"]').value.trim();
+    const ini  = tr.querySelector('[name="initials"]').value.trim();
+    return pid !== '' || ini !== '';
   }).length;
   document.getElementById('grid-row-count').textContent =
-    rows.length + ' rows · ' + filled + ' have a Participant ID';
+    rows.length + ' rows · ' + filled + ' have participant info';
 }
 
 function getGridRows() {
   const rows = [];
   document.querySelectorAll('#entry-grid-body tr').forEach(tr => {
-    const pid = tr.querySelector('[name="pid"]').value.trim();
-    const date = tr.querySelector('[name="date"]').value.trim();
-    if (!pid || !date) return; // skip blank rows
+    const initials = (tr.querySelector('[name="initials"]').value || '').trim().toUpperCase();
+    const year     = (tr.querySelector('[name="year"]').value    || '').trim();
+    const date     = tr.querySelector('[name="date"]').value.trim();
+    let   pid      = tr.querySelector('[name="pid"]').value.trim();
+
+    // need at least a date and either PID or initials+year
+    if (!date || (!pid && !initials)) return;
+
+    // if no PID yet, try registry one more time
+    if (!pid && initials && year) {
+      const found = lookupPID(initials, year);
+      if (found) pid = String(found);
+    }
+
     rows.push({
       action: 'logVisit',
       date,
-      participantId: pid,
+      participantId:  pid,
+      initials,
+      birthYear:      year,
+      gender:         tr.querySelector('[name="gender"]').value  || '',
+      race:           tr.querySelector('[name="race"]').value    || '',
+      county:         tr.querySelector('[name="county"]').value  || '',
+      zip:            tr.querySelector('[name="zip"]').value      || '',
       newOrReturning: tr.querySelector('[name="nr"]').value,
       location:       tr.querySelector('[name="loc"]').value,
       worker:         tr.querySelector('[name="worker"]').value,
-      longs:          tr.querySelector('[name="longs"]').value   || '0',
-      shorts:         tr.querySelector('[name="shorts"]').value  || '0',
-      naloxIM:        tr.querySelector('[name="naloxIM"]').value || '0',
-      naloxNasal:     tr.querySelector('[name="naloxNasal"]').value || '0',
-      secDistrib:     tr.querySelector('[name="sec"]').value     || '0',
-      returnedSyringes: tr.querySelector('[name="returned"]').value || '0',
-      notes:          tr.querySelector('[name="notes"]').value   || '',
+      longs:          tr.querySelector('[name="longs"]').value        || '0',
+      shorts:         tr.querySelector('[name="shorts"]').value       || '0',
+      naloxIM:        tr.querySelector('[name="naloxIM"]').value      || '0',
+      naloxNasal:     tr.querySelector('[name="naloxNasal"]').value   || '0',
+      secDistrib:     tr.querySelector('[name="sec"]').value          || '0',
+      returnedSyringes: tr.querySelector('[name="returned"]').value   || '0',
+      notes:          tr.querySelector('[name="notes"]').value        || '',
       reversals: [], reversalCount: '0', housing: ''
     });
   });
