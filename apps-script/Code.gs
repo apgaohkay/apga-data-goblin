@@ -37,17 +37,16 @@ var CONFIG = {
     visits:       'SSP Visits',
     events:       'Events',
     attendees:    'Event Attendees',
-    checkins:     'Check-Ins',
-    reversals:    'Reversals'
+    checkins:     'Check-Ins'
   },
-  // Header rows used when a tab has to be created from scratch.
+  // Header rows used only when a tab has to be created from scratch.
+  // Column names match data_dashboard_2026 exactly (verified July 2026).
   HEADERS: {
-    participants: ['Participant ID','Initials','Birth Year','Gender','Race','Participant Type','Zip','County','Registered'],
-    visits:       ['Date','Participant ID','New/Returning','Location','Worker','Longs','Shorts','Nalox IM','Nalox Nasal','Sec Distrib','Returned Syringes','Reversal Count','Housing','Notes','Logged'],
+    participants: ['Participant ID#','Initials','Birth Year','Gender Identity','Race / Ethnicity','County','ZIP','Housing Status','Participant Type','Date Registered'],
+    visits:       ['Date','Participant ID','New / Returning','Staff / Vol','Location','Housing Status','Longs Given','Shorts Given','Naloxone IM','Naloxone Nasal','Sec Distrib Kits','Reported Reversal?','Reversal: Reporter Type','Reversal: OD Outcome','Reversal: Nasal Doses Used','Reversal: IM Doses Used','Reversal: Gender','Reversal: Race / Eth','Reversal: Age Range','Reversal: County','Notes','Logged'],
     events:       ['Event ID','Title','Date','Event Type','Trainer','Duration','Format','Location','Partner','Funder','Notes','Created'],
     attendees:    ['Event ID','Initials','Age Range','Race','Zip','County','Relationship','Nalox IM','Nalox Nasal','Sec Distrib','Participant ID','Completion','Logged'],
-    checkins:     ['Time','Participant ID','Notes','Logged'],
-    reversals:    ['Date','Participant ID','Reporter Type','OD Outcome','Nasal Doses','IM Doses','OD Gender','OD Race','OD Age','OD County','Logged']
+    checkins:     ['Time','Participant ID','Notes','Logged']
   }
 };
 
@@ -60,7 +59,7 @@ function doGet() {
   var col = headerIndex_(rows[0] || []);
   var participants = [];
   for (var i = 1; i < rows.length; i++) {
-    var id = rows[i][col['Participant ID']];
+    var id = rows[i][col['Participant ID#']];
     if (id === '' || id == null) continue;
     participants.push({
       id: Number(id),
@@ -103,15 +102,15 @@ function registerParticipant_(p) {
   var existing = findParticipant_(sheet, { id: p.id });
   if (existing) return { ok: true, id: existing.id, existed: true };
   appendByHeader_(sheet, {
-    'Participant ID': Number(p.id),
+    'Participant ID#': Number(p.id),
     'Initials': String(p.initials || '').toUpperCase(),
     'Birth Year': p.birthYear || '',
-    'Gender': p.gender || '',
-    'Race': p.race || '',
-    'Participant Type': p.participantType || '',
-    'Zip': p.zip || '',
+    'Gender Identity': p.gender || '',
+    'Race / Ethnicity': p.race || '',
     'County': p.county || '',
-    'Registered': new Date()
+    'ZIP': p.zip || '',
+    'Participant Type': p.participantType || '',
+    'Date Registered': new Date()
   });
   return { ok: true, id: Number(p.id), existed: false };
 }
@@ -122,22 +121,22 @@ function logVisit_(p) {
   // Grid imports may send initials+birthYear instead of a PID.
   // Resolve against the registry; auto-register when genuinely new.
   if (!pid && p.initials) {
-    var sheet = ensureSheet_('participants');
-    var match = findParticipant_(sheet, { initials: p.initials, year: p.birthYear });
+    var pSheet = ensureSheet_('participants');
+    var match = findParticipant_(pSheet, { initials: p.initials, year: p.birthYear });
     if (match) {
       pid = String(match.id);
     } else {
-      pid = String(newParticipantId_(sheet));
-      appendByHeader_(sheet, {
-        'Participant ID': Number(pid),
+      pid = String(newParticipantId_(pSheet));
+      appendByHeader_(pSheet, {
+        'Participant ID#': Number(pid),
         'Initials': String(p.initials || '').toUpperCase(),
         'Birth Year': p.birthYear || '',
-        'Gender': p.gender || '',
-        'Race': p.race || '',
-        'Participant Type': 'SSP',
-        'Zip': p.zip || '',
+        'Gender Identity': p.gender || '',
+        'Race / Ethnicity': p.race || '',
         'County': p.county || '',
-        'Registered': new Date()
+        'ZIP': p.zip || '',
+        'Participant Type': 'SSP',
+        'Date Registered': new Date()
       });
     }
   }
@@ -145,38 +144,35 @@ function logVisit_(p) {
 
   // Privacy rule: the visits tab stores the anonymous ID ONLY —
   // never initials, birth year, or other identifiers.
+
+  // Reversal detail: take the first reported reversal inline.
+  // The spreadsheet has one set of reversal columns per visit row.
+  var rv = (p.reversals && p.reversals.length > 0) ? p.reversals[0] : null;
+  var hasReversal = rv || p.reversalReported === 'Yes' || Number(p.reversalCount) > 0;
+
   appendByHeader_(ensureSheet_('visits'), {
     'Date': p.date || '',
     'Participant ID': Number(pid),
-    'New/Returning': p.newOrReturning || '',
+    'New / Returning': p.newOrReturning || '',
+    'Staff / Vol': p.worker || '',
     'Location': p.location || '',
-    'Worker': p.worker || '',
-    'Longs': num_(p.longs),
-    'Shorts': num_(p.shorts),
-    'Nalox IM': num_(p.naloxIM),
-    'Nalox Nasal': num_(p.naloxNasal),
-    'Sec Distrib': num_(p.secDistrib),
-    'Returned Syringes': p.returnedSyringes === 'yes' ? 'yes' : num_(p.returnedSyringes),
-    'Reversal Count': num_(p.reversalCount),
-    'Housing': p.housing || '',
+    'Housing Status': p.housing || '',
+    'Longs Given': num_(p.longs),
+    'Shorts Given': num_(p.shorts),
+    'Naloxone IM': num_(p.naloxIM),
+    'Naloxone Nasal': num_(p.naloxNasal),
+    'Sec Distrib Kits': num_(p.secDistrib),
+    'Reported Reversal?': hasReversal ? 'Yes' : '',
+    'Reversal: Reporter Type': rv ? (rv.reporterType || '') : '',
+    'Reversal: OD Outcome': rv ? (rv.odOutcome || '') : '',
+    'Reversal: Nasal Doses Used': rv ? (rv.nasalDoses || '') : '',
+    'Reversal: IM Doses Used': rv ? (rv.imDoses || '') : '',
+    'Reversal: Gender': rv ? (rv.odGender || '') : '',
+    'Reversal: Race / Eth': rv ? (rv.odRace || '') : '',
+    'Reversal: Age Range': rv ? (rv.odAge || '') : '',
+    'Reversal: County': rv ? (rv.odCounty || '') : '',
     'Notes': p.notes || '',
     'Logged': new Date()
-  });
-
-  (p.reversals || []).forEach(function (r) {
-    appendByHeader_(ensureSheet_('reversals'), {
-      'Date': p.date || '',
-      'Participant ID': Number(pid),
-      'Reporter Type': r.reporterType || '',
-      'OD Outcome': r.odOutcome || '',
-      'Nasal Doses': r.nasalDoses || '',
-      'IM Doses': r.imDoses || '',
-      'OD Gender': r.odGender || '',
-      'OD Race': r.odRace || '',
-      'OD Age': r.odAge || '',
-      'OD County': r.odCounty || '',
-      'Logged': new Date()
-    });
   });
 
   return { ok: true, participantId: Number(pid) };
@@ -277,19 +273,19 @@ function appendByHeader_(sheet, obj) {
   sheet.appendRow(row);
 }
 
-/** Find a participant by {id} or {initials, year}. Returns {id,...} or null. */
+/** Find a participant by {id} or {initials, year}. Returns {id} or null. */
 function findParticipant_(sheet, q) {
   var rows = sheet.getDataRange().getValues();
   if (rows.length < 2) return null;
   var col = headerIndex_(rows[0]);
   for (var i = 1; i < rows.length; i++) {
-    if (q.id != null && q.id !== '' && Number(rows[i][col['Participant ID']]) === Number(q.id)) {
-      return { id: Number(rows[i][col['Participant ID']]) };
+    if (q.id != null && q.id !== '' && Number(rows[i][col['Participant ID#']]) === Number(q.id)) {
+      return { id: Number(rows[i][col['Participant ID#']]) };
     }
     if (q.initials &&
         String(rows[i][col['Initials']]).toUpperCase() === String(q.initials).toUpperCase() &&
         String(rows[i][col['Birth Year']]) === String(q.year || '')) {
-      return { id: Number(rows[i][col['Participant ID']]) };
+      return { id: Number(rows[i][col['Participant ID#']]) };
     }
   }
   return null;
@@ -300,7 +296,7 @@ function newParticipantId_(sheet) {
   var rows = sheet.getDataRange().getValues();
   var col = headerIndex_(rows[0] || []);
   var used = {};
-  for (var i = 1; i < rows.length; i++) used[Number(rows[i][col['Participant ID']])] = true;
+  for (var i = 1; i < rows.length; i++) used[Number(rows[i][col['Participant ID#']])] = true;
   var id;
   do { id = Math.floor(Math.random() * 9000) + 1000; } while (used[id]);
   return id;

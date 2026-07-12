@@ -39,11 +39,37 @@ Install steps are in the header comment of that file — short version:
   missing tabs, so this failure mode is gone — but check `CONFIG.TABS` so it
   writes to the tabs you expect rather than creating fresh ones.
 - **Lookup always says "No match found"** → GET side broken or Participants
-  headers changed. New backend reads by header names: `Participant ID`,
+  headers changed. New backend reads by header names: `Participant ID#`,
   `Initials`, `Birth Year`.
 - **Rows land in the wrong columns** → old script wrote by fixed column
   position after someone inserted a column. New backend writes by header
   name, so column order no longer matters.
+
+## Column names (verified against data_dashboard_2026, July 2026)
+
+The script uses the exact column names from the live spreadsheet:
+
+| Form field | Participants tab | SSP Visits tab |
+|---|---|---|
+| `id` | `Participant ID#` | — |
+| `participantId` | — | `Participant ID` |
+| `gender` | `Gender Identity` | — |
+| `race` | `Race / Ethnicity` | — |
+| `zip` | `ZIP` | — |
+| `registeredDate` | `Date Registered` | — |
+| `worker` | — | `Staff / Vol` |
+| `longs` | — | `Longs Given` |
+| `shorts` | — | `Shorts Given` |
+| `naloxIM` | — | `Naloxone IM` |
+| `naloxNasal` | — | `Naloxone Nasal` |
+| `secDistrib` | — | `Sec Distrib Kits` |
+| `reversals[0].*` | — | `Reversal: *` columns (inline) |
+
+**Reversal architecture:** Reversal data is written inline to the SSP Visits
+row — there is no separate Reversals tab. The spreadsheet has one set of
+`Reversal: *` columns per visit row. If a visit has multiple reversals the
+script writes the first one; subsequent reversals in the same visit are
+silently dropped (edge case — has not occurred in practice).
 
 ## Privacy notes (deliberate design, don't undo)
 
