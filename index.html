@@ -191,6 +191,53 @@ select option { background: var(--bg); }
 #toast.err { background: #3d1f1f; border-color: var(--warn); }
 /* ── Section divider ─────────────────────────────────────────────────── */
 .divider { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+/* ── Paper sheet rows ────────────────────────────────────────────────── */
+.paper-row {
+  background: var(--pill-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.paper-row .row-num {
+  font-size: .7rem;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 8px;
+}
+.paper-row .field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.paper-row label { font-size: .78rem; }
+.paper-row input, .paper-row select {
+  font-size: .88rem;
+  padding: 6px 8px;
+  margin-bottom: 0;
+}
+.paper-row .del-row {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: none;
+  border: none;
+  color: var(--warn);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.paper-row .section-label {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin: 10px 0 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
 </style>
 </head>
 <body>
@@ -203,6 +250,7 @@ select option { background: var(--bg); }
   <button class="tab-btn active" onclick="showTab('visit')">Log Visit</button>
   <button class="tab-btn" onclick="showTab('register')">Register Participant</button>
   <button class="tab-btn" onclick="showTab('event')">Events</button>
+  <button class="tab-btn" onclick="showTab('paper')">🖨 Paper Sheet</button>
 </div>
 
 <!-- ══════════════════ LOG VISIT TAB ══════════════════ -->
@@ -599,6 +647,20 @@ select option { background: var(--bg); }
   <button class="submit-btn" onclick="submitAttendee()">Log Attendance</button>
 </div>
 
+<!-- ══════════════════ PAPER SHEET TAB ══════════════════ -->
+<div id="tab-paper" class="tab-pane">
+  <section>
+    <h2>📋 Manual Entry Sheet</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px;">
+      One row per participant. Fill what you have — if they're new, include demographics and they'll be registered automatically. Hit Submit All when done.
+    </p>
+    <div id="paper-rows"></div>
+    <button onclick="addPaperRow()" style="width:100%;background:var(--pill-bg);border:1px dashed var(--border);border-radius:8px;color:var(--muted);padding:10px;cursor:pointer;font-size:.9rem;margin-bottom:10px">+ Add Row</button>
+  </section>
+  <button class="submit-btn" onclick="submitPaperSheet(this)">Submit All to Sheet</button>
+  <div id="paper-result" style="margin-top:10px;font-size:.9rem;color:var(--accent2);display:none"></div>
+</div>
+
 
 <!-- Toast -->
 <div id="toast"></div>
@@ -627,6 +689,9 @@ let pillValues   = {
 // Boot
 // ────────────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
+  // Start with one blank paper row ready to go
+  addPaperRow();
+
   // Default visit date to today
   const today = new Date();
   const ymd = today.getFullYear() + '-' +
@@ -978,6 +1043,171 @@ function post_(payload) {
     method: 'POST',
     body:   JSON.stringify(payload)
   });
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Paper Sheet tab
+// ────────────────────────────────────────────────────────────────────────────
+let paperRowCount = 0;
+
+function addPaperRow() {
+  paperRowCount++;
+  const n = paperRowCount;
+  const today = new Date().toISOString().slice(0, 10);
+  const countyOpts = ['','Clarke','Oconee','Jackson','Madison','Barrow','Oglethorpe',
+    'Elbert','Hart','Franklin','Stephens','Habersham','Rabun','Other']
+    .map(c => `<option value="${c}">${c || '— county —'}</option>`).join('');
+
+  const row = document.createElement('div');
+  row.className = 'paper-row';
+  row.dataset.rowId = n;
+  row.innerHTML = `
+    <div class="row-num">#${n} <button class="del-row" onclick="this.closest('.paper-row').remove()">✕</button></div>
+    <div class="section-label">Participant</div>
+    <div class="field-grid">
+      <label>Initials<input type="text" name="initials" placeholder="ABC" maxlength="5" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase();paperAutoLookup(this.closest('.paper-row'))"></label>
+      <label>Birth Year<input type="number" name="birthYear" placeholder="1985" min="1920" max="2010" oninput="paperAutoLookup(this.closest('.paper-row'))"></label>
+      <label>PID (auto-fills or enter)<input type="text" name="pid" placeholder="auto" maxlength="4" class="paper-pid"></label>
+      <label>Gender<select name="gender">
+        <option value="">—</option>
+        <option value="M">M</option><option value="F">F</option>
+        <option value="NB">NB</option><option value="TF">TF</option>
+        <option value="TM">TM</option><option value="O">Other</option>
+      </select></label>
+      <label>Race/Eth<select name="race">
+        <option value="">—</option>
+        <option value="W">White</option><option value="B">Black</option>
+        <option value="H">Hispanic</option><option value="AI">AI/AN</option>
+        <option value="API">API</option><option value="M">Multi</option>
+        <option value="O">Other</option>
+      </select></label>
+      <label>County<select name="county">${countyOpts}</select></label>
+      <label>ZIP<input type="text" name="zip" placeholder="30601" maxlength="10"></label>
+    </div>
+    <div class="section-label">Visit</div>
+    <div class="field-grid">
+      <label>Date<input type="date" name="date" value="${today}"></label>
+      <label>N/R<select name="newReturn">
+        <option value="Returning">Returning</option>
+        <option value="New">New</option>
+      </select></label>
+      <label>Location<input type="text" name="location" placeholder="location"></label>
+      <label>Worker<input type="text" name="worker" placeholder="initials"></label>
+      <label>Ret Syr<select name="returnedSyringes"><option value="No">No</option><option value="Yes">Yes</option></select></label>
+      <label>Longs<input type="number" name="longs" value="0" min="0" max="200" step="5"></label>
+      <label>Shorts<input type="number" name="shorts" value="0" min="0" max="200" step="5"></label>
+      <label>Nal IM<select name="naloxIM">
+        ${[0,1,2,3,4,6,8,10,12,14,16,18,20].map(v=>`<option value="${v}">${v}</option>`).join('')}
+      </select></label>
+      <label>Nal Nasal<select name="naloxNasal">
+        ${[0,1,2,3,4,5].map(v=>`<option value="${v}">${v}</option>`).join('')}
+      </select></label>
+      <label>Reversal<select name="reversal"><option value="No">No</option><option value="Yes">Yes</option></select></label>
+      <label style="grid-column:1/-1">Notes<input type="text" name="notes" placeholder="optional notes"></label>
+    </div>
+  `;
+  document.getElementById('paper-rows').appendChild(row);
+}
+
+function paperAutoLookup(row) {
+  const initials  = (row.querySelector('[name=initials]').value || '').toUpperCase().trim();
+  const birthYear = (row.querySelector('[name=birthYear]').value || '').trim();
+  const pidField  = row.querySelector('[name=pid]');
+  if (!initials || !birthYear) return;
+  const match = participants.find(p =>
+    String(p.initials||'').toUpperCase() === initials && String(p.birthYear||p.year||'') === birthYear
+  );
+  if (match) {
+    pidField.value = match.id;
+    pidField.style.background = '#0d3321';
+  }
+}
+
+async function submitPaperSheet(btn) {
+  const rows = Array.from(document.querySelectorAll('.paper-row'));
+  if (!rows.length) { alert('No rows to submit.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  const resultEl = document.getElementById('paper-result');
+  resultEl.style.display = 'none';
+
+  let registered = 0, logged = 0, errors = [];
+
+  for (const row of rows) {
+    const g = name => (row.querySelector(`[name=${name}]`) || {}).value || '';
+    const initials  = g('initials').toUpperCase().trim();
+    const birthYear = g('birthYear').trim();
+    let   pid       = g('pid').trim();
+
+    // Register if no PID
+    if (!pid && initials && birthYear) {
+      const existing = participants.find(p =>
+        String(p.initials||'').toUpperCase() === initials &&
+        String(p.birthYear||p.year||'') === birthYear
+      );
+      if (existing) {
+        pid = String(existing.id);
+        row.querySelector('[name=pid]').value = pid;
+      } else {
+        const usedIds = participants.map(p => String(p.id));
+        let newId;
+        do { newId = String(Math.floor(1000 + Math.random() * 9000)); }
+        while (usedIds.includes(newId));
+
+        try {
+          const res  = await post_({ action:'registerParticipant', id:newId,
+            initials, birthYear, gender:g('gender'), race:g('race'),
+            county:g('county'), zip:g('zip') });
+          const data = await res.json();
+          if (data.ok || data.success) {
+            pid = newId;
+            row.querySelector('[name=pid]').value = pid;
+            participants.push({ id:pid, initials, birthYear, year:birthYear });
+            registered++;
+          } else {
+            errors.push(`Row: ${initials}/${birthYear} reg failed: ${data.error||'unknown'}`);
+            continue;
+          }
+        } catch(e) {
+          errors.push(`Row: ${initials}/${birthYear} network error`);
+          continue;
+        }
+      }
+    }
+
+    if (!pid) {
+      errors.push(`Row ${initials||'?'}: no PID — skipped`);
+      continue;
+    }
+
+    const date = g('date');
+    if (!date) { errors.push(`PID ${pid}: no date — skipped`); continue; }
+
+    try {
+      const res  = await post_({ action:'logVisit',
+        participantId: pid, date, worker:g('worker'), location:g('location'),
+        newOrReturning:g('newReturn'), longs:g('longs'), shorts:g('shorts'),
+        naloxIM:g('naloxIM'), naloxNasal:g('naloxNasal'),
+        returnedSyringes:g('returnedSyringes'), reportedReversal:g('reversal'),
+        notes:g('notes') });
+      const data = await res.json();
+      if (data.ok || data.success) { logged++; }
+      else { errors.push(`PID ${pid} visit error: ${data.error||'unknown'}`); }
+    } catch(e) {
+      errors.push(`PID ${pid} network error`);
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Submit All to Sheet';
+  let msg = `✓ ${logged} visit${logged!==1?'s':''} logged`;
+  if (registered) msg += `, ${registered} new participant${registered!==1?'s':''} registered`;
+  if (errors.length) msg += `\n⚠ Errors:\n` + errors.join('\n');
+  resultEl.style.display = 'block';
+  resultEl.style.color = errors.length ? 'var(--warn)' : 'var(--accent2)';
+  resultEl.style.whiteSpace = 'pre-line';
+  resultEl.textContent = msg;
 }
 
 // ────────────────────────────────────────────────────────────────────────────
