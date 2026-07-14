@@ -366,14 +366,7 @@ select option { background: var(--bg); }
         <div class="pill" data-val="2" onclick="pickPill('naloxNasal',this)">2</div>
         <div class="pill" data-val="3" onclick="pickPill('naloxNasal',this)">3</div>
         <div class="pill" data-val="4" onclick="pickPill('naloxNasal',this)">4</div>
-        <div class="pill" data-val="6" onclick="pickPill('naloxNasal',this)">6</div>
-        <div class="pill" data-val="8" onclick="pickPill('naloxNasal',this)">8</div>
-        <div class="pill" data-val="10" onclick="pickPill('naloxNasal',this)">10</div>
-        <div class="pill" data-val="12" onclick="pickPill('naloxNasal',this)">12</div>
-        <div class="pill" data-val="14" onclick="pickPill('naloxNasal',this)">14</div>
-        <div class="pill" data-val="16" onclick="pickPill('naloxNasal',this)">16</div>
-        <div class="pill" data-val="18" onclick="pickPill('naloxNasal',this)">18</div>
-        <div class="pill" data-val="20" onclick="pickPill('naloxNasal',this)">20</div>
+        <div class="pill" data-val="5" onclick="pickPill('naloxNasal',this)">5</div>
       </div>
     </div>
 
@@ -555,7 +548,14 @@ select option { background: var(--bg); }
     </select>
 
     <label>County</label>
-    <input type="text" id="regCounty" placeholder="e.g. Clarke">
+    <select id="regCounty">
+      <option value="">— select —</option>
+      <option>Clarke</option><option>Oconee</option><option>Jackson</option>
+      <option>Madison</option><option>Barrow</option><option>Oglethorpe</option>
+      <option>Elbert</option><option>Hart</option><option>Franklin</option>
+      <option>Stephens</option><option>Habersham</option><option>Rabun</option>
+      <option>Other</option>
+    </select>
 
     <label>ZIP Code</label>
     <input type="text" id="regZip" placeholder="e.g. 30601" maxlength="10">
@@ -934,7 +934,7 @@ async function submitRegister() {
       document.getElementById('regInitials').value   = '';
       document.getElementById('regBirthYear').value  = '';
       document.getElementById('regGender').value     = '';
-      document.getElementById('regCounty').value     = '';
+      document.getElementById('regCounty').selectedIndex = 0;
       document.getElementById('regZip').value        = '';
       document.getElementById('regHousing').value    = '';
       pickPillByVal('regType', 'SSP');
