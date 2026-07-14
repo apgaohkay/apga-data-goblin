@@ -919,10 +919,17 @@ async function submitRegister() {
     const res  = await post_(payload);
     const data = await res.json();
     if (data.ok || data.success) {
-      participants.push({ id: newId, initials, year: birthYear });
       toast('✓ Registered! ID: ' + (data.id || newId));
-      // Reload participant list so new person shows up in lookup
-      fetch(WEB_APP_URL).then(r=>r.json()).then(d => { participants = d.participants || []; });
+      // Add to local list immediately so next registration gets a different ID
+      participants.push({ id: newId, initials, year: birthYear });
+      // Then reload from sheet in background (preserves the pushed entry if reload fails)
+      fetch(WEB_APP_URL).then(r=>r.json()).then(d => {
+        const fresh = d.participants || [];
+        // Keep any locally-added entries not yet in the sheet response
+        const freshIds = new Set(fresh.map(p=>String(p.id)));
+        participants.filter(p=>!freshIds.has(String(p.id))).forEach(p=>fresh.push(p));
+        participants = fresh;
+      }).catch(()=>{});
       // Clear registration form
       document.getElementById('regInitials').value   = '';
       document.getElementById('regBirthYear').value  = '';
