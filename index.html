@@ -338,7 +338,14 @@ select option { background: var(--bg); }
         <div class="pill" data-val="2" onclick="pickPill('naloxIM',this)">2</div>
         <div class="pill" data-val="3" onclick="pickPill('naloxIM',this)">3</div>
         <div class="pill" data-val="4" onclick="pickPill('naloxIM',this)">4</div>
-        <div class="pill" data-val="5" onclick="pickPill('naloxIM',this)">5</div>
+        <div class="pill" data-val="6" onclick="pickPill('naloxIM',this)">6</div>
+        <div class="pill" data-val="8" onclick="pickPill('naloxIM',this)">8</div>
+        <div class="pill" data-val="10" onclick="pickPill('naloxIM',this)">10</div>
+        <div class="pill" data-val="12" onclick="pickPill('naloxIM',this)">12</div>
+        <div class="pill" data-val="14" onclick="pickPill('naloxIM',this)">14</div>
+        <div class="pill" data-val="16" onclick="pickPill('naloxIM',this)">16</div>
+        <div class="pill" data-val="18" onclick="pickPill('naloxIM',this)">18</div>
+        <div class="pill" data-val="20" onclick="pickPill('naloxIM',this)">20</div>
       </div>
     </div>
 
@@ -350,7 +357,14 @@ select option { background: var(--bg); }
         <div class="pill" data-val="2" onclick="pickPill('naloxNasal',this)">2</div>
         <div class="pill" data-val="3" onclick="pickPill('naloxNasal',this)">3</div>
         <div class="pill" data-val="4" onclick="pickPill('naloxNasal',this)">4</div>
-        <div class="pill" data-val="5" onclick="pickPill('naloxNasal',this)">5</div>
+        <div class="pill" data-val="6" onclick="pickPill('naloxNasal',this)">6</div>
+        <div class="pill" data-val="8" onclick="pickPill('naloxNasal',this)">8</div>
+        <div class="pill" data-val="10" onclick="pickPill('naloxNasal',this)">10</div>
+        <div class="pill" data-val="12" onclick="pickPill('naloxNasal',this)">12</div>
+        <div class="pill" data-val="14" onclick="pickPill('naloxNasal',this)">14</div>
+        <div class="pill" data-val="16" onclick="pickPill('naloxNasal',this)">16</div>
+        <div class="pill" data-val="18" onclick="pickPill('naloxNasal',this)">18</div>
+        <div class="pill" data-val="20" onclick="pickPill('naloxNasal',this)">20</div>
       </div>
     </div>
 
@@ -802,7 +816,7 @@ async function submitVisit() {
   try {
     const res  = await post_(payload);
     const data = await res.json();
-    if (data.ok) {
+    if (data.ok || data.success) {
       toast('✓ Visit logged for ' + pid);
       resetVisitForm();
     } else {
@@ -862,8 +876,15 @@ async function submitRegister() {
   const btn = document.getElementById('submitReg');
   btn.disabled = true; btn.textContent = 'Registering…';
 
+  // Generate a PID not already in the local registry
+  const existingIds = participants.map(p => String(p.id));
+  let newId;
+  do { newId = String(Math.floor(1000 + Math.random() * 9000)); }
+  while (existingIds.includes(newId));
+
   const payload = {
     action:          'registerParticipant',
+    id:              newId,
     initials:        initials,
     birthYear:       birthYear,
     gender:          document.getElementById('regGender').value,
@@ -877,8 +898,9 @@ async function submitRegister() {
   try {
     const res  = await post_(payload);
     const data = await res.json();
-    if (data.ok) {
-      toast('✓ Registered! New ID: ' + data.id);
+    if (data.ok || data.success) {
+      participants.push({ id: newId, initials, year: birthYear });
+      toast('✓ Registered! ID: ' + (data.id || newId));
       // Reload participant list so new person shows up in lookup
       fetch(WEB_APP_URL).then(r=>r.json()).then(d => { participants = d.participants || []; });
       // Clear registration form
@@ -911,7 +933,7 @@ async function submitAttendee() {
     const res  = await post_({ action:'logAttendee', eventId, participantId:pid,
       notes: document.getElementById('eventNotes').value });
     const data = await res.json();
-    if (data.ok) {
+    if (data.ok || data.success) {
       toast('✓ Attendance logged');
       document.getElementById('eventParticipantId').value = '';
       document.getElementById('eventNotes').value = '';
