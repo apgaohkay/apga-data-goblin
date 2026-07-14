@@ -606,7 +606,7 @@ select option { background: var(--bg); }
     </select>
 
     <label>ZIP Code</label>
-    <input type="text" id="regZip" placeholder="e.g. 30601" maxlength="10">
+    <select id="regZip"></select>
 
     <label>Housing Status</label>
     <select id="regHousing">
@@ -672,6 +672,33 @@ select option { background: var(--bg); }
 const WEB_APP_URL =
   'https://script.google.com/macros/s/AKfycbykiqg1ZmqVdUdJNzEbJIVVkaU857Uz6TmMlWxFU4eXQCYXK4D1MLuO5FGh8dFVf7ym/exec';
 
+// ZIP codes for the counties Access Point serves, grouped by county.
+const ZIPS_BY_COUNTY = {
+  'Barrow':     ['30011','30620','30666','30680'],
+  'Clarke':     ['30601','30602','30605','30606','30607','30609','30683'],
+  'Elbert':     ['30624','30634','30635'],
+  'Franklin':   ['30520','30521','30553','30662'],
+  'Habersham':  ['30510','30523','30531','30535','30563'],
+  'Hart':       ['30516','30643'],
+  'Jackson':    ['30517','30529','30548','30549','30565','30567','30575'],
+  'Madison':    ['30627','30628','30629','30633','30646'],
+  'Oconee':     ['30621','30622','30677'],
+  'Oglethorpe': ['30619','30630','30648','30667'],
+  'Rabun':      ['30525','30537','30552','30568','30576'],
+  'Stephens':   ['30538','30557','30577']
+};
+// Build <optgroup>-grouped <option> markup for a ZIP dropdown.
+function zipOptionsHtml() {
+  let html = '<option value="">— ZIP —</option>';
+  for (const county of Object.keys(ZIPS_BY_COUNTY)) {
+    html += `<optgroup label="${county}">`;
+    html += ZIPS_BY_COUNTY[county].map(z => `<option value="${z}">${z}</option>`).join('');
+    html += '</optgroup>';
+  }
+  html += '<option value="Other">Other / not listed</option>';
+  return html;
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // State
 // ────────────────────────────────────────────────────────────────────────────
@@ -689,6 +716,9 @@ let pillValues   = {
 // Boot
 // ────────────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
+  // Populate the registration ZIP dropdown
+  document.getElementById('regZip').innerHTML = zipOptionsHtml();
+
   // Start with one blank paper row ready to go
   addPaperRow();
 
@@ -1082,7 +1112,7 @@ function addPaperRow() {
         <option value="O">Other</option>
       </select></label>
       <label>County<select name="county">${countyOpts}</select></label>
-      <label>ZIP<input type="text" name="zip" placeholder="30601" maxlength="10"></label>
+      <label>ZIP<select name="zip">${zipOptionsHtml()}</select></label>
     </div>
     <div class="section-label">Visit</div>
     <div class="field-grid">
