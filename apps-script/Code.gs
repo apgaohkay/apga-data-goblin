@@ -1,313 +1,363 @@
 /**
- * Access Point of Georgia — SSP Data System backend
- * ==================================================
- * Google Apps Script web app that connects the "Access Point SSP" form
- * (index.html in this repo) to the data_dashboard_2026 spreadsheet.
+ * Code.gs  —  Access Point SSP Web App (sspv5)
  *
- * HOW TO INSTALL (5 minutes):
- *  1. Open data_dashboard_2026 → Extensions → Apps Script.
- *  2. Replace everything in Code.gs with this file. Save (💾).
- *  3. Check CONFIG below: the tab names must match the real tab names in the
- *     spreadsheet EXACTLY (case-sensitive). If a tab doesn't exist yet the
- *     script creates it with the right headers on first use.
- *  4. Deploy → Manage deployments → ✏️ Edit (pencil) on the existing
- *     deployment → Version: "New version" → Deploy.
- *     ⚠️ Do NOT create a brand-new deployment — that mints a new /exec URL
- *     and the form would still point at the old one. Editing the existing
- *     deployment keeps the URL the form already uses.
- *     (Settings: Execute as: Me · Who has access: Anyone)
- *  5. Test: open the /exec URL in a browser — you should see JSON starting
- *     with {"ok":true,"participants":[...
+ * KEY FIX vs previous version:
+ *   SSP Visits tab has a TITLE ROW in row 1 and column HEADERS in row 2.
+ *   appendByHeader_() now reads CONFIG.HEADER_ROW[sheetName] (default 1) so
+ *   SSP Visits correctly reads row 2 while all other tabs still use row 1.
  *
- * WHY THE FORM BROKE (most common causes, in order of likelihood):
- *  - A tab was renamed (e.g. "SSP Visits" → "SSP Visits/Log") and the script
- *    still referenced the old name → getSheetByName() returned null.
- *  - Someone re-deployed as a NEW deployment, changing the /exec URL.
- *  - Columns were inserted/moved and the script wrote by fixed column index.
- *  This version fixes all three failure modes: tab names live in CONFIG,
- *  missing tabs are auto-created, and every write is header-driven — it looks
- *  up column positions by header name at write time, so inserting or
- *  reordering columns can't silently corrupt data again.
+ * Deploy: Extensions → Apps Script → Edit deployment (pencil) → New version → Save.
+ * Do NOT create a new deployment — the form's WEB_APP_URL must stay the same.
  */
 
-// ═══════════════════ CONFIG — edit tab names here only ═══════════════════
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────────────────────────────────────
+var SS_ID = '1D3wbyiGS3QIwg0CwFutj7tpffUZtmRf0P4HKSlitppM';
+
 var CONFIG = {
   TABS: {
-    participants: 'Participants',
-    visits:       'SSP Visits',
-    events:       'Events',
-    attendees:    'Event Attendees',
-    checkins:     'Check-Ins'
+    participants:   'Participants',
+    visits:         'SSP Visits',
+    events:         'Events',
+    attendees:      'Event Attendees',
+    checkins:       'Check-Ins',
+    rawSubmissions: 'Raw Submissions'
   },
-  // Header rows used only when a tab has to be created from scratch.
-  // Column names match data_dashboard_2026 exactly (verified July 2026).
+
+  // Only SSP Visits has a title banner in row 1; its real headers are in row 2.
+  // All other tabs have headers in row 1 (default).
+  HEADER_ROW: {
+    'SSP Visits': 2
+  },
+
   HEADERS: {
-    participants: ['Participant ID#','Initials','Birth Year','Gender Identity','Race / Ethnicity','County','ZIP','Housing Status','Participant Type','Date Registered'],
-    visits:       ['Date','Participant ID','New / Returning','Staff / Vol','Location','Housing Status','Longs Given','Shorts Given','Naloxone IM','Naloxone Nasal','Sec Distrib Kits','Reported Reversal?','Reversal: Reporter Type','Reversal: OD Outcome','Reversal: Nasal Doses Used','Reversal: IM Doses Used','Reversal: Gender','Reversal: Race / Eth','Reversal: Age Range','Reversal: County','Notes','Logged'],
-    events:       ['Event ID','Title','Date','Event Type','Trainer','Duration','Format','Location','Partner','Funder','Notes','Created'],
-    attendees:    ['Event ID','Initials','Age Range','Race','Zip','County','Relationship','Nalox IM','Nalox Nasal','Sec Distrib','Participant ID','Completion','Logged'],
-    checkins:     ['Time','Participant ID','Notes','Logged']
+    participants: [
+      'Participant ID#', 'Initials', 'Birth Year', 'Gender Identity',
+      'Race / Ethnicity', 'County', 'ZIP', 'Housing Status',
+      'Participant Type', 'Date Registered'
+    ],
+    visits: [
+      'Date', 'Participant ID', 'New / Returning', 'Staff / Vol', 'Location',
+      'Housing Status', 'Longs Given', 'Shorts Given', 'FTS Given',
+      'Naloxone IM', 'Naloxone Nasal', 'Sec Distrib Kits',
+      'Services / Referrals',
+      'Reported Reversal?', 'Reversal: Reporter Type', 'Reversal: OD Outcome',
+      'Reversal: Nasal Doses Used', 'Reversal: IM Doses Used',
+      'Reversal: Gender', 'Reversal: Race / Eth', 'Reversal: Age Range',
+      'Reversal: County', 'Notes', 'Logged'
+    ],
+    events: [
+      'Event ID', 'Event Name', 'Date', 'Location', 'Type',
+      'Staff / Vol', 'Notes', 'Created'
+    ],
+    attendees: [
+      'Event ID', 'Participant ID', 'Check-In Time', 'Notes'
+    ],
+    checkins: [
+      'Date', 'Participant ID', 'Staff / Vol', 'Location',
+      'Notes', 'Logged'
+    ]
   }
 };
 
-// ═══════════════════ Entry points ═══════════════════
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
 
-/** GET → participant registry for the form's initials+year lookup. */
-function doGet() {
-  var sheet = ensureSheet_('participants');
-  var rows = sheet.getDataRange().getValues();
-  var col = headerIndex_(rows[0] || []);
-  var participants = [];
-  for (var i = 1; i < rows.length; i++) {
-    var id = rows[i][col['Participant ID#']];
-    if (id === '' || id == null) continue;
-    participants.push({
-      id: Number(id),
-      initials: String(rows[i][col['Initials']] || '').toUpperCase(),
-      year: String(rows[i][col['Birth Year']] || '')
-    });
+/**
+ * Append a row to `sheet` by matching object keys to column headers.
+ * Keys in rowObj that don't match any header are silently ignored.
+ * Columns in the sheet that have no matching key are left empty.
+ *
+ * For SSP Visits, headers are in row 2 (CONFIG.HEADER_ROW['SSP Visits'] = 2).
+ * For all other tabs, headers are in row 1.
+ */
+function appendByHeader_(sheet, rowObj) {
+  var sheetName = sheet.getName();
+  var headerRow  = CONFIG.HEADER_ROW[sheetName] || 1;
+  var lastCol    = sheet.getLastColumn();
+  if (lastCol < 1) lastCol = 1;
+
+  var headers = sheet.getRange(headerRow, 1, 1, lastCol).getValues()[0];
+  var row     = new Array(lastCol).fill('');
+
+  headers.forEach(function(h, i) {
+    if (h !== '' && h in rowObj) {
+      row[i] = rowObj[h] !== undefined ? rowObj[h] : '';
+    }
+  });
+
+  sheet.appendRow(row);
+
+  // SSP Visits column B is "Day (auto)" — restore formula after appendRow
+  if (sheetName === CONFIG.TABS.visits) {
+    var newRow = sheet.getLastRow();
+    sheet.getRange(newRow, 2).setFormula(
+      '=IF(ISBLANK(A' + newRow + '),"",TEXT(A' + newRow + ',"DDD"))'
+    );
   }
-  return json_({ ok: true, participants: participants });
 }
 
-/** POST → dispatch on payload.action. */
+/** Log every POST to Raw Submissions for audit and date-recovery purposes. */
+function rawLog_(ss, action, payload) {
+  try {
+    var raw = ss.getSheetByName(CONFIG.TABS.rawSubmissions);
+    if (!raw) return;
+    var now = new Date();
+    raw.appendRow([now.toISOString(), action, JSON.stringify(payload)]);
+  } catch (e) {
+    // Non-fatal: don't let logging failure break a form submit
+    Logger.log('rawLog_ error: ' + e.message);
+  }
+}
+
+/** Return a JSON ContentService response. */
+function jsonOut_(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/** Parse integer, defaulting to 0 on NaN/empty. */
+function int_(v) {
+  var n = parseInt(v, 10);
+  return isNaN(n) ? 0 : n;
+}
+
+/** Parse a YYYY-MM-DD string safely; falls back to today. */
+function parseDate_(s) {
+  if (!s) return new Date();
+  var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return new Date();
+  // Use local noon to avoid timezone-boundary shift
+  return new Date(+m[1], +m[2] - 1, +m[3], 12, 0, 0);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// doGet  —  returns participant list (and optionally event list)
+// ─────────────────────────────────────────────────────────────────────────────
+function doGet(e) {
+  var ss = SpreadsheetApp.openById(SS_ID);
+  var action = (e && e.parameter && e.parameter.action) || 'getParticipants';
+
+  try {
+    if (action === 'getParticipants') {
+      var pSheet = ss.getSheetByName(CONFIG.TABS.participants);
+      var lastRow = pSheet.getLastRow();
+      var participants = [];
+
+      if (lastRow >= 2) {
+        // Participants headers in row 1; data starts row 2
+        var pData = pSheet.getRange(2, 1, lastRow - 1, CONFIG.HEADERS.participants.length)
+                          .getValues();
+        participants = pData
+          .filter(function(r) { return r[0]; }) // must have an ID
+          .map(function(r) {
+            return {
+              id:        String(r[0]),
+              initials:  String(r[1] || ''),
+              birthYear: r[2] ? String(r[2]) : '',
+              gender:    String(r[3] || ''),
+              race:      String(r[4] || ''),
+              county:    String(r[5] || ''),
+              zip:       String(r[6] || ''),
+              housing:   String(r[7] || ''),
+              type:      String(r[8] || '')
+            };
+          });
+      }
+      return jsonOut_({ ok: true, participants: participants });
+    }
+
+    if (action === 'getEvents') {
+      var evSheet = ss.getSheetByName(CONFIG.TABS.events);
+      var evLast  = evSheet.getLastRow();
+      var events  = [];
+      if (evLast >= 2) {
+        var evData = evSheet.getRange(2, 1, evLast - 1, CONFIG.HEADERS.events.length).getValues();
+        events = evData
+          .filter(function(r) { return r[0]; })
+          .map(function(r) {
+            return { id: String(r[0]), name: String(r[1]), date: r[2], location: String(r[3]) };
+          });
+      }
+      return jsonOut_({ ok: true, events: events });
+    }
+
+    return jsonOut_({ ok: false, error: 'Unknown action: ' + action });
+  } catch (err) {
+    return jsonOut_({ ok: false, error: err.message });
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// doPost  —  handles all form submissions
+// ─────────────────────────────────────────────────────────────────────────────
 function doPost(e) {
   var lock = LockService.getScriptLock();
-  lock.waitLock(30000); // serialize writes; two phones can submit at once
   try {
-    var p = JSON.parse(e.postData.contents);
-    switch (p.action) {
-      case 'registerParticipant': return json_(registerParticipant_(p));
-      case 'logVisit':            return json_(logVisit_(p));
-      case 'bulkLogVisits':
-        var results = (p.visits || []).map(logVisit_);
-        return json_({ ok: true, logged: results.length });
-      case 'createEvent':         return json_(createEvent_(p));
-      case 'logAttendee':         return json_(logAttendee_(p));
-      case 'checkIn':             return json_(checkIn_(p));
-      default:
-        return json_({ ok: false, error: 'Unknown action: ' + p.action });
+    lock.waitLock(15000);
+  } catch (le) {
+    return jsonOut_({ ok: false, error: 'Server busy — try again in a moment.' });
+  }
+
+  try {
+    var raw  = e.postData ? e.postData.contents : '';
+    var p    = JSON.parse(raw);
+    var ss   = SpreadsheetApp.openById(SS_ID);
+    var action = p.action;
+
+    // Always log to Raw Submissions first
+    rawLog_(ss, action, p);
+
+    // ── registerParticipant ──────────────────────────────────────────────────
+    if (action === 'registerParticipant') {
+      var pSheet = ss.getSheetByName(CONFIG.TABS.participants);
+
+      // Generate next ID (max existing + 1, minimum 1001)
+      var lastP = pSheet.getLastRow();
+      var maxId = 1000;
+      if (lastP >= 2) {
+        var existingIds = pSheet.getRange(2, 1, lastP - 1, 1).getValues()
+          .map(function(r) { return parseInt(r[0], 10) || 0; });
+        maxId = Math.max.apply(null, existingIds);
+      }
+      var newId = maxId + 1;
+
+      appendByHeader_(pSheet, {
+        'Participant ID#':   newId,
+        'Initials':          String(p.initials || '').toUpperCase(),
+        'Birth Year':        int_(p.birthYear),
+        'Gender Identity':   p.gender  || '',
+        'Race / Ethnicity':  p.race    || '',
+        'County':            p.county  || '',
+        'ZIP':               p.zip     || '',
+        'Housing Status':    p.housing || '',
+        'Participant Type':  p.participantType || 'SSP',
+        'Date Registered':   new Date()
+      });
+
+      return jsonOut_({ ok: true, id: String(newId) });
     }
+
+    // ── logVisit ─────────────────────────────────────────────────────────────
+    if (action === 'logVisit') {
+      return handleLogVisit_(ss, p);
+    }
+
+    // ── bulkLogVisits ────────────────────────────────────────────────────────
+    if (action === 'bulkLogVisits') {
+      var visits = p.visits || [];
+      var results = [];
+      visits.forEach(function(v) {
+        v.action = 'logVisit'; // ensure handler sees correct action
+        var r = handleLogVisit_(ss, v);
+        results.push(JSON.parse(r.getContent()));
+      });
+      return jsonOut_({ ok: true, results: results });
+    }
+
+    // ── createEvent ──────────────────────────────────────────────────────────
+    if (action === 'createEvent') {
+      var evSheet = ss.getSheetByName(CONFIG.TABS.events);
+      var evLast  = evSheet.getLastRow();
+      var maxEv   = 100;
+      if (evLast >= 2) {
+        var evIds = evSheet.getRange(2, 1, evLast - 1, 1).getValues()
+          .map(function(r) { return parseInt(r[0], 10) || 0; });
+        maxEv = Math.max.apply(null, evIds);
+      }
+      var newEvId = maxEv + 1;
+      appendByHeader_(evSheet, {
+        'Event ID':    newEvId,
+        'Event Name':  p.eventName  || '',
+        'Date':        parseDate_(p.date),
+        'Location':    p.location   || '',
+        'Type':        p.eventType  || '',
+        'Staff / Vol': p.worker     || '',
+        'Notes':       p.notes      || '',
+        'Created':     new Date()
+      });
+      return jsonOut_({ ok: true, eventId: String(newEvId) });
+    }
+
+    // ── logAttendee ───────────────────────────────────────────────────────────
+    if (action === 'logAttendee') {
+      var attSheet = ss.getSheetByName(CONFIG.TABS.attendees);
+      appendByHeader_(attSheet, {
+        'Event ID':       p.eventId       || '',
+        'Participant ID': p.participantId  || '',
+        'Check-In Time':  new Date(),
+        'Notes':          p.notes         || ''
+      });
+      return jsonOut_({ ok: true });
+    }
+
+    // ── checkIn ───────────────────────────────────────────────────────────────
+    if (action === 'checkIn') {
+      var ciSheet = ss.getSheetByName(CONFIG.TABS.checkins);
+      appendByHeader_(ciSheet, {
+        'Date':           parseDate_(p.date),
+        'Participant ID': p.participantId || '',
+        'Staff / Vol':    p.worker        || '',
+        'Location':       p.location      || '',
+        'Notes':          p.notes         || '',
+        'Logged':         new Date()
+      });
+      return jsonOut_({ ok: true });
+    }
+
+    return jsonOut_({ ok: false, error: 'Unknown action: ' + action });
+
   } catch (err) {
-    return json_({ ok: false, error: String(err) });
+    Logger.log('doPost error: ' + err.message + '\n' + err.stack);
+    return jsonOut_({ ok: false, error: err.message });
   } finally {
     lock.releaseLock();
   }
 }
 
-// ═══════════════════ Handlers ═══════════════════
+// ─────────────────────────────────────────────────────────────────────────────
+// handleLogVisit_  —  shared by logVisit and bulkLogVisits
+// ─────────────────────────────────────────────────────────────────────────────
+function handleLogVisit_(ss, p) {
+  var visits = ss.getSheetByName(CONFIG.TABS.visits);
 
-function registerParticipant_(p) {
-  var sheet = ensureSheet_('participants');
-  var existing = findParticipant_(sheet, { id: p.id });
-  if (existing) return { ok: true, id: existing.id, existed: true };
-  appendByHeader_(sheet, {
-    'Participant ID#': Number(p.id),
-    'Initials': String(p.initials || '').toUpperCase(),
-    'Birth Year': p.birthYear || '',
-    'Gender Identity': p.gender || '',
-    'Race / Ethnicity': p.race || '',
-    'County': p.county || '',
-    'ZIP': p.zip || '',
-    'Participant Type': p.participantType || '',
-    'Date Registered': new Date()
-  });
-  return { ok: true, id: Number(p.id), existed: false };
-}
+  var reportedReversal = (p.reportedReversal === 'Yes' || p.reportedReversal === true)
+    ? 'Yes' : 'No';
 
-function logVisit_(p) {
-  var pid = String(p.participantId || '').trim();
+  var row = {
+    'Date':              parseDate_(p.date),
+    'Participant ID':    p.participantId  || '',
+    'New / Returning':   p.newOrReturning || '',
+    'Staff / Vol':       p.worker         || '',
+    'Location':          p.location       || '',
+    'Housing Status':    p.housing        || '',
+    'Longs Given':       int_(p.longs),
+    'Shorts Given':      int_(p.shorts),
+    'FTS Given':         int_(p.fts),          // fentanyl test strips — RE-ADDED
+    'Naloxone IM':       int_(p.naloxIM),
+    'Naloxone Nasal':    int_(p.naloxNasal),
+    'Sec Distrib Kits':  int_(p.secDistrib),
+    'Services / Referrals': p.services   || '', // multi-value, "; " separated
+    'Reported Reversal?': reportedReversal,
+    'Notes':             p.notes         || '',
+    'Logged':            new Date()
+  };
 
-  // Grid imports may send initials+birthYear instead of a PID.
-  // Resolve against the registry; auto-register when genuinely new.
-  if (!pid && p.initials) {
-    var pSheet = ensureSheet_('participants');
-    var match = findParticipant_(pSheet, { initials: p.initials, year: p.birthYear });
-    if (match) {
-      pid = String(match.id);
-    } else {
-      pid = String(newParticipantId_(pSheet));
-      appendByHeader_(pSheet, {
-        'Participant ID#': Number(pid),
-        'Initials': String(p.initials || '').toUpperCase(),
-        'Birth Year': p.birthYear || '',
-        'Gender Identity': p.gender || '',
-        'Race / Ethnicity': p.race || '',
-        'County': p.county || '',
-        'ZIP': p.zip || '',
-        'Participant Type': 'SSP',
-        'Date Registered': new Date()
-      });
-    }
+  // Reversal sub-fields (only written when a reversal was reported)
+  if (reportedReversal === 'Yes') {
+    row['Reversal: Reporter Type']     = p.reversalReporterType  || '';
+    row['Reversal: OD Outcome']        = p.reversalODOutcome     || '';
+    row['Reversal: Nasal Doses Used']  = int_(p.reversalNasalDoses);
+    row['Reversal: IM Doses Used']     = int_(p.reversalIMDoses);
+    row['Reversal: Gender']            = p.reversalGender        || '';
+    row['Reversal: Race / Eth']        = p.reversalRace          || '';
+    row['Reversal: Age Range']         = p.reversalAgeRange      || '';
+    row['Reversal: County']            = p.reversalCounty        || '';
   }
-  if (!pid) return { ok: false, error: 'logVisit: no participantId and no initials' };
 
-  // Privacy rule: the visits tab stores the anonymous ID ONLY —
-  // never initials, birth year, or other identifiers.
-
-  // Reversal detail: take the first reported reversal inline.
-  // The spreadsheet has one set of reversal columns per visit row.
-  var rv = (p.reversals && p.reversals.length > 0) ? p.reversals[0] : null;
-  var hasReversal = rv || p.reversalReported === 'Yes' || Number(p.reversalCount) > 0;
-
-  appendByHeader_(ensureSheet_('visits'), {
-    'Date': p.date || '',
-    'Participant ID': Number(pid),
-    'New / Returning': p.newOrReturning || '',
-    'Staff / Vol': p.worker || '',
-    'Location': p.location || '',
-    'Housing Status': p.housing || '',
-    'Longs Given': num_(p.longs),
-    'Shorts Given': num_(p.shorts),
-    'Naloxone IM': num_(p.naloxIM),
-    'Naloxone Nasal': num_(p.naloxNasal),
-    'Sec Distrib Kits': num_(p.secDistrib),
-    'Reported Reversal?': hasReversal ? 'Yes' : '',
-    'Reversal: Reporter Type': rv ? (rv.reporterType || '') : '',
-    'Reversal: OD Outcome': rv ? (rv.odOutcome || '') : '',
-    'Reversal: Nasal Doses Used': rv ? (rv.nasalDoses || '') : '',
-    'Reversal: IM Doses Used': rv ? (rv.imDoses || '') : '',
-    'Reversal: Gender': rv ? (rv.odGender || '') : '',
-    'Reversal: Race / Eth': rv ? (rv.odRace || '') : '',
-    'Reversal: Age Range': rv ? (rv.odAge || '') : '',
-    'Reversal: County': rv ? (rv.odCounty || '') : '',
-    'Notes': p.notes || '',
-    'Logged': new Date()
-  });
-
-  return { ok: true, participantId: Number(pid) };
-}
-
-function createEvent_(p) {
-  appendByHeader_(ensureSheet_('events'), {
-    'Event ID': p.eventId || '',
-    'Title': p.title || '',
-    'Date': p.date || '',
-    'Event Type': p.eventType || '',
-    'Trainer': p.trainer || '',
-    'Duration': p.duration || '',
-    'Format': p.format || '',
-    'Location': p.location || '',
-    'Partner': p.partner || '',
-    'Funder': p.funder || '',
-    'Notes': p.notes || '',
-    'Created': new Date()
-  });
-  return { ok: true, eventId: p.eventId };
-}
-
-function logAttendee_(p) {
-  appendByHeader_(ensureSheet_('attendees'), {
-    'Event ID': p.eventId || '',
-    'Initials': String(p.initials || '').toUpperCase(),
-    'Age Range': p.ageRange || '',
-    'Race': p.race || '',
-    'Zip': p.zip || '',
-    'County': p.county || '',
-    'Relationship': p.relationship || '',
-    'Nalox IM': num_(p.naloxIM),
-    'Nalox Nasal': num_(p.naloxNasal),
-    'Sec Distrib': num_(p.secDistrib),
-    'Participant ID': p.participantId ? Number(p.participantId) : '',
-    'Completion': p.completion || '',
-    'Logged': new Date()
-  });
-  return { ok: true };
-}
-
-function checkIn_(p) {
-  appendByHeader_(ensureSheet_('checkins'), {
-    'Time': p.time || new Date().toISOString(),
-    'Participant ID': p.participantId ? Number(p.participantId) : '',
-    'Notes': p.notes || '',
-    'Logged': new Date()
-  });
-  return { ok: true };
-}
-
-// ═══════════════════ Helpers ═══════════════════
-
-/** Get a tab by CONFIG key; create it with headers if it doesn't exist. */
-function ensureSheet_(key) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var name = CONFIG.TABS[key];
-  var sheet = ss.getSheetByName(name);
-  if (!sheet) {
-    sheet = ss.insertSheet(name);
-    sheet.appendRow(CONFIG.HEADERS[key]);
-    sheet.setFrozenRows(1);
-  } else if (sheet.getLastRow() === 0) {
-    sheet.appendRow(CONFIG.HEADERS[key]);
-    sheet.setFrozenRows(1);
-  }
-  return sheet;
-}
-
-/** Map header name → 0-based column index. */
-function headerIndex_(headerRow) {
-  var map = {};
-  headerRow.forEach(function (h, i) { map[String(h).trim()] = i; });
-  return map;
-}
-
-/**
- * Append a row by matching object keys to header names, so column order in
- * the sheet never matters. Headers missing from the sheet are appended to
- * the header row automatically (never overwrites existing columns).
- */
-function appendByHeader_(sheet, obj) {
-  var lastCol = Math.max(sheet.getLastColumn(), 1);
-  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
-  var col = headerIndex_(headers);
-  var keys = Object.keys(obj);
-  // add any missing headers to the right
-  keys.forEach(function (k) {
-    if (!(k in col)) {
-      headers.push(k);
-      sheet.getRange(1, headers.length).setValue(k);
-      col[k] = headers.length - 1;
-    }
-  });
-  var row = new Array(headers.length).fill('');
-  keys.forEach(function (k) { row[col[k]] = obj[k]; });
-  sheet.appendRow(row);
-}
-
-/** Find a participant by {id} or {initials, year}. Returns {id} or null. */
-function findParticipant_(sheet, q) {
-  var rows = sheet.getDataRange().getValues();
-  if (rows.length < 2) return null;
-  var col = headerIndex_(rows[0]);
-  for (var i = 1; i < rows.length; i++) {
-    if (q.id != null && q.id !== '' && Number(rows[i][col['Participant ID#']]) === Number(q.id)) {
-      return { id: Number(rows[i][col['Participant ID#']]) };
-    }
-    if (q.initials &&
-        String(rows[i][col['Initials']]).toUpperCase() === String(q.initials).toUpperCase() &&
-        String(rows[i][col['Birth Year']]) === String(q.year || '')) {
-      return { id: Number(rows[i][col['Participant ID#']]) };
-    }
-  }
-  return null;
-}
-
-/** Random 4-digit ID not already in the registry (matches front-end scheme). */
-function newParticipantId_(sheet) {
-  var rows = sheet.getDataRange().getValues();
-  var col = headerIndex_(rows[0] || []);
-  var used = {};
-  for (var i = 1; i < rows.length; i++) used[Number(rows[i][col['Participant ID#']])] = true;
-  var id;
-  do { id = Math.floor(Math.random() * 9000) + 1000; } while (used[id]);
-  return id;
-}
-
-function num_(v) {
-  var n = Number(String(v == null ? '' : v).trim());
-  return isNaN(n) ? 0 : n;
-}
-
-function json_(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
+  appendByHeader_(visits, row);
+  return jsonOut_({ ok: true });
 }
