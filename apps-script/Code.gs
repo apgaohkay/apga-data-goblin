@@ -170,6 +170,67 @@ function doGet(e) {
       return jsonOut_({ ok: true, participants: participants });
     }
 
+    if (action === 'getVisits') {
+      var vSheet   = ss.getSheetByName(CONFIG.TABS.visits);
+      var vHeadRow = CONFIG.HEADER_ROW[CONFIG.TABS.visits] || 1; // row 2
+      var vLast    = vSheet.getLastRow();
+      var vVisits  = [];
+
+      if (vLast > vHeadRow) {
+        var vLastCol = vSheet.getLastColumn();
+        var vHeaders = vSheet.getRange(vHeadRow, 1, 1, vLastCol).getValues()[0];
+        // Map each needed field to its column index (0-based), -1 if absent
+        function col_(name) { return vHeaders.indexOf(name); }
+        var idx = {
+          date:            col_('Date'),
+          participantId:   col_('Participant ID'),
+          newOrReturning:  col_('New / Returning'),
+          worker:          col_('Staff / Vol'),
+          location:        col_('Location'),
+          longs:           col_('Longs Given'),
+          shorts:          col_('Shorts Given'),
+          fts:             col_('FTS Given'),
+          naloxIM:         col_('Naloxone IM'),
+          naloxNasal:      col_('Naloxone Nasal'),
+          secDistrib:      col_('Sec Distrib Kits'),
+          reportedReversal: col_('Reported Reversal?'),
+          reversalCounty:  col_('Reversal: County')
+        };
+        var vData = vSheet.getRange(vHeadRow + 1, 1, vLast - vHeadRow, vLastCol).getValues();
+        vVisits = vData
+          .filter(function(r) { return r[idx.participantId]; })
+          .map(function(r) {
+            function g(k) { return idx[k] >= 0 ? r[idx[k]] : ''; }
+            var d = g('date');
+            // Return date as YYYY-MM-DD string for the frontend
+            var dateStr = '';
+            if (d instanceof Date && !isNaN(d)) {
+              dateStr = d.getFullYear() + '-' +
+                ('0' + (d.getMonth() + 1)).slice(-2) + '-' +
+                ('0' + d.getDate()).slice(-2);
+            } else if (d) {
+              dateStr = String(d);
+            }
+            return {
+              date:            dateStr,
+              participantId:   String(g('participantId')),
+              newOrReturning:  String(g('newOrReturning') || ''),
+              worker:          String(g('worker') || ''),
+              location:        String(g('location') || ''),
+              longs:           g('longs') || 0,
+              shorts:          g('shorts') || 0,
+              fts:             g('fts') || 0,
+              naloxIM:         g('naloxIM') || 0,
+              naloxNasal:      g('naloxNasal') || 0,
+              secDistrib:      g('secDistrib') || 0,
+              reportedReversal: String(g('reportedReversal') || ''),
+              reversalCounty:  String(g('reversalCounty') || '')
+            };
+          });
+      }
+      return jsonOut_({ ok: true, visits: vVisits });
+    }
+
     if (action === 'getEvents') {
       var evSheet = ss.getSheetByName(CONFIG.TABS.events);
       var evLast  = evSheet.getLastRow();

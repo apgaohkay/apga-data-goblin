@@ -60,7 +60,13 @@ These must work at all times. Do not remove or break them:
 - Manual PID entry field exists for participants who have their card but aren't findable in search yet
 - Submits to `action: 'logVisit'` → writes to 'SSP Visits' sheet tab
 
-### 4. Visit Date
+### 4. Dashboard
+- **Dashboard tab** shows read-only program summaries: participant demographics (county, gender, race, housing, birth decade) and SSP visit stats (volume by month, new/returning, by location, supplies distributed, reversals).
+- Participant summaries use the already-loaded `participants` array.
+- Visit summaries require `doGet` action `getVisits` (returns `{ ok, visits: [...] }`, one object per SSP Visits row keyed by camelCase field names, date as `YYYY-MM-DD`).
+- All computed client-side — no external chart libraries. Bars are CSS. Loads lazily when the tab is opened.
+
+### 5. Visit Date
 - Always append `T12:00:00` when parsing date strings in Apps Script to avoid UTC midnight → Eastern off-by-one-day bug:
   ```js
   new Date(dateStr + 'T12:00:00')
@@ -68,10 +74,15 @@ These must work at all times. Do not remove or break them:
 
 ## Apps Script: Code.gs Structure
 
-Three actions only (keep it slim):
+POST actions (keep it slim):
 - `registerParticipant` → writes to 'Participants' sheet
 - `logVisit` → writes to 'SSP Visits' sheet via `_appendVisitRow()`
 - `bulkLogVisits` → loop over visits, opens spreadsheet ONCE, calls `_appendVisitRow()` per visit
+
+GET actions (`doGet`):
+- `getParticipants` (default) → registry for lookup
+- `getVisits` → visit rows for the Dashboard tab
+- `getEvents` → event list
 
 **Sheet tab names must match exactly:** `Participants`, `SSP Visits`
 
