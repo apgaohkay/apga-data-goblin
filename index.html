@@ -412,52 +412,9 @@ select option { background: var(--bg); }
     <hr class="divider">
     <p class="supply-sub">Prep Supplies</p>
 
-    <div class="qty-row">
-      <span class="qty-label">Tourniquets</span>
-      <div class="pills" id="pills-tourniquets">
-        <div class="pill active" data-val="0" onclick="pickPill('tourniquets',this)">0</div>
-        <div class="pill" data-val="1" onclick="pickPill('tourniquets',this)">1</div>
-        <div class="pill" data-val="2" onclick="pickPill('tourniquets',this)">2</div>
-        <div class="pill" data-val="3" onclick="pickPill('tourniquets',this)">3</div>
-        <div class="pill" data-val="4" onclick="pickPill('tourniquets',this)">4</div>
-        <div class="pill" data-val="5" onclick="pickPill('tourniquets',this)">5</div>
-      </div>
-    </div>
-
-    <div class="qty-row">
-      <span class="qty-label">Cottons</span>
-      <div class="pills" id="pills-cottons">
-        <div class="pill active" data-val="0" onclick="pickPill('cottons',this)">0</div>
-        <div class="pill" data-val="5" onclick="pickPill('cottons',this)">5</div>
-        <div class="pill" data-val="10" onclick="pickPill('cottons',this)">10</div>
-        <div class="pill" data-val="20" onclick="pickPill('cottons',this)">20</div>
-        <div class="pill" data-val="30" onclick="pickPill('cottons',this)">30</div>
-        <div class="pill" data-val="50" onclick="pickPill('cottons',this)">50</div>
-      </div>
-    </div>
-
-    <div class="qty-row">
-      <span class="qty-label">Filters</span>
-      <div class="pills" id="pills-filters">
-        <div class="pill active" data-val="0" onclick="pickPill('filters',this)">0</div>
-        <div class="pill" data-val="5" onclick="pickPill('filters',this)">5</div>
-        <div class="pill" data-val="10" onclick="pickPill('filters',this)">10</div>
-        <div class="pill" data-val="20" onclick="pickPill('filters',this)">20</div>
-        <div class="pill" data-val="30" onclick="pickPill('filters',this)">30</div>
-        <div class="pill" data-val="50" onclick="pickPill('filters',this)">50</div>
-      </div>
-    </div>
-
-    <div class="qty-row">
-      <span class="qty-label">Cookers</span>
-      <div class="pills" id="pills-cookers">
-        <div class="pill active" data-val="0" onclick="pickPill('cookers',this)">0</div>
-        <div class="pill" data-val="1" onclick="pickPill('cookers',this)">1</div>
-        <div class="pill" data-val="2" onclick="pickPill('cookers',this)">2</div>
-        <div class="pill" data-val="5" onclick="pickPill('cookers',this)">5</div>
-        <div class="pill" data-val="10" onclick="pickPill('cookers',this)">10</div>
-        <div class="pill" data-val="20" onclick="pickPill('cookers',this)">20</div>
-      </div>
+    <div class="check-row">
+      <input type="checkbox" id="prepSupplies">
+      <label for="prepSupplies">Prep supplies distributed (tourniquets, cottons, filters, cookers)</label>
     </div>
 
     <div class="check-row" style="margin-top:4px">
@@ -845,7 +802,6 @@ let participants = [];
 let pillValues   = {
   newReturn: 'Returning',
   longs: '0', shorts: '0', fts: '0',
-  tourniquets: '0', cottons: '0', filters: '0', cookers: '0',
   naloxIM: '0', naloxNasal: '0', secDistrib: '0', fts: '0', xts: '0',
   reversal: 'No',
   reversalNasalDoses: '0', reversalIMDoses: '0',
@@ -1102,10 +1058,7 @@ async function submitVisit() {
     longs:           pillValues.longs,
     shorts:          pillValues.shorts,
     fts:             pillValues.fts,
-    tourniquets:     pillValues.tourniquets,
-    cottons:         pillValues.cottons,
-    filters:         pillValues.filters,
-    cookers:         pillValues.cookers,
+    prepSupplies:    document.getElementById('prepSupplies').checked ? 'Yes' : 'No',
     saferInhalation: document.getElementById('saferInhalation').checked ? 'Yes' : 'No',
     boofingSupplies: document.getElementById('boofingSupplies').checked ? 'Yes' : 'No',
     naloxIM:         pillValues.naloxIM,
@@ -1159,11 +1112,11 @@ function resetVisitForm() {
   document.getElementById('visitHousing').value   = '';
   document.getElementById('visitNotes').value     = '';
   document.getElementById('returnedSyringes').checked = false;
+  document.getElementById('prepSupplies').checked     = false;
   document.getElementById('saferInhalation').checked  = false;
   document.getElementById('boofingSupplies').checked  = false;
   // Reset all pills to default
-  ['longs','shorts','tourniquets','cottons','filters','cookers',
-   'naloxIM','naloxNasal','secDistrib','fts','xts',
+  ['longs','shorts','naloxIM','naloxNasal','secDistrib','fts','xts',
    'reversalNasalDoses','reversalIMDoses'].forEach(g => {
     pickPillByVal(g, '0');
   });
