@@ -238,43 +238,32 @@ select option { background: var(--bg); }
   padding-top: 8px;
   border-top: 1px solid var(--border);
 }
-/* ── Dashboard ───────────────────────────────────────────────────────── */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
-  margin-bottom: 6px;
+/* ── Supply subsection labels ─────────────────────────────────────────── */
+.supply-sub {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin: 10px 0 6px;
+  padding-top: 2px;
 }
-.stat-card {
-  background: var(--pill-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-  text-align: center;
-}
-.stat-card .num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-.stat-card .lbl { font-size: .72rem; color: var(--muted); margin-top: 2px; }
-.bar-row {
-  display: grid;
-  grid-template-columns: 110px 1fr 44px;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 5px;
-  font-size: .82rem;
-}
-.bar-row .bar-label { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bar-row .bar-track { background: var(--pill-bg); border-radius: 4px; height: 16px; overflow: hidden; }
-.bar-row .bar-fill  { background: var(--accent); height: 100%; border-radius: 4px; min-width: 2px; }
-.bar-row .bar-val   { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-.dash-note { font-size: .78rem; color: var(--muted); margin: 4px 0 12px; }
-.dash-warn {
-  background: rgba(248,81,73,.1);
+.supply-sub.naloxone { color: var(--warn); font-weight: 700; }
+/* ── Standalone reversal button ──────────────────────────────────────── */
+.reversal-only-btn {
+  width: 100%;
+  background: transparent;
   border: 1px solid var(--warn);
   border-radius: var(--radius);
-  padding: 12px;
-  font-size: .82rem;
-  color: var(--text);
+  color: var(--warn);
+  cursor: pointer;
+  font-size: .88rem;
+  font-weight: 600;
+  padding: 10px;
+  margin-top: 10px;
+  transition: background .15s;
 }
+.reversal-only-btn:hover { background: rgba(248,81,73,.12); }
+.reversal-only-btn:disabled { opacity: .4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -288,7 +277,6 @@ select option { background: var(--bg); }
   <button class="tab-btn" onclick="showTab('register')">Register Participant</button>
   <button class="tab-btn" onclick="showTab('event')">Events</button>
   <button class="tab-btn" onclick="showTab('paper')">🖨 Manual Entry</button>
-  <button class="tab-btn" onclick="showTab('dashboard')">📊 Dashboard</button>
 </div>
 
 <!-- ══════════════════ LOG VISIT TAB ══════════════════ -->
@@ -388,6 +376,8 @@ select option { background: var(--bg); }
   <section>
     <h2>🧪 Supplies Distributed</h2>
 
+    <p class="supply-sub">Syringes</p>
+
     <div class="qty-row">
       <span class="qty-label">Longs</span>
       <div class="pills" id="pills-longs">
@@ -424,6 +414,74 @@ select option { background: var(--bg); }
         <div class="pill" data-val="25" onclick="pickPill('fts',this)">25</div>
       </div>
     </div>
+
+    <div class="check-row">
+      <input type="checkbox" id="returnedSyringes">
+      <label for="returnedSyringes">Participant returned syringes</label>
+    </div>
+
+    <hr class="divider">
+    <p class="supply-sub">Prep Supplies</p>
+
+    <div class="qty-row">
+      <span class="qty-label">Tourniquets</span>
+      <div class="pills" id="pills-tourniquets">
+        <div class="pill active" data-val="0" onclick="pickPill('tourniquets',this)">0</div>
+        <div class="pill" data-val="1" onclick="pickPill('tourniquets',this)">1</div>
+        <div class="pill" data-val="2" onclick="pickPill('tourniquets',this)">2</div>
+        <div class="pill" data-val="3" onclick="pickPill('tourniquets',this)">3</div>
+        <div class="pill" data-val="4" onclick="pickPill('tourniquets',this)">4</div>
+        <div class="pill" data-val="5" onclick="pickPill('tourniquets',this)">5</div>
+      </div>
+    </div>
+
+    <div class="qty-row">
+      <span class="qty-label">Cottons</span>
+      <div class="pills" id="pills-cottons">
+        <div class="pill active" data-val="0" onclick="pickPill('cottons',this)">0</div>
+        <div class="pill" data-val="5" onclick="pickPill('cottons',this)">5</div>
+        <div class="pill" data-val="10" onclick="pickPill('cottons',this)">10</div>
+        <div class="pill" data-val="20" onclick="pickPill('cottons',this)">20</div>
+        <div class="pill" data-val="30" onclick="pickPill('cottons',this)">30</div>
+        <div class="pill" data-val="50" onclick="pickPill('cottons',this)">50</div>
+      </div>
+    </div>
+
+    <div class="qty-row">
+      <span class="qty-label">Filters</span>
+      <div class="pills" id="pills-filters">
+        <div class="pill active" data-val="0" onclick="pickPill('filters',this)">0</div>
+        <div class="pill" data-val="5" onclick="pickPill('filters',this)">5</div>
+        <div class="pill" data-val="10" onclick="pickPill('filters',this)">10</div>
+        <div class="pill" data-val="20" onclick="pickPill('filters',this)">20</div>
+        <div class="pill" data-val="30" onclick="pickPill('filters',this)">30</div>
+        <div class="pill" data-val="50" onclick="pickPill('filters',this)">50</div>
+      </div>
+    </div>
+
+    <div class="qty-row">
+      <span class="qty-label">Cookers</span>
+      <div class="pills" id="pills-cookers">
+        <div class="pill active" data-val="0" onclick="pickPill('cookers',this)">0</div>
+        <div class="pill" data-val="1" onclick="pickPill('cookers',this)">1</div>
+        <div class="pill" data-val="2" onclick="pickPill('cookers',this)">2</div>
+        <div class="pill" data-val="5" onclick="pickPill('cookers',this)">5</div>
+        <div class="pill" data-val="10" onclick="pickPill('cookers',this)">10</div>
+        <div class="pill" data-val="20" onclick="pickPill('cookers',this)">20</div>
+      </div>
+    </div>
+
+    <div class="check-row" style="margin-top:4px">
+      <input type="checkbox" id="saferInhalation">
+      <label for="saferInhalation">Safer inhalation / smoking supplies (glass, foil, straws)</label>
+    </div>
+    <div class="check-row">
+      <input type="checkbox" id="boofingSupplies">
+      <label for="boofingSupplies">Safer rectal use supplies (booty bumping kit)</label>
+    </div>
+
+    <hr class="divider">
+    <p class="supply-sub naloxone">💉 Naloxone</p>
 
     <div class="qty-row">
       <span class="qty-label">Naloxone IM</span>
@@ -467,12 +525,6 @@ select option { background: var(--bg); }
         <div class="pill" data-val="5" onclick="pickPill('secDistrib',this)">5</div>
       </div>
     </div>
-
-    <hr class="divider">
-    <div class="check-row">
-      <input type="checkbox" id="returnedSyringes">
-      <label for="returnedSyringes">Participant returned syringes</label>
-    </div>
   </section>
 
   <!-- Services / Referrals / Linkage -->
@@ -483,19 +535,23 @@ select option { background: var(--bg); }
     </p>
     <div class="pills" id="pills-services" style="gap:8px">
       <div class="multi-pill" data-val="Safer use education" onclick="toggleService(this)">Safer Use Education</div>
+      <div class="multi-pill" data-val="Routes of admin education" onclick="toggleService(this)">Routes of Admin Education</div>
       <div class="multi-pill" data-val="Peer check-in" onclick="toggleService(this)">Peer Check-In</div>
+      <div class="multi-pill" data-val="Naloxone training" onclick="toggleService(this)">Naloxone Training</div>
       <div class="multi-pill" data-val="Wound care" onclick="toggleService(this)">Wound Care</div>
+      <div class="multi-pill" data-val="Sleep hygiene" onclick="toggleService(this)">Sleep Hygiene</div>
       <div class="multi-pill" data-val="Condoms" onclick="toggleService(this)">Condoms</div>
-      <div class="multi-pill" data-val="Tourniquets" onclick="toggleService(this)">Tourniquets</div>
       <div class="multi-pill" data-val="Clothing/hygiene" onclick="toggleService(this)">Clothing / Hygiene</div>
       <div class="multi-pill" data-val="Food/water" onclick="toggleService(this)">Food / Water</div>
+      <div class="multi-pill" data-val="Transportation" onclick="toggleService(this)">Transportation</div>
       <div class="multi-pill" data-val="Referral: treatment" onclick="toggleService(this)">Referral: Treatment</div>
       <div class="multi-pill" data-val="Referral: housing" onclick="toggleService(this)">Referral: Housing</div>
       <div class="multi-pill" data-val="Referral: medical" onclick="toggleService(this)">Referral: Medical</div>
       <div class="multi-pill" data-val="Referral: mental health" onclick="toggleService(this)">Referral: Mental Health</div>
       <div class="multi-pill" data-val="Referral: benefits/SNAP" onclick="toggleService(this)">Referral: Benefits / SNAP</div>
-      <div class="multi-pill" data-val="Naloxone training" onclick="toggleService(this)">Naloxone Training</div>
-      <div class="multi-pill" data-val="Transportation" onclick="toggleService(this)">Transportation</div>
+      <div class="multi-pill" data-val="Referral: legal" onclick="toggleService(this)">Referral: Legal</div>
+      <div class="multi-pill" data-val="Referral: ID/documents" onclick="toggleService(this)">Referral: ID / Documents</div>
+      <div class="multi-pill" data-val="Referral: employment" onclick="toggleService(this)">Referral: Employment</div>
       <div class="multi-pill" data-val="Other" onclick="toggleService(this)">Other</div>
     </div>
   </section>
@@ -583,6 +639,15 @@ select option { background: var(--bg); }
 
     <label>County of Person Reversed</label>
     <input type="text" id="reversalCounty" placeholder="e.g. Clarke">
+
+    <hr class="divider">
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:6px;">
+      Submitting as part of a visit? Hit <strong>Submit Visit Log</strong> below.<br>
+      Reporting a standalone reversal (no visit to log)? Use the button below — no participant ID needed.
+    </p>
+    <button class="reversal-only-btn" id="submitReversalOnly" onclick="submitReversalOnly()">
+      🚨 Submit as Standalone Reversal Report
+    </button>
   </section>
 
   <!-- Notes -->
@@ -699,27 +764,6 @@ select option { background: var(--bg); }
   <div id="paper-result" style="margin-top:10px;font-size:.9rem;color:var(--accent2);display:none"></div>
 </div>
 
-<!-- ══════════════════ DASHBOARD TAB ══════════════════ -->
-<div id="tab-dashboard" class="tab-pane">
-  <section>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h2 style="margin:0">📊 Program Summary</h2>
-      <button onclick="loadDashboard(true)" style="background:var(--pill-bg);border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:6px 10px;cursor:pointer;font-size:.8rem">↻ Refresh</button>
-    </div>
-    <p class="dash-note" id="dash-status">Loading…</p>
-  </section>
-
-  <section>
-    <h2>Participants</h2>
-    <div id="dash-participants"></div>
-  </section>
-
-  <section>
-    <h2>SSP Visits</h2>
-    <div id="dash-visits"></div>
-  </section>
-</div>
-
 
 <!-- Toast -->
 <div id="toast"></div>
@@ -762,11 +806,10 @@ function zipOptionsHtml() {
 // State
 // ────────────────────────────────────────────────────────────────────────────
 let participants = [];
-let visits       = [];
-let visitsLoaded = false;
 let pillValues   = {
   newReturn: 'Returning',
   longs: '0', shorts: '0', fts: '0',
+  tourniquets: '0', cottons: '0', filters: '0', cookers: '0',
   naloxIM: '0', naloxNasal: '0', secDistrib: '0',
   reversal: 'No',
   reversalNasalDoses: '0', reversalIMDoses: '0',
@@ -839,7 +882,6 @@ function showTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   event.target.classList.add('active');
-  if (name === 'dashboard') loadDashboard(false);
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -870,6 +912,61 @@ function getSelectedServices() {
 // ────────────────────────────────────────────────────────────────────────────
 function toggleReversal(show) {
   document.getElementById('reversalSection').style.display = show ? 'block' : 'none';
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Standalone Reversal Report (no participant ID required)
+// ────────────────────────────────────────────────────────────────────────────
+async function submitReversalOnly() {
+  const btn = document.getElementById('submitReversalOnly');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const date = document.getElementById('visitDate').value || new Date().toISOString().slice(0, 10);
+
+  const payload = {
+    action:               'logVisit',
+    participantId:        'REVERSAL-ONLY',
+    date:                 date,
+    worker:               document.getElementById('visitWorker').value,
+    location:             document.getElementById('visitLocation').value,
+    reportedReversal:     'Yes',
+    reversalReporterType: document.getElementById('reversalReporterType').value,
+    reversalODOutcome:    document.getElementById('reversalODOutcome').value,
+    reversalNasalDoses:   pillValues.reversalNasalDoses,
+    reversalIMDoses:      pillValues.reversalIMDoses,
+    reversalGender:       document.getElementById('reversalGender').value,
+    reversalRace:         document.getElementById('reversalRace').value,
+    reversalAgeRange:     document.getElementById('reversalAgeRange').value,
+    reversalCounty:       document.getElementById('reversalCounty').value,
+    notes:                document.getElementById('visitNotes').value
+  };
+
+  try {
+    const res  = await post_(payload);
+    const data = await res.json();
+    if (data.ok || data.success) {
+      toast('✓ Standalone reversal report logged');
+      // Reset reversal fields
+      document.getElementById('reversalReporterType').value = '';
+      document.getElementById('reversalODOutcome').value    = '';
+      document.getElementById('reversalGender').value       = '';
+      document.getElementById('reversalRace').value         = '';
+      document.getElementById('reversalAgeRange').value     = '';
+      document.getElementById('reversalCounty').value       = '';
+      pickPillByVal('reversalNasalDoses', '0');
+      pickPillByVal('reversalIMDoses', '0');
+      pickPillByVal('reversal', 'No');
+      toggleReversal(false);
+    } else {
+      toast('Error: ' + (data.error || 'Unknown'), true);
+    }
+  } catch(e) {
+    toast('Network error — check connection.', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🚨 Submit as Standalone Reversal Report';
+  }
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -969,6 +1066,12 @@ async function submitVisit() {
     longs:           pillValues.longs,
     shorts:          pillValues.shorts,
     fts:             pillValues.fts,
+    tourniquets:     pillValues.tourniquets,
+    cottons:         pillValues.cottons,
+    filters:         pillValues.filters,
+    cookers:         pillValues.cookers,
+    saferInhalation: document.getElementById('saferInhalation').checked ? 'Yes' : 'No',
+    boofingSupplies: document.getElementById('boofingSupplies').checked ? 'Yes' : 'No',
     naloxIM:         pillValues.naloxIM,
     naloxNasal:      pillValues.naloxNasal,
     secDistrib:      pillValues.secDistrib,
@@ -1018,8 +1121,11 @@ function resetVisitForm() {
   document.getElementById('visitHousing').value   = '';
   document.getElementById('visitNotes').value     = '';
   document.getElementById('returnedSyringes').checked = false;
+  document.getElementById('saferInhalation').checked  = false;
+  document.getElementById('boofingSupplies').checked  = false;
   // Reset all pills to default
-  ['longs','shorts','fts','naloxIM','naloxNasal','secDistrib',
+  ['longs','shorts','fts','tourniquets','cottons','filters','cookers',
+   'naloxIM','naloxNasal','secDistrib',
    'reversalNasalDoses','reversalIMDoses'].forEach(g => {
     pickPillByVal(g, '0');
   });
@@ -1300,163 +1406,6 @@ async function submitPaperSheet(btn) {
   resultEl.style.color = errors.length ? 'var(--warn)' : 'var(--accent2)';
   resultEl.style.whiteSpace = 'pre-line';
   resultEl.textContent = msg;
-}
-
-// ────────────────────────────────────────────────────────────────────────────
-// Dashboard
-// ────────────────────────────────────────────────────────────────────────────
-function _num(v) { const n = parseFloat(v); return isNaN(n) ? 0 : n; }
-
-// Count occurrences of a field across records, return [ [label,count], ... ] desc
-function _tally(records, getVal, { blankLabel = '(blank)', limit = 0 } = {}) {
-  const counts = {};
-  records.forEach(r => {
-    let v = getVal(r);
-    v = (v === undefined || v === null || String(v).trim() === '') ? blankLabel : String(v).trim();
-    counts[v] = (counts[v] || 0) + 1;
-  });
-  let rows = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  if (limit) rows = rows.slice(0, limit);
-  return rows;
-}
-
-function _statCards(pairs) {
-  return '<div class="stat-grid">' + pairs.map(([n, l]) =>
-    `<div class="stat-card"><div class="num">${n}</div><div class="lbl">${l}</div></div>`
-  ).join('') + '</div>';
-}
-
-function _barChart(rows, { title } = {}) {
-  if (!rows.length) return '';
-  const max = Math.max(...rows.map(r => r[1])) || 1;
-  let html = title ? `<p class="dash-note" style="margin-top:12px;font-weight:600;color:var(--text)">${title}</p>` : '';
-  html += rows.map(([label, val]) => {
-    const pct = Math.round((val / max) * 100);
-    return `<div class="bar-row">
-      <span class="bar-label" title="${label}">${label}</span>
-      <span class="bar-track"><span class="bar-fill" style="width:${pct}%"></span></span>
-      <span class="bar-val">${val}</span>
-    </div>`;
-  }).join('');
-  return html;
-}
-
-// Read a field from a record trying several possible key names
-function _field(rec, keys) {
-  for (const k of keys) {
-    if (rec[k] !== undefined && rec[k] !== null && String(rec[k]).trim() !== '') return rec[k];
-  }
-  return '';
-}
-
-function _monthKey(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(String(dateStr).slice(0, 10) + 'T12:00:00');
-  if (isNaN(d)) return '';
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-}
-
-function renderDashboard() {
-  // ---- Participants ----
-  const pEl = document.getElementById('dash-participants');
-  if (!participants.length) {
-    pEl.innerHTML = '<p class="dash-note">No participant data loaded.</p>';
-  } else {
-    let h = _statCards([[participants.length, 'Total participants']]);
-    h += _barChart(_tally(participants, p => _field(p, ['county','County']), { limit: 15 }), { title: 'By county' });
-    h += _barChart(_tally(participants, p => _field(p, ['gender','gender_identity','Gender Identity'])), { title: 'By gender identity' });
-    h += _barChart(_tally(participants, p => _field(p, ['race','race_ethnicity','Race / Ethnicity'])), { title: 'By race / ethnicity' });
-    const housing = _tally(participants, p => _field(p, ['housing','housing_status','Housing Status']));
-    if (housing.some(r => r[0] !== '(blank)')) h += _barChart(housing, { title: 'By housing status' });
-    // Birth-year decade
-    const decades = _tally(participants, p => {
-      const y = parseInt(_field(p, ['birthYear','year','Birth Year']), 10);
-      return isNaN(y) ? '' : (Math.floor(y / 10) * 10) + 's';
-    });
-    if (decades.some(r => r[0] !== '(blank)')) h += _barChart(decades.sort((a,b)=>a[0]<b[0]?-1:1), { title: 'By birth decade' });
-    pEl.innerHTML = h;
-  }
-
-  // ---- Visits ----
-  const vEl = document.getElementById('dash-visits');
-  if (!visitsLoaded) {
-    vEl.innerHTML = '<p class="dash-note">Loading visit data…</p>';
-    return;
-  }
-  if (!visits.length) {
-    vEl.innerHTML = '<div class="dash-warn"><strong>No visit data available yet.</strong><br>' +
-      'The app can only show visit summaries once the Apps Script <code>doGet</code> returns visits ' +
-      '(action <code>getVisits</code>). Ask Claude for the one-time <code>Code.gs</code> snippet to add.</div>';
-    return;
-  }
-
-  const V = (rec, keys) => _field(rec, keys);
-  const uniquePids = new Set(visits.map(v => String(V(v, ['participantId','pid','Participant ID'])).trim()).filter(Boolean));
-  const totLongs  = visits.reduce((s, v) => s + _num(V(v, ['longs','Longs Given'])), 0);
-  const totShorts = visits.reduce((s, v) => s + _num(V(v, ['shorts','Shorts Given'])), 0);
-  const totIM     = visits.reduce((s, v) => s + _num(V(v, ['naloxIM','Naloxone IM'])), 0);
-  const totNasal  = visits.reduce((s, v) => s + _num(V(v, ['naloxNasal','Naloxone Nasal'])), 0);
-  const totFTS    = visits.reduce((s, v) => s + _num(V(v, ['fts','FTS Given'])), 0);
-  const totSec    = visits.reduce((s, v) => s + _num(V(v, ['secDistrib','Sec Distrib Kits'])), 0);
-  const reversals = visits.filter(v => /^y/i.test(String(V(v, ['reportedReversal','Reported Reversal?'])))).length;
-
-  let h = _statCards([
-    [visits.length, 'Total visits'],
-    [uniquePids.size, 'Unique participants'],
-    [totLongs + totShorts, 'Syringes given'],
-    [totIM + totNasal, 'Naloxone kits'],
-    [reversals, 'Reversals reported']
-  ]);
-
-  // New vs returning
-  h += _barChart(_tally(visits, v => V(v, ['newOrReturning','New / Returning'])), { title: 'New vs returning' });
-  // By month
-  const byMonth = _tally(visits, v => _monthKey(V(v, ['date','Date'])), { blankLabel: '(no date)' })
-    .filter(r => r[0] !== '(no date)').sort((a, b) => a[0] < b[0] ? -1 : 1);
-  h += _barChart(byMonth, { title: 'Visits by month' });
-  // By location
-  h += _barChart(_tally(visits, v => V(v, ['location','Location']), { limit: 12 }), { title: 'By location' });
-
-  // Supplies breakdown
-  h += _barChart([
-    ['Longs', totLongs], ['Shorts', totShorts],
-    ['Naloxone IM', totIM], ['Naloxone Nasal', totNasal],
-    ['FTS', totFTS], ['Sec. distrib', totSec]
-  ].filter(r => r[1] > 0).sort((a, b) => b[1] - a[1]), { title: 'Supplies distributed (totals)' });
-
-  // Reversals by county (only if any)
-  if (reversals) {
-    const revRows = _tally(
-      visits.filter(v => /^y/i.test(String(V(v, ['reportedReversal','Reported Reversal?'])))),
-      v => V(v, ['reversalCounty','Reversal: County']), { blankLabel: '(unspecified)' }
-    );
-    h += _barChart(revRows, { title: 'Reversals by county' });
-  }
-
-  vEl.innerHTML = h;
-}
-
-function loadDashboard(force) {
-  const status = document.getElementById('dash-status');
-  renderDashboard(); // render participants immediately
-  if (visitsLoaded && !force) {
-    status.textContent = 'Showing ' + participants.length + ' participants and ' + visits.length + ' visits.';
-    return;
-  }
-  status.textContent = 'Loading visit data…';
-  fetch(WEB_APP_URL + '?action=getVisits')
-    .then(r => r.json())
-    .then(data => {
-      visits = data.visits || [];
-      visitsLoaded = true;
-      status.textContent = 'Showing ' + participants.length + ' participants and ' + visits.length + ' visits.';
-      renderDashboard();
-    })
-    .catch(() => {
-      visitsLoaded = true;
-      status.textContent = 'Participant data loaded; visit data unavailable.';
-      renderDashboard();
-    });
 }
 
 // ────────────────────────────────────────────────────────────────────────────
