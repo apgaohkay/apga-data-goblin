@@ -404,17 +404,6 @@ select option { background: var(--bg); }
       </div>
     </div>
 
-    <div class="qty-row">
-      <span class="qty-label">FTS</span>
-      <div class="pills" id="pills-fts">
-        <div class="pill active" data-val="0" onclick="pickPill('fts',this)">0</div>
-        <div class="pill" data-val="5" onclick="pickPill('fts',this)">5</div>
-        <div class="pill" data-val="10" onclick="pickPill('fts',this)">10</div>
-        <div class="pill" data-val="20" onclick="pickPill('fts',this)">20</div>
-        <div class="pill" data-val="25" onclick="pickPill('fts',this)">25</div>
-      </div>
-    </div>
-
     <div class="check-row">
       <input type="checkbox" id="returnedSyringes">
       <label for="returnedSyringes">Participant returned syringes</label>
@@ -481,7 +470,7 @@ select option { background: var(--bg); }
     </div>
 
     <hr class="divider">
-    <p class="supply-sub naloxone">💉 Naloxone</p>
+    <p class="supply-sub naloxone">💉 Naloxone & Test Strips</p>
 
     <div class="qty-row">
       <span class="qty-label">Naloxone IM</span>
@@ -523,6 +512,28 @@ select option { background: var(--bg); }
         <div class="pill" data-val="3" onclick="pickPill('secDistrib',this)">3</div>
         <div class="pill" data-val="4" onclick="pickPill('secDistrib',this)">4</div>
         <div class="pill" data-val="5" onclick="pickPill('secDistrib',this)">5</div>
+      </div>
+    </div>
+
+    <div class="qty-row">
+      <span class="qty-label">FTS</span>
+      <div class="pills" id="pills-fts">
+        <div class="pill active" data-val="0" onclick="pickPill('fts',this)">0</div>
+        <div class="pill" data-val="5" onclick="pickPill('fts',this)">5</div>
+        <div class="pill" data-val="10" onclick="pickPill('fts',this)">10</div>
+        <div class="pill" data-val="20" onclick="pickPill('fts',this)">20</div>
+        <div class="pill" data-val="25" onclick="pickPill('fts',this)">25</div>
+      </div>
+    </div>
+
+    <div class="qty-row">
+      <span class="qty-label">XTS</span>
+      <div class="pills" id="pills-xts">
+        <div class="pill active" data-val="0" onclick="pickPill('xts',this)">0</div>
+        <div class="pill" data-val="5" onclick="pickPill('xts',this)">5</div>
+        <div class="pill" data-val="10" onclick="pickPill('xts',this)">10</div>
+        <div class="pill" data-val="20" onclick="pickPill('xts',this)">20</div>
+        <div class="pill" data-val="25" onclick="pickPill('xts',this)">25</div>
       </div>
     </div>
   </section>
@@ -662,18 +673,38 @@ select option { background: var(--bg); }
 
 <!-- ══════════════════ REGISTER TAB ══════════════════ -->
 <div id="tab-register" class="tab-pane">
+
+  <section style="border-color:#3fb950">
+    <h2 style="color:#3fb950">🎲 Quick Fill</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px;">
+      Randomizes all fields below with plausible placeholder values. Correct what you know — race/ethnicity, approximate age, county — then hit Register. Nothing is locked in until you submit.
+    </p>
+    <button class="submit-btn" id="anonGenerateBtn" style="background:#2d6a4f;padding:13px"
+            onclick="randomizeRegFields()">🎲 Fill with Random Values</button>
+  </section>
+
   <section>
     <h2>👤 New Participant Registration</h2>
     <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px;">
       Anonymous ID only — do not enter names or contact info.
     </p>
 
-    <label>Initials *</label>
-    <input type="text" id="regInitials" placeholder="2–4 letters" maxlength="6"
+    <label>Initials</label>
+    <input type="text" id="regInitials" placeholder="2–4 letters, or leave as generated" maxlength="6"
            oninput="this.value=this.value.toUpperCase()">
 
-    <label>Birth Year *</label>
-    <input type="number" id="regBirthYear" placeholder="e.g. 1983" min="1920" max="2010">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div>
+        <label>Birth Year</label>
+        <input type="number" id="regBirthYear" placeholder="e.g. 1983" min="1920" max="2010" style="margin-bottom:0">
+      </div>
+      <div>
+        <label>— or approximate age</label>
+        <input type="number" id="regAge" placeholder="e.g. 34" min="16" max="90" style="margin-bottom:0"
+               oninput="if(this.value) document.getElementById('regBirthYear').value = new Date().getFullYear() - parseInt(this.value)">
+      </div>
+    </div>
+    <div style="height:10px"></div>
 
     <label>Gender Identity</label>
     <select id="regGender">
@@ -699,9 +730,9 @@ select option { background: var(--bg); }
     </select>
 
     <label>County</label>
-    <select id="regCounty">
+    <select id="regCounty" onchange="syncRegZip()">
       <option value="">— select —</option>
-      <option>Clarke</option><option>Oconee</option><option>Jackson</option>
+      <option selected>Clarke</option><option>Oconee</option><option>Jackson</option>
       <option>Madison</option><option>Barrow</option><option>Oglethorpe</option>
       <option>Elbert</option><option>Hart</option><option>Franklin</option>
       <option>Stephens</option><option>Habersham</option><option>Rabun</option>
@@ -728,6 +759,11 @@ select option { background: var(--bg); }
   </section>
 
   <button class="submit-btn" id="submitReg" onclick="submitRegister()">Register New Participant</button>
+  <div id="regResult" style="display:none;margin-top:14px;background:var(--surface);border:1px solid #3fb950;border-radius:var(--radius);padding:14px;text-align:center">
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">New Participant ID — write on their card</div>
+    <div id="regIdDisplay" style="font-size:3rem;font-weight:900;color:#3fb950;letter-spacing:.1em;line-height:1.1"></div>
+    <div id="regIdSub" style="font-size:.82rem;color:var(--muted);margin-top:6px"></div>
+  </div>
 </div>
 
 
@@ -810,7 +846,7 @@ let pillValues   = {
   newReturn: 'Returning',
   longs: '0', shorts: '0', fts: '0',
   tourniquets: '0', cottons: '0', filters: '0', cookers: '0',
-  naloxIM: '0', naloxNasal: '0', secDistrib: '0',
+  naloxIM: '0', naloxNasal: '0', secDistrib: '0', fts: '0', xts: '0',
   reversal: 'No',
   reversalNasalDoses: '0', reversalIMDoses: '0',
   regType: 'SSP'
@@ -820,8 +856,8 @@ let pillValues   = {
 // Boot
 // ────────────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  // Populate the registration ZIP dropdown
-  document.getElementById('regZip').innerHTML = zipOptionsHtml();
+  // Populate the registration ZIP dropdown, defaulting to Clarke/30606
+  syncRegZip();
 
   // Start with one blank paper row ready to go
   addPaperRow();
@@ -1075,6 +1111,8 @@ async function submitVisit() {
     naloxIM:         pillValues.naloxIM,
     naloxNasal:      pillValues.naloxNasal,
     secDistrib:      pillValues.secDistrib,
+    fts:             pillValues.fts,
+    xts:             pillValues.xts,
     services:        getSelectedServices(),
     returnedSyringes: document.getElementById('returnedSyringes').checked ? 'Yes' : 'No',
     reportedReversal: pillValues.reversal,
@@ -1124,8 +1162,8 @@ function resetVisitForm() {
   document.getElementById('saferInhalation').checked  = false;
   document.getElementById('boofingSupplies').checked  = false;
   // Reset all pills to default
-  ['longs','shorts','fts','tourniquets','cottons','filters','cookers',
-   'naloxIM','naloxNasal','secDistrib',
+  ['longs','shorts','tourniquets','cottons','filters','cookers',
+   'naloxIM','naloxNasal','secDistrib','fts','xts',
    'reversalNasalDoses','reversalIMDoses'].forEach(g => {
     pickPillByVal(g, '0');
   });
@@ -1152,8 +1190,8 @@ async function submitRegister() {
   const initials  = document.getElementById('regInitials').value.trim().toUpperCase();
   const birthYear = document.getElementById('regBirthYear').value.trim();
 
-  if (!initials || !birthYear) {
-    toast('Initials and birth year are required.', true); return;
+  if (!initials) {
+    toast('Initials are required — hit 🎲 to generate random ones.', true); return;
   }
 
   const btn = document.getElementById('submitReg');
@@ -1182,20 +1220,26 @@ async function submitRegister() {
     const res  = await post_(payload);
     const data = await res.json();
     if (data.ok || data.success) {
-      toast('✓ Registered! ID: ' + (data.id || newId));
-      // Add to local list immediately so next registration gets a different ID
-      participants.push({ id: newId, initials, year: birthYear });
-      // Then reload from sheet in background (preserves the pushed entry if reload fails)
+      const assignedId = String(data.id || newId);
+      // Add to local list using the server-assigned ID so lookup is immediately correct
+      participants.push({ id: assignedId, initials, birthYear, year: birthYear });
+      // Then reload from sheet in background
       fetch(WEB_APP_URL).then(r=>r.json()).then(d => {
         const fresh = d.participants || [];
-        // Keep any locally-added entries not yet in the sheet response
         const freshIds = new Set(fresh.map(p=>String(p.id)));
         participants.filter(p=>!freshIds.has(String(p.id))).forEach(p=>fresh.push(p));
         participants = fresh;
       }).catch(()=>{});
+      // Show ID prominently on screen — don't rely on a disappearing toast
+      document.getElementById('regIdDisplay').textContent = assignedId;
+      document.getElementById('regIdSub').textContent =
+        initials + (birthYear ? ' · ' + birthYear : '') + ' · ' + pillValues.regType;
+      document.getElementById('regResult').style.display = 'block';
+      toast('✓ Registered! ID: ' + assignedId);
       // Clear registration form
       document.getElementById('regInitials').value   = '';
       document.getElementById('regBirthYear').value  = '';
+      document.getElementById('regAge').value        = '';
       document.getElementById('regGender').value     = '';
       document.getElementById('regCounty').selectedIndex = 0;
       document.getElementById('regZip').value        = '';
@@ -1209,6 +1253,53 @@ async function submitRegister() {
   } finally {
     btn.disabled = false; btn.textContent = 'Register New Participant';
   }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Anonymous participant ID generator
+// ────────────────────────────────────────────────────────────────────────────
+// Sync the main registration ZIP dropdown when county changes
+function syncRegZip() {
+  const county = document.getElementById('regCounty').value;
+  const zips   = ZIPS_BY_COUNTY[county] || [];
+  const regZip = document.getElementById('regZip');
+  regZip.innerHTML = '<option value="">— ZIP —</option>' +
+    zips.map(z => `<option value="${z}">${z}</option>`).join('') +
+    '<option value="Other">Other / not listed</option>';
+  if (county === 'Clarke' && zips.includes('30606')) regZip.value = '30606';
+}
+
+// Fill the registration form with random plausible placeholder values
+function randomizeRegFields() {
+  const consonants = 'BCDFGHJKLMNPQRSTVWXZ';
+  const randInitials = Array.from({length: 3}, () =>
+    consonants[Math.floor(Math.random() * consonants.length)]
+  ).join('');
+
+  // Birth year: plausible adult range (ages ~22–62 as of this year)
+  const thisYear = new Date().getFullYear();
+  const randYear = thisYear - Math.floor(22 + Math.random() * 40);
+
+  // Gender weighted roughly toward common presentations in SSP populations
+  const genders = ['M','M','M','F','F','F','NB','O'];
+  const randGender = genders[Math.floor(Math.random() * genders.length)];
+
+  // Race — leave blank so worker always consciously selects; don't randomly assign
+  // (too important for equity data to guess)
+
+  document.getElementById('regInitials').value  = randInitials;
+  document.getElementById('regBirthYear').value = randYear;
+  document.getElementById('regAge').value       = thisYear - randYear;
+  document.getElementById('regGender').value    = randGender;
+  document.getElementById('regRace').value      = '';   // worker must confirm
+  document.getElementById('regCounty').value    = 'Clarke';
+  syncRegZip();  // sets ZIP to 30606
+
+  // Scroll to the form so worker can review/edit
+  document.getElementById('regInitials').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  const btn = document.getElementById('anonGenerateBtn');
+  btn.textContent = '🎲 Re-randomize';
 }
 
 // ────────────────────────────────────────────────────────────────────────────
