@@ -526,21 +526,7 @@ select option { background: var(--field-bg); color: var(--field-text); }
     <p style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">
       Select all that apply — tap to toggle.
     </p>
-    <div class="pills" id="pills-services" style="gap:8px">
-      <div class="multi-pill" data-val="Naloxone training" onclick="toggleService(this)">Naloxone Training</div>
-      <div class="multi-pill" data-val="Naloxone/OEND" onclick="toggleService(this)">Naloxone / OEND</div>
-      <div class="multi-pill" data-val="Peer support" onclick="toggleService(this)">Peer Support</div>
-      <div class="multi-pill" data-val="Linkage to care" onclick="toggleService(this)">Linkage to Care</div>
-      <div class="multi-pill" data-val="Insurance assistance" onclick="toggleService(this)">Insurance Assistance</div>
-      <div class="multi-pill" data-val="Safer use education" onclick="toggleService(this)">Safer Use Education</div>
-      <div class="multi-pill" data-val="FTS education" onclick="toggleService(this)">FTS Education</div>
-      <div class="multi-pill" data-val="Secondary distribution" onclick="toggleService(this)">Secondary Distribution</div>
-      <div class="multi-pill" data-val="Advocacy" onclick="toggleService(this)">Advocacy</div>
-      <div class="multi-pill" data-val="Wound care" onclick="toggleService(this)">Wound Care</div>
-      <div class="multi-pill" data-val="Screening" onclick="toggleService(this)">Screening</div>
-      <div class="multi-pill" data-val="Community presentation" onclick="toggleService(this)">Community Presentation</div>
-      <div class="multi-pill" data-val="Other" onclick="toggleService(this)">Other</div>
-    </div>
+    <div class="pills" id="pills-services" style="gap:8px"></div>
   </section>
 
   <!-- Reversal Toggle -->
@@ -773,6 +759,26 @@ select option { background: var(--field-bg); color: var(--field-text); }
 const WEB_APP_URL =
   'https://script.google.com/macros/s/AKfycbykiqg1ZmqVdUdJNzEbJIVVkaU857Uz6TmMlWxFU4eXQCYXK4D1MLuO5FGh8dFVf7ym/exec';
 
+// ── Services / Referrals ──────────────────────────────────────────────────────
+// Edit this list to add, remove, or rename service options.
+// The label (shown on the pill) is derived automatically from the value.
+const SERVICES = [
+  'Naloxone training',
+  'Naloxone/OEND',
+  'Peer support',
+  'Linkage to care',
+  'Insurance assistance',
+  'Safer use education',
+  'FTS education',
+  'Secondary distribution',
+  'Advocacy',
+  'Wound care',
+  'Screening',
+  'Community presentation',
+  'Other',
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
 // ZIP codes for the counties Access Point serves, grouped by county.
 const ZIPS_BY_COUNTY = {
   'Barrow':     ['30011','30620','30666','30680'],
@@ -817,6 +823,20 @@ let pillValues   = {
 // Boot
 // ────────────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
+  // Render service pills from the SERVICES config array
+  (function() {
+    const container = document.getElementById('pills-services');
+    SERVICES.forEach(function(svc) {
+      const d = document.createElement('div');
+      d.className = 'multi-pill';
+      d.dataset.val = svc;
+      // Title-case the label for display
+      d.textContent = svc.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+      d.onclick = function() { toggleService(d); };
+      container.appendChild(d);
+    });
+  })();
+
   // Populate the registration ZIP dropdown, defaulting to Clarke/30606
   syncRegZip();
 
