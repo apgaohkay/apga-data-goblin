@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Access Point SSP — Visit Log</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
 <style>
 /* ── Base ─────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,29 +14,31 @@
   --bg:        #1a0000;   /* deepest near-black maroon base */
   --surface:   #3d0000;   /* brand deep maroon — card surfaces */
   --border:    #6a1a14;   /* lifted crimson border */
-  --accent:    #7a120f;   /* brand red — primary actions */
+  --accent:    #a02e19;   /* brand red — primary actions */
   --accent2:   #c4956a;   /* warm amber — success / multi-select */
   --warn:      #e87878;   /* soft warm pink-red — alerts */
   --text:      #f5e8e6;   /* warm off-white with rose blush */
   --muted:     #b09090;   /* warm rose-grey */
   --pill-bg:   #2e0505;   /* dark maroon pill background */
-  --pill-on:   #7a120f;   /* brand red — active tab */
+  --pill-on:   #a02e19;   /* brand red — active tab */
   --multi-on:  #7a4e20;   /* warm amber-brown — multi-select */
   --lavender:  #c0a8e0;   /* logo lavender — used sparingly */
   --citron:    #d4cc20;   /* citron — reversal section, unmissable */
+  --field-bg:  #f5ede8;   /* warm cream — input fields */
+  --field-text:#1a0000;   /* near-black on cream */
   --radius:    10px;
 }
 html { font-size: 16px; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Courier Prime', 'Courier New', monospace;
+  font-family: 'Cutive Mono', 'Courier New', monospace;
   padding: 12px;
   max-width: 640px;
   margin: 0 auto;
 }
 h1 {
-  font-family: 'Special Elite', 'Courier New', serif;
+  font-family: 'Cutive Mono', 'Courier New', monospace;
   font-size: 1.25rem;
   color: var(--accent);
   margin-bottom: 4px;
@@ -51,7 +53,7 @@ section {
   margin-bottom: 12px;
 }
 section h2 {
-  font-family: 'Special Elite', 'Courier New', serif;
+  font-family: 'Cutive Mono', 'Courier New', monospace;
   font-size: .85rem;
   text-transform: uppercase;
   letter-spacing: .08em;
@@ -62,10 +64,11 @@ section h2 {
 label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
 input[type=text], input[type=number], input[type=date], select, textarea {
   width: 100%;
-  background: var(--bg);
+  background: var(--field-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
-  color: var(--text);
+  color: var(--field-text);
+  font-family: 'Cutive Mono', 'Courier New', monospace;
   font-size: 1rem;
   padding: 8px 10px;
   margin-bottom: 10px;
@@ -75,8 +78,9 @@ textarea { min-height: 72px; resize: vertical; }
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(160,46,25,0.20);
 }
-select option { background: var(--bg); }
+select option { background: var(--field-bg); color: var(--field-text); }
 /* ── Pill groups (single-select) ─────────────────────────────────────── */
 .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .pill {
@@ -172,7 +176,7 @@ select option { background: var(--bg); }
   border-radius: var(--radius);
   color: #fff;
   cursor: pointer;
-  font-family: 'Special Elite', 'Courier New', serif;
+  font-family: 'Cutive Mono', 'Courier New', monospace;
   font-size: 1rem;
   letter-spacing: .06em;
   padding: 14px;
@@ -189,7 +193,7 @@ select option { background: var(--bg); }
   border-radius: 6px;
   color: var(--muted);
   cursor: pointer;
-  font-family: 'Special Elite', 'Courier New', serif;
+  font-family: 'Cutive Mono', 'Courier New', monospace;
   font-size: .82rem;
   letter-spacing: .04em;
   padding: 6px 13px;
@@ -237,6 +241,8 @@ select option { background: var(--bg); }
   font-size: .88rem;
   padding: 6px 8px;
   margin-bottom: 0;
+  background: var(--field-bg);
+  color: var(--field-text);
 }
 .paper-row .del-row {
   position: absolute;
@@ -275,7 +281,7 @@ select option { background: var(--bg); }
   border-radius: var(--radius);
   color: var(--lavender);
   cursor: pointer;
-  font-family: 'Special Elite', 'Courier New', serif;
+  font-family: 'Cutive Mono', 'Courier New', monospace;
   font-size: .88rem;
   letter-spacing: .04em;
   padding: 10px;
@@ -740,6 +746,10 @@ select option { background: var(--bg); }
     <div style="font-size:.78rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">New Participant ID — write on their card</div>
     <div id="regIdDisplay" style="font-size:3rem;font-weight:900;color:#3fb950;letter-spacing:.1em;line-height:1.1"></div>
     <div id="regIdSub" style="font-size:.82rem;color:var(--muted);margin-top:6px"></div>
+    <button onclick="document.getElementById('regResult').style.display='none';document.getElementById('regInitials').focus();"
+      style="margin-top:14px;background:transparent;border:1px solid #3fb950;border-radius:20px;color:#3fb950;font-family:'Cutive Mono','Courier New',monospace;font-size:.82rem;padding:6px 18px;cursor:pointer;">
+      ＋ Register Another Participant
+    </button>
   </div>
 </div>
 
@@ -1167,6 +1177,11 @@ async function submitRegister() {
     toast('Initials are required — hit 🎲 to generate random ones.', true); return;
   }
 
+  // Clear any previous result so stale IDs never linger
+  document.getElementById('regResult').style.display = 'none';
+  document.getElementById('regIdDisplay').textContent = '';
+  document.getElementById('regIdSub').textContent = '';
+
   const btn = document.getElementById('submitReg');
   btn.disabled = true; btn.textContent = 'Registering…';
 
@@ -1192,24 +1207,27 @@ async function submitRegister() {
   try {
     const res  = await post_(payload);
     const data = await res.json();
-    if (data.ok || data.success) {
-      const assignedId = String(data.id || newId);
-      // Add to local list using the server-assigned ID so lookup is immediately correct
+    // Accept any success-looking response; Apps Script returns varied formats
+    const failed = data.error || data.status === 'error';
+    if (!failed) {
+      // Use server-assigned ID if returned, otherwise our locally-generated one
+      const assignedId = String(data.id || data.newId || newId);
+      // Add to local list immediately so next ID generation skips it
       participants.push({ id: assignedId, initials, birthYear, year: birthYear });
-      // Then reload from sheet in background
+      // Reload from sheet in background to catch any other new registrations
       fetch(WEB_APP_URL).then(r=>r.json()).then(d => {
         const fresh = d.participants || [];
         const freshIds = new Set(fresh.map(p=>String(p.id)));
         participants.filter(p=>!freshIds.has(String(p.id))).forEach(p=>fresh.push(p));
         participants = fresh;
       }).catch(()=>{});
-      // Show ID prominently on screen — don't rely on a disappearing toast
+      // Show ID prominently — clears old result, shows new one
       document.getElementById('regIdDisplay').textContent = assignedId;
       document.getElementById('regIdSub').textContent =
         initials + (birthYear ? ' · ' + birthYear : '') + ' · ' + pillValues.regType;
       document.getElementById('regResult').style.display = 'block';
       toast('✓ Registered! ID: ' + assignedId);
-      // Clear registration form
+      // Clear registration form fields for next entry
       document.getElementById('regInitials').value   = '';
       document.getElementById('regBirthYear').value  = '';
       document.getElementById('regAge').value        = '';
