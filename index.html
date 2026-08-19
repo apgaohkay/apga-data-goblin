@@ -301,7 +301,6 @@ select option { background: var(--field-bg); color: var(--field-text); }
 <div class="tab-bar">
   <button class="tab-btn active" onclick="showTab('visit')">Log Visit</button>
   <button class="tab-btn" onclick="showTab('register')">Register Participant</button>
-  <button class="tab-btn" onclick="showTab('event')">Events</button>
   <button class="tab-btn" onclick="showTab('paper')">🖨 Manual Entry</button>
 </div>
 
@@ -528,24 +527,18 @@ select option { background: var(--field-bg); color: var(--field-text); }
       Select all that apply — tap to toggle.
     </p>
     <div class="pills" id="pills-services" style="gap:8px">
-      <div class="multi-pill" data-val="Safer use education" onclick="toggleService(this)">Safer Use Education</div>
-      <div class="multi-pill" data-val="Routes of admin education" onclick="toggleService(this)">Routes of Admin Education</div>
-      <div class="multi-pill" data-val="Peer check-in" onclick="toggleService(this)">Peer Check-In</div>
       <div class="multi-pill" data-val="Naloxone training" onclick="toggleService(this)">Naloxone Training</div>
+      <div class="multi-pill" data-val="Naloxone/OEND" onclick="toggleService(this)">Naloxone / OEND</div>
+      <div class="multi-pill" data-val="Peer support" onclick="toggleService(this)">Peer Support</div>
+      <div class="multi-pill" data-val="Linkage to care" onclick="toggleService(this)">Linkage to Care</div>
+      <div class="multi-pill" data-val="Insurance assistance" onclick="toggleService(this)">Insurance Assistance</div>
+      <div class="multi-pill" data-val="Safer use education" onclick="toggleService(this)">Safer Use Education</div>
+      <div class="multi-pill" data-val="FTS education" onclick="toggleService(this)">FTS Education</div>
+      <div class="multi-pill" data-val="Secondary distribution" onclick="toggleService(this)">Secondary Distribution</div>
+      <div class="multi-pill" data-val="Advocacy" onclick="toggleService(this)">Advocacy</div>
       <div class="multi-pill" data-val="Wound care" onclick="toggleService(this)">Wound Care</div>
-      <div class="multi-pill" data-val="Sleep hygiene" onclick="toggleService(this)">Sleep Hygiene</div>
-      <div class="multi-pill" data-val="Condoms" onclick="toggleService(this)">Condoms</div>
-      <div class="multi-pill" data-val="Clothing/hygiene" onclick="toggleService(this)">Clothing / Hygiene</div>
-      <div class="multi-pill" data-val="Food/water" onclick="toggleService(this)">Food / Water</div>
-      <div class="multi-pill" data-val="Transportation" onclick="toggleService(this)">Transportation</div>
-      <div class="multi-pill" data-val="Referral: treatment" onclick="toggleService(this)">Referral: Treatment</div>
-      <div class="multi-pill" data-val="Referral: housing" onclick="toggleService(this)">Referral: Housing</div>
-      <div class="multi-pill" data-val="Referral: medical" onclick="toggleService(this)">Referral: Medical</div>
-      <div class="multi-pill" data-val="Referral: mental health" onclick="toggleService(this)">Referral: Mental Health</div>
-      <div class="multi-pill" data-val="Referral: benefits/SNAP" onclick="toggleService(this)">Referral: Benefits / SNAP</div>
-      <div class="multi-pill" data-val="Referral: legal" onclick="toggleService(this)">Referral: Legal</div>
-      <div class="multi-pill" data-val="Referral: ID/documents" onclick="toggleService(this)">Referral: ID / Documents</div>
-      <div class="multi-pill" data-val="Referral: employment" onclick="toggleService(this)">Referral: Employment</div>
+      <div class="multi-pill" data-val="Screening" onclick="toggleService(this)">Screening</div>
+      <div class="multi-pill" data-val="Community presentation" onclick="toggleService(this)">Community Presentation</div>
       <div class="multi-pill" data-val="Other" onclick="toggleService(this)">Other</div>
     </div>
   </section>
@@ -754,24 +747,6 @@ select option { background: var(--field-bg); color: var(--field-text); }
 </div>
 
 
-<!-- ══════════════════ EVENTS TAB ══════════════════ -->
-<div id="tab-event" class="tab-pane">
-  <section>
-    <h2>📅 Log Event Attendance</h2>
-
-    <label>Event</label>
-    <select id="eventSelect">
-      <option value="">Loading events…</option>
-    </select>
-
-    <label>Participant ID</label>
-    <input type="text" id="eventParticipantId" placeholder="4-digit ID">
-
-    <label>Notes</label>
-    <input type="text" id="eventNotes" placeholder="Optional">
-  </section>
-  <button class="submit-btn" onclick="submitAttendee()">Log Attendance</button>
-</div>
 
 <!-- ══════════════════ PAPER SHEET TAB ══════════════════ -->
 <div id="tab-paper" class="tab-pane">
@@ -876,24 +851,6 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(err => console.warn('Could not load participants:', err));
 
-  // Load events for Events tab
-  fetch(WEB_APP_URL + '?action=getEvents')
-    .then(r => r.json())
-    .then(data => {
-      const sel = document.getElementById('eventSelect');
-      sel.innerHTML = '';
-      if (!data.events || data.events.length === 0) {
-        sel.innerHTML = '<option value="">No events found</option>';
-        return;
-      }
-      data.events.forEach(ev => {
-        const opt = document.createElement('option');
-        opt.value = ev.id;
-        opt.textContent = ev.name + ' — ' + (ev.date ? new Date(ev.date).toLocaleDateString() : '') + ' @ ' + ev.location;
-        sel.appendChild(opt);
-      });
-    })
-    .catch(() => {});
 });
 
 // ────────────────────────────────────────────────────────────────────────────
