@@ -529,6 +529,19 @@ select option { background: var(--field-bg); color: var(--field-text); }
     <div class="pills" id="pills-services" style="gap:8px"></div>
   </section>
 
+  <!-- Recovery Conversations -->
+  <section>
+    <h2>🔄 Recovery Conversations</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">
+      Discussed or asked about — select all that apply. Does not require a referral to have been made.
+    </p>
+    <div class="pills" id="pills-recovery" style="gap:8px"></div>
+    <label style="margin-top:14px;display:block;">Notes</label>
+    <textarea id="recoveryNotes" rows="2"
+      placeholder="Context, barriers, bed dates, outcomes…"
+      style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--fg);font-family:inherit;font-size:.9rem;padding:8px 10px;resize:vertical;box-sizing:border-box;"></textarea>
+  </section>
+
   <!-- Reversal Toggle -->
   <section>
     <h2>💊 Reversal Reported?</h2>
@@ -786,6 +799,23 @@ const SERVICES = [
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ── Recovery Conversations ────────────────────────────────────────────────────
+// Topics the participant discussed or asked about — not whether they followed
+// through. Edit this list to add, remove, or rename options.
+const RECOVERY_CONVERSATIONS = [
+  'Detox',
+  'Inpatient treatment',
+  'Outpatient / IOP',
+  'MAT / MOUD',
+  'Sober living / recovery housing',
+  'Peer recovery support',
+  'NA / AA / recovery groups',
+  'Mental health treatment',
+  'Employment / vocational',
+  'Other',
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
 // ZIP codes for the counties Access Point serves, grouped by county.
 const ZIPS_BY_COUNTY = {
   'Barrow':     ['30011','30620','30666','30680'],
@@ -837,9 +867,21 @@ document.addEventListener('DOMContentLoaded', function() {
       const d = document.createElement('div');
       d.className = 'multi-pill';
       d.dataset.val = svc;
-      // Title-case the label for display
       d.textContent = svc.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
       d.onclick = function() { toggleService(d); };
+      container.appendChild(d);
+    });
+  })();
+
+  // Render recovery conversation pills from the RECOVERY_CONVERSATIONS config array
+  (function() {
+    const container = document.getElementById('pills-recovery');
+    RECOVERY_CONVERSATIONS.forEach(function(topic) {
+      const d = document.createElement('div');
+      d.className = 'multi-pill';
+      d.dataset.val = topic;
+      d.textContent = topic.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+      d.onclick = function() { d.classList.toggle('active'); };
       container.appendChild(d);
     });
   })();
@@ -910,6 +952,11 @@ function toggleService(el) {
 
 function getSelectedServices() {
   const active = document.querySelectorAll('#pills-services .multi-pill.active');
+  return Array.from(active).map(el => el.dataset.val).join('; ');
+}
+
+function getSelectedRecovery() {
+  const active = document.querySelectorAll('#pills-recovery .multi-pill.active');
   return Array.from(active).map(el => el.dataset.val).join('; ');
 }
 
@@ -1080,10 +1127,12 @@ async function submitVisit() {
     secDistrib:      pillValues.secDistrib,
     fts:             pillValues.fts,
     xts:             pillValues.xts,
-    services:        getSelectedServices(),
-    returnedSyringes: document.getElementById('returnedSyringes').checked ? 'Yes' : 'No',
-    reportedReversal: pillValues.reversal,
-    notes:           document.getElementById('visitNotes').value
+    services:              getSelectedServices(),
+    recoveryConversations: getSelectedRecovery(),
+    recoveryNotes:         document.getElementById('recoveryNotes').value,
+    returnedSyringes:      document.getElementById('returnedSyringes').checked ? 'Yes' : 'No',
+    reportedReversal:      pillValues.reversal,
+    notes:                 document.getElementById('visitNotes').value
   };
 
   // Reversal sub-fields
@@ -1139,6 +1188,9 @@ function resetVisitForm() {
   toggleReversal(false);
   // Clear multi-select services
   document.querySelectorAll('#pills-services .multi-pill').forEach(el => el.classList.remove('active'));
+  // Clear recovery conversations
+  document.querySelectorAll('#pills-recovery .multi-pill').forEach(el => el.classList.remove('active'));
+  document.getElementById('recoveryNotes').value = '';
 }
 
 function pickPillByVal(group, val) {
