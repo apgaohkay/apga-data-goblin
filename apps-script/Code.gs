@@ -276,15 +276,26 @@ function doPost(e) {
     if (action === 'registerParticipant') {
       var pSheet = ss.getSheetByName(CONFIG.TABS.participants);
 
-      // Generate next ID (max existing + 1, minimum 1001)
-      var lastP = pSheet.getLastRow();
-      var maxId = 1000;
-      if (lastP >= 2) {
-        var existingIds = pSheet.getRange(2, 1, lastP - 1, 1).getValues()
-          .map(function(r) { return parseInt(r[0], 10) || 0; });
-        maxId = Math.max.apply(null, existingIds);
+      // Use client-provided ID (already collision-checked against loaded registry).
+      // Fall back to max+1 only if client didn't send one.
+      var newId;
+      if (p.id && String(p.id).match(/^\d{4}$/)) {
+        newId = String(p.id);
+      } else {
+        // Fallback: find max existing ID via header lookup (not column-order dependent)
+        var lastP = pSheet.getLastRow();
+        var maxId = 1000;
+        if (lastP >= 2) {
+          var headers = pSheet.getRange(1, 1, 1, pSheet.getLastColumn()).getValues()[0];
+          var idCol = headers.indexOf('Participant ID#');
+          if (idCol >= 0) {
+            var existingIds = pSheet.getRange(2, idCol + 1, lastP - 1, 1).getValues()
+              .map(function(r) { return parseInt(r[0], 10) || 0; });
+            maxId = Math.max.apply(null, existingIds);
+          }
+        }
+        newId = String(maxId + 1);
       }
-      var newId = maxId + 1;
 
       appendByHeader_(pSheet, {
         'Participant ID#':   newId,
@@ -401,9 +412,11 @@ function handleLogVisit_(ss, p) {
     'Naloxone IM':       int_(p.naloxIM),
     'Naloxone Nasal':    int_(p.naloxNasal),
     'Sec Distrib Kits':  int_(p.secDistrib),
-    'Services / Referrals': p.services   || '', // multi-value, "; " separated
-    'Reported Reversal?': reportedReversal,
-    'Notes':             p.notes         || '',
+    'Services / Referrals':     p.services              || '', // multi-value, "; " separated
+    'Recovery Conversations':   p.recoveryConversations || '', // topics discussed/asked about
+    'Recovery Notes':           p.recoveryNotes         || '',
+    'Reported Reversal?':       reportedReversal,
+    'Notes':                    p.notes                 || '',
     'Logged':            new Date()
   };
 

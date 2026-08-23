@@ -290,44 +290,6 @@ select option { background: var(--field-bg); color: var(--field-text); }
 }
 .reversal-only-btn:hover { background: rgba(192,168,224,.10); }
 .reversal-only-btn:disabled { opacity: .4; cursor: not-allowed; }
-
-/* ── Dashboard ───────────────────────────────────────────────────────── */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
-  margin-bottom: 6px;
-}
-.stat-card {
-  background: var(--pill-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-  text-align: center;
-}
-.stat-card .num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-.stat-card .lbl { font-size: .72rem; color: var(--muted); margin-top: 2px; }
-.bar-row {
-  display: grid;
-  grid-template-columns: 110px 1fr 44px;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 5px;
-  font-size: .82rem;
-}
-.bar-row .bar-label { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bar-row .bar-track { background: var(--pill-bg); border-radius: 4px; height: 16px; overflow: hidden; }
-.bar-row .bar-fill  { background: var(--accent); height: 100%; border-radius: 4px; min-width: 2px; }
-.bar-row .bar-val   { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-.dash-note { font-size: .78rem; color: var(--muted); margin: 4px 0 12px; }
-.dash-warn {
-  background: rgba(248,81,73,.1);
-  border: 1px solid var(--warn);
-  border-radius: var(--radius);
-  padding: 12px;
-  font-size: .82rem;
-  color: var(--text);
-}
 </style>
 </head>
 <body>
@@ -340,7 +302,6 @@ select option { background: var(--field-bg); color: var(--field-text); }
   <button class="tab-btn active" onclick="showTab('visit')">Log Visit</button>
   <button class="tab-btn" onclick="showTab('register')">Register Participant</button>
   <button class="tab-btn" onclick="showTab('paper')">🖨 Manual Entry</button>
-  <button class="tab-btn" onclick="showTab('dashboard')">📊 Dashboard</button>
 </div>
 
 <!-- ══════════════════ LOG VISIT TAB ══════════════════ -->
@@ -800,27 +761,6 @@ select option { background: var(--field-bg); color: var(--field-text); }
   <div id="paper-result" style="margin-top:10px;font-size:.9rem;color:var(--accent2);display:none"></div>
 </div>
 
-<!-- ══════════════════ DASHBOARD TAB ══════════════════ -->
-<div id="tab-dashboard" class="tab-pane">
-  <section>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h2 style="margin:0">📊 Program Summary</h2>
-      <button onclick="loadDashboard(true)" style="background:var(--pill-bg);border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:6px 10px;cursor:pointer;font-size:.8rem">↻ Refresh</button>
-    </div>
-    <p class="dash-note" id="dash-status">Loading…</p>
-  </section>
-
-  <section>
-    <h2>Participants</h2>
-    <div id="dash-participants"></div>
-  </section>
-
-  <section>
-    <h2>SSP Visits</h2>
-    <div id="dash-visits"></div>
-  </section>
-</div>
-
 
 <!-- Toast -->
 <div id="toast"></div>
@@ -855,6 +795,7 @@ const SERVICES = [
   'Medical',
   'Therapeutic services',
   'Repro. health',
+  'Groups - HRW/SMART/All/12-Step/Etc.',
   'Other',
 ];
 // ─────────────────────────────────────────────────────────────────────────────
@@ -869,7 +810,6 @@ const RECOVERY_CONVERSATIONS = [
   'MAT / MOUD',
   'Sober living / recovery housing',
   'Peer recovery support',
-  'NA / AA / recovery groups',
   'Mental health treatment',
   'Employment / vocational',
   'Other',
@@ -907,8 +847,6 @@ function zipOptionsHtml() {
 // State
 // ────────────────────────────────────────────────────────────────────────────
 let participants = [];
-let visits       = [];
-let visitsLoaded = false;
 let pillValues   = {
   newReturn: 'Returning',
   longs: '0', shorts: '0', fts: '0',
@@ -992,7 +930,6 @@ function showTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   event.target.classList.add('active');
-  if (name === 'dashboard') loadDashboard(false);
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -1587,163 +1524,6 @@ async function submitPaperSheet(btn) {
   resultEl.style.color = errors.length ? 'var(--warn)' : 'var(--accent2)';
   resultEl.style.whiteSpace = 'pre-line';
   resultEl.textContent = msg;
-}
-
-// ────────────────────────────────────────────────────────────────────────────
-// Dashboard
-// ────────────────────────────────────────────────────────────────────────────
-function _num(v) { const n = parseFloat(v); return isNaN(n) ? 0 : n; }
-
-// Count occurrences of a field across records, return [ [label,count], ... ] desc
-function _tally(records, getVal, { blankLabel = '(blank)', limit = 0 } = {}) {
-  const counts = {};
-  records.forEach(r => {
-    let v = getVal(r);
-    v = (v === undefined || v === null || String(v).trim() === '') ? blankLabel : String(v).trim();
-    counts[v] = (counts[v] || 0) + 1;
-  });
-  let rows = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  if (limit) rows = rows.slice(0, limit);
-  return rows;
-}
-
-function _statCards(pairs) {
-  return '<div class="stat-grid">' + pairs.map(([n, l]) =>
-    `<div class="stat-card"><div class="num">${n}</div><div class="lbl">${l}</div></div>`
-  ).join('') + '</div>';
-}
-
-function _barChart(rows, { title } = {}) {
-  if (!rows.length) return '';
-  const max = Math.max(...rows.map(r => r[1])) || 1;
-  let html = title ? `<p class="dash-note" style="margin-top:12px;font-weight:600;color:var(--text)">${title}</p>` : '';
-  html += rows.map(([label, val]) => {
-    const pct = Math.round((val / max) * 100);
-    return `<div class="bar-row">
-      <span class="bar-label" title="${label}">${label}</span>
-      <span class="bar-track"><span class="bar-fill" style="width:${pct}%"></span></span>
-      <span class="bar-val">${val}</span>
-    </div>`;
-  }).join('');
-  return html;
-}
-
-// Read a field from a record trying several possible key names
-function _field(rec, keys) {
-  for (const k of keys) {
-    if (rec[k] !== undefined && rec[k] !== null && String(rec[k]).trim() !== '') return rec[k];
-  }
-  return '';
-}
-
-function _monthKey(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(String(dateStr).slice(0, 10) + 'T12:00:00');
-  if (isNaN(d)) return '';
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-}
-
-function renderDashboard() {
-  // ---- Participants ----
-  const pEl = document.getElementById('dash-participants');
-  if (!participants.length) {
-    pEl.innerHTML = '<p class="dash-note">No participant data loaded.</p>';
-  } else {
-    let h = _statCards([[participants.length, 'Total participants']]);
-    h += _barChart(_tally(participants, p => _field(p, ['county','County']), { limit: 15 }), { title: 'By county' });
-    h += _barChart(_tally(participants, p => _field(p, ['gender','gender_identity','Gender Identity'])), { title: 'By gender identity' });
-    h += _barChart(_tally(participants, p => _field(p, ['race','race_ethnicity','Race / Ethnicity'])), { title: 'By race / ethnicity' });
-    const housing = _tally(participants, p => _field(p, ['housing','housing_status','Housing Status']));
-    if (housing.some(r => r[0] !== '(blank)')) h += _barChart(housing, { title: 'By housing status' });
-    // Birth-year decade
-    const decades = _tally(participants, p => {
-      const y = parseInt(_field(p, ['birthYear','year','Birth Year']), 10);
-      return isNaN(y) ? '' : (Math.floor(y / 10) * 10) + 's';
-    });
-    if (decades.some(r => r[0] !== '(blank)')) h += _barChart(decades.sort((a,b)=>a[0]<b[0]?-1:1), { title: 'By birth decade' });
-    pEl.innerHTML = h;
-  }
-
-  // ---- Visits ----
-  const vEl = document.getElementById('dash-visits');
-  if (!visitsLoaded) {
-    vEl.innerHTML = '<p class="dash-note">Loading visit data…</p>';
-    return;
-  }
-  if (!visits.length) {
-    vEl.innerHTML = '<div class="dash-warn"><strong>No visit data available yet.</strong><br>' +
-      'The app can only show visit summaries once the Apps Script <code>doGet</code> returns visits ' +
-      '(action <code>getVisits</code>). Ask Claude for the one-time <code>Code.gs</code> snippet to add.</div>';
-    return;
-  }
-
-  const V = (rec, keys) => _field(rec, keys);
-  const uniquePids = new Set(visits.map(v => String(V(v, ['participantId','pid','Participant ID'])).trim()).filter(Boolean));
-  const totLongs  = visits.reduce((s, v) => s + _num(V(v, ['longs','Longs Given'])), 0);
-  const totShorts = visits.reduce((s, v) => s + _num(V(v, ['shorts','Shorts Given'])), 0);
-  const totIM     = visits.reduce((s, v) => s + _num(V(v, ['naloxIM','Naloxone IM'])), 0);
-  const totNasal  = visits.reduce((s, v) => s + _num(V(v, ['naloxNasal','Naloxone Nasal'])), 0);
-  const totFTS    = visits.reduce((s, v) => s + _num(V(v, ['fts','FTS Given'])), 0);
-  const totSec    = visits.reduce((s, v) => s + _num(V(v, ['secDistrib','Sec Distrib Kits'])), 0);
-  const reversals = visits.filter(v => /^y/i.test(String(V(v, ['reportedReversal','Reported Reversal?'])))).length;
-
-  let h = _statCards([
-    [visits.length, 'Total visits'],
-    [uniquePids.size, 'Unique participants'],
-    [totLongs + totShorts, 'Syringes given'],
-    [totIM + totNasal, 'Naloxone kits'],
-    [reversals, 'Reversals reported']
-  ]);
-
-  // New vs returning
-  h += _barChart(_tally(visits, v => V(v, ['newOrReturning','New / Returning'])), { title: 'New vs returning' });
-  // By month
-  const byMonth = _tally(visits, v => _monthKey(V(v, ['date','Date'])), { blankLabel: '(no date)' })
-    .filter(r => r[0] !== '(no date)').sort((a, b) => a[0] < b[0] ? -1 : 1);
-  h += _barChart(byMonth, { title: 'Visits by month' });
-  // By location
-  h += _barChart(_tally(visits, v => V(v, ['location','Location']), { limit: 12 }), { title: 'By location' });
-
-  // Supplies breakdown
-  h += _barChart([
-    ['Longs', totLongs], ['Shorts', totShorts],
-    ['Naloxone IM', totIM], ['Naloxone Nasal', totNasal],
-    ['FTS', totFTS], ['Sec. distrib', totSec]
-  ].filter(r => r[1] > 0).sort((a, b) => b[1] - a[1]), { title: 'Supplies distributed (totals)' });
-
-  // Reversals by county (only if any)
-  if (reversals) {
-    const revRows = _tally(
-      visits.filter(v => /^y/i.test(String(V(v, ['reportedReversal','Reported Reversal?'])))),
-      v => V(v, ['reversalCounty','Reversal: County']), { blankLabel: '(unspecified)' }
-    );
-    h += _barChart(revRows, { title: 'Reversals by county' });
-  }
-
-  vEl.innerHTML = h;
-}
-
-function loadDashboard(force) {
-  const status = document.getElementById('dash-status');
-  renderDashboard(); // render participants immediately
-  if (visitsLoaded && !force) {
-    status.textContent = 'Showing ' + participants.length + ' participants and ' + visits.length + ' visits.';
-    return;
-  }
-  status.textContent = 'Loading visit data…';
-  fetch(WEB_APP_URL + '?action=getVisits')
-    .then(r => r.json())
-    .then(data => {
-      visits = data.visits || [];
-      visitsLoaded = true;
-      status.textContent = 'Showing ' + participants.length + ' participants and ' + visits.length + ' visits.';
-      renderDashboard();
-    })
-    .catch(() => {
-      visitsLoaded = true;
-      status.textContent = 'Participant data loaded; visit data unavailable.';
-      renderDashboard();
-    });
 }
 
 // ────────────────────────────────────────────────────────────────────────────
